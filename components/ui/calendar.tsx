@@ -1,5 +1,5 @@
+import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import {
   add,
   eachDayOfInterval,
@@ -54,7 +54,7 @@ export default function Calendar({
   }
 
   return (
-    <div className={clsx(className, "rounded-lg border border-slate-200 p-4")}>
+    <div className={cn(className, "rounded-lg border border-slate-200 p-4")}>
       <div className="flex items-center px-3 pt-2">
         <h2 className="flex-auto font-semibold text-gray-900">
           {format(firstDayCurrentMonth, "MMMM yyyy")}
@@ -89,7 +89,7 @@ export default function Calendar({
         {days.map((day, dayIdx) => (
           <div
             key={day.toString()}
-            className={clsx(
+            className={cn(
               dayIdx === 0 && `col-start-${getDay(day) + 1}`,
               "py-1.5",
             )}
@@ -97,7 +97,7 @@ export default function Calendar({
             <button
               type="button"
               onClick={() => handleDateSelect(day)}
-              className={clsx(
+              className={cn(
                 isEqual(day, selectedDay) && "text-white",
                 !isEqual(day, selectedDay) && isToday(day) && "text-red-500",
                 !isEqual(day, selectedDay) &&

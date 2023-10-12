@@ -1,12 +1,12 @@
 "use client";
 
-import Calendar from "@/components/common/calendar";
+import Calendar from "@/components/ui/calendar";
 import ServiceSlot from "@/components/pages/business/schedule/service-slot";
-import { Tabs, TabsList, TabsTrigger } from "@/components/common/tabs";
 import { useBusinessScheduleByTimeRange } from "@/lib/hooks/use-business-schedule-by-time-range";
 import { add, format, isAfter, isSameDay, parse, startOfToday } from "date-fns";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import AnimatedTabs from "@/components/ui/animated-tabs";
 
 export default function Schedule({ params }: { params: { handle: string } }) {
   const today = startOfToday();
@@ -89,27 +89,23 @@ export default function Schedule({ params }: { params: { handle: string } }) {
               onDateSelect={(newDate) => setSelectedDay(newDate)}
             />
           </div>
-          {/* <h4 className="my-4 font-semibold text-gray-700">
-            {format(selectedDay, "MMMM dd")}
-          </h4> */}
+
           <section className="mt-4 w-full lg:mt-0 lg:pl-14">
+            <p className="my-4 text-sm font-semibold text-black/70">
+              {format(selectedDay, "MMMM dd")}
+            </p>
             {data?.length > 1 && (
-              <Tabs
+              <AnimatedTabs
+                tabs={(data || []).map((group) => ({
+                  id: group.id,
+                  label: group.title,
+                }))}
+                onChange={(newTab: string) => setSelectedTab(newTab)}
                 value={selectedTab || data?.[0]?.id}
-                onValueChange={(newTab: string) => setSelectedTab(newTab)}
-                className="h-16  w-[400px] overflow-x-auto"
-              >
-                <TabsList className="h-12 p-2">
-                  {(data || []).map((group, index) => (
-                    <TabsTrigger key={`${group.id}-${index}`} value={group.id}>
-                      {group.title}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
+              />
             )}
 
-            <ol className=" space-y-1 text-sm leading-6 text-gray-500">
+            <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
               {selectedDayServiceSlots.length > 0 ? (
                 selectedDayServiceSlots.map((slot) => (
                   <Link href={`/${params.handle}/${slot.id}/booking`}>

@@ -28,11 +28,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-full bg-gray-50">
       <body
         className={`${inter.className} ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
-        }`}
+        } h-full`}
       >
         <ReactQueryProvider> {children}</ReactQueryProvider>
       </body>
