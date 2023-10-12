@@ -74,7 +74,7 @@ enable_signup = true
 # addresses. If disabled, only the new email is required to confirm.
 double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
-enable_confirmations = false
+enable_confirmations = true
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
@@ -108,6 +108,17 @@ redirect_uri = ""
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
 # or any other third-party OIDC providers.
 url = ""
+
+# [auth.external.google]
+# enabled = true
+# client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+# # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
+# secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+# # Overrides the default auth redirectUrl.
+# redirect_uri = ""
+# # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
+# # or any other third-party OIDC providers.
+# url = ""
 
 [analytics]
 enabled = false

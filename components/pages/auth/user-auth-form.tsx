@@ -1,11 +1,95 @@
 "use client";
 
+import { supaClientComponentClient } from "@/lib/supabase/client-side";
 import { useState } from "react";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
+import { redirect } from "next/navigation";
 
 type FormState = "sign-in" | "sign-up";
 
+const formSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+export type FormSchemaType = z.infer<typeof formSchema>;
+
 export default function UserAuthForm() {
   const [formState, setFormState] = useState<FormState>("sign-in");
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
+  });
+
+  async function handleEmailLogin(formValues: FormSchemaType) {
+    try {
+      const { data, error } =
+        await supaClientComponentClient().auth.signInWithPassword({
+          email: formValues.email,
+          password: formValues.password,
+        });
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message,
+        });
+      } else {
+        redirect("/dashboard");
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong!",
+        description: "We were unable to log you in. Please try again.",
+      });
+    }
+  }
+
+  async function handleSignUp(formValues: FormSchemaType) {
+    // https://supabase.com/docs/reference/javascript/auth-signup
+    // @todo - turn on email confirmation in real environment
+    try {
+      const { data, error } = await supaClientComponentClient().auth.signUp({
+        email: formValues.email,
+        password: formValues.password,
+      });
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: error.message,
+        });
+      } else {
+        redirect("/dashboard");
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Something went wrong!",
+        description: "We were unable to log you in. Please try again.",
+      });
+    }
+  }
+
+  function handleFormSubmit(formValues: FormSchemaType) {
+    if (formState === "sign-in") {
+      handleEmailLogin(formValues);
+    } else {
+      handleSignUp(formValues);
+    }
+  }
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -24,7 +108,7 @@ export default function UserAuthForm() {
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit(handleFormSubmit)}>
             <div>
               <label
                 htmlFor="email"
@@ -33,13 +117,14 @@ export default function UserAuthForm() {
                 Email address
               </label>
               <div className="mt-2">
-                <input
+                <Input
                   id="email"
-                  name="email"
                   type="email"
                   autoComplete="email"
                   required
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  {...register("email")}
+                  error={errors.email?.message}
                 />
               </div>
             </div>
@@ -52,13 +137,14 @@ export default function UserAuthForm() {
                 Password
               </label>
               <div className="mt-2">
-                <input
+                <Input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
                   required
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  {...register("password")}
+                  error={errors.password?.message}
                 />
               </div>
             </div>
@@ -94,6 +180,7 @@ export default function UserAuthForm() {
             <div>
               <button
                 type="submit"
+                disabled={isSubmitting}
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 {formState === "sign-in" ? "Sign in" : "Sign up"}
