@@ -1,3 +1,4 @@
+// NOTE: only server components should import anything from this file.
 import { Database } from "@/types/db";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";

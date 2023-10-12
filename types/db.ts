@@ -14,19 +14,19 @@ export interface Database {
           booker_id: string | null
           created_at: string | null
           id: string
-          service_slot_id: string | null
+          service_slot_id: string
         }
         Insert: {
           booker_id?: string | null
           created_at?: string | null
           id?: string
-          service_slot_id?: string | null
+          service_slot_id: string
         }
         Update: {
           booker_id?: string | null
           created_at?: string | null
           id?: string
-          service_slot_id?: string | null
+          service_slot_id?: string
         }
         Relationships: [
           {
@@ -47,30 +47,36 @@ export interface Database {
         Row: {
           created_at: string | null
           description: string | null
+          email: string | null
           handle: string
           id: string
           inactive: boolean | null
-          title: string | null
+          phone: string | null
+          title: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
           description?: string | null
+          email?: string | null
           handle: string
           id?: string
           inactive?: boolean | null
-          title?: string | null
+          phone?: string | null
+          title: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
           description?: string | null
+          email?: string | null
           handle?: string
           id?: string
           inactive?: boolean | null
-          title?: string | null
+          phone?: string | null
+          title?: string
           updated_at?: string | null
           user_id?: string
         }
@@ -89,6 +95,7 @@ export interface Database {
           created_at: string | null
           description: string | null
           id: string
+          image_url: string | null
           price: number | null
           service_group_id: string | null
           title: string
@@ -99,6 +106,7 @@ export interface Database {
           created_at?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           price?: number | null
           service_group_id?: string | null
           title: string
@@ -109,6 +117,7 @@ export interface Database {
           created_at?: string | null
           description?: string | null
           id?: string
+          image_url?: string | null
           price?: number | null
           service_group_id?: string | null
           title?: string
@@ -169,7 +178,7 @@ export interface Database {
           duration: number
           id: string
           image_url: string | null
-          providers: Json | null
+          repeat_count: number | null
           repeat_interval: number | null
           repeat_start: string | null
           service_id: string
@@ -181,7 +190,7 @@ export interface Database {
           duration: number
           id?: string
           image_url?: string | null
-          providers?: Json | null
+          repeat_count?: number | null
           repeat_interval?: number | null
           repeat_start?: string | null
           service_id: string
@@ -193,7 +202,7 @@ export interface Database {
           duration?: number
           id?: string
           image_url?: string | null
-          providers?: Json | null
+          repeat_count?: number | null
           repeat_interval?: number | null
           repeat_start?: string | null
           service_id?: string
@@ -242,33 +251,33 @@ export interface Database {
           business_id: string | null
           created_at: string | null
           email: string | null
-          first_name: string | null
+          first_name: string
           id: string
           image_url: string | null
           instagram_handle: string | null
-          last_name: string | null
+          last_name: string
           updated_at: string | null
         }
         Insert: {
           business_id?: string | null
           created_at?: string | null
           email?: string | null
-          first_name?: string | null
+          first_name?: string
           id?: string
           image_url?: string | null
           instagram_handle?: string | null
-          last_name?: string | null
+          last_name?: string
           updated_at?: string | null
         }
         Update: {
           business_id?: string | null
           created_at?: string | null
           email?: string | null
-          first_name?: string | null
+          first_name?: string
           id?: string
           image_url?: string | null
           instagram_handle?: string | null
-          last_name?: string | null
+          last_name?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -312,9 +321,11 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      get_today_business_schedule: {
+      get_business_schedule_in_range: {
         Args: {
           business_handle: string
+          start_time: string
+          end_time: string
         }
         Returns: Json
       }

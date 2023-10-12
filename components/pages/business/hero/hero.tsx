@@ -1,13 +1,16 @@
 import { Tables } from "@/types/db.extension";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero({ business }: { business: Tables<"business"> }) {
   return (
     <div className="relative isolate overflow-hidden pt-14">
-      <img
+      <Image
         src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2830&q=80&blend=111827&sat=-100&exp=15&blend-mode=multiply"
         alt=""
         className="absolute inset-0 -z-10 h-full w-full object-cover"
+        fill
       />
       <div
         className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -21,7 +24,7 @@ export default function Hero({ business }: { business: Tables<"business"> }) {
           }}
         />
       </div>
-      <div className="mx-auto max-w-2xl px-8 py-32 sm:py-48 lg:py-56">
+      <div className="mx-auto max-w-2xl px-8 py-16 lg:py-48">
         <div className="mb-8 flex justify-center">
           <div className="flex">
             <div className="relative flex items-center gap-x-4 rounded-full px-4 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-600 hover:ring-gray-600/40">
@@ -43,15 +46,22 @@ export default function Hero({ business }: { business: Tables<"business"> }) {
             </div>
           </div>
         </div>
-        <div className="text-center">
+        <div className="flex flex-col items-center gap-4 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
             {business.title}
           </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-300">
+          <p className="text-lg leading-8 text-gray-300">
             {business.description}
           </p>
+          <Link
+            href={`/${business.handle}/schedule`}
+            className="mt-4 max-w-[200px] rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          >
+            See schedule
+          </Link>
         </div>
       </div>
+
       <div
         className="absolute inset-x-0 top-[calc(100%-13rem)] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[calc(100%-30rem)]"
         aria-hidden="true"

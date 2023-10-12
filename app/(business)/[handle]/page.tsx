@@ -1,9 +1,7 @@
-import ServiceGroup from "./components/service-group";
-import Navbar from "./components/landing/navbar";
+import Navbar from "@/components/pages/business/navbar/navbar";
 import { redirect } from "next/navigation";
-import { supaStaticRouteClient } from "@/lib/supabase";
-import Hero from "./components/landing/hero";
-import { BusinessServiceGroup } from "@/types";
+import { supaStaticRouteClient } from "@/lib/supabase/server-side";
+import Hero from "@/components/pages/business/hero/hero";
 
 export default async function ServiceProvider({
   params,
@@ -21,29 +19,10 @@ export default async function ServiceProvider({
     redirect("/");
   }
 
-  const { data: serviceGroupsJSON } = await supaStaticRouteClient.rpc(
-    "get_today_business_schedule",
-    {
-      business_handle: business.handle,
-    },
-  );
-  const serviceGroups = JSON.parse(JSON.stringify(serviceGroupsJSON));
-
   return (
     <>
       <Navbar business={business} />
       <Hero business={business} />
-      <div className="bg-white p-8 text-gray-800 ">
-        {serviceGroups.map(
-          (serviceGroup: BusinessServiceGroup, index: number) => (
-            <ServiceGroup
-              key={serviceGroup.title + index}
-              serviceGroup={serviceGroup}
-              className="mb-8"
-            />
-          ),
-        )}
-      </div>
     </>
   );
 }

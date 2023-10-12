@@ -2,7 +2,7 @@ create table "public"."booking" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone default now(),
     "booker_id" uuid,
-    "service_slot_id" uuid
+    "service_slot_id" uuid not null
 );
 
 
@@ -13,9 +13,11 @@ create table "public"."business" (
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
     "handle" text not null,
-    "title" text,
+    "title" text not null,
     "description" text,
     "user_id" uuid not null,
+    "phone" text,
+    "email" text,
     "inactive" boolean default false
 );
 
@@ -30,6 +32,7 @@ create table "public"."service" (
     "title" text not null,
     "description" text,
     "booking_limit" bigint,
+    "image_url" text,
     "price" bigint
 );
 
@@ -59,7 +62,7 @@ create table "public"."service_slot" (
     "duration" bigint not null,
     "repeat_start" timestamp with time zone ,
     "repeat_interval" bigint,
-    "providers" json,
+    "repeat_count" bigint,
     "image_url" text
 );
 
@@ -80,8 +83,8 @@ create table "public"."staff" (
     "updated_at" timestamp with time zone default now(),
     "email" text,
     "instagram_handle" text,
-    "first_name" text,
-    "last_name" text,
+    "first_name" text not null default '',
+    "last_name" text not null default '',
     "image_url" text,
     "business_id" uuid
 );
@@ -169,4 +172,10 @@ alter table "public"."staff" add constraint "staff_business_id_fkey" FOREIGN KEY
 
 alter table "public"."staff" validate constraint "staff_business_id_fkey";
 
+create policy "Enable read access for all users"
+on "public"."business"
+as permissive
+for select
+to public
+using (true);
 
