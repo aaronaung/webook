@@ -27,7 +27,7 @@ export default async function LoginPage() {
         href="/"
         className={cn(
           buttonVariants({ variant: "ghost" }),
-          "absolute left-4 top-4 md:left-8 md:top-8",
+          "absolute left-4 top-4 md:left-4 md:top-8",
         )}
       >
         <>
