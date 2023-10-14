@@ -15,10 +15,14 @@ create table "public"."business" (
     "handle" text not null,
     "title" text not null,
     "description" text,
-    "user_id" uuid not null,
+    "owner_id" uuid not null,
     "phone" text,
     "email" text,
-    "inactive" boolean default false
+    "inactive" boolean default false,
+    "address" text,
+    "city" text,
+    "state" text,
+    "zip" text
 );
 
 
@@ -145,9 +149,9 @@ alter table "public"."booking" add constraint "booking_service_slot_id_fkey" FOR
 
 alter table "public"."booking" validate constraint "booking_service_slot_id_fkey";
 
-alter table "public"."business" add constraint "business_user_id_fkey" FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE not valid;
+alter table "public"."business" add constraint "business_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "user"(id) ON DELETE CASCADE not valid;
 
-alter table "public"."business" validate constraint "business_user_id_fkey";
+alter table "public"."business" validate constraint "business_owner_id_fkey";
 
 alter table "public"."service" add constraint "service_service_group_id_fkey" FOREIGN KEY (service_group_id) REFERENCES service_group(id) ON DELETE SET NULL not valid;
 

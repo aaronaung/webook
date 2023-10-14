@@ -47,7 +47,7 @@ export default function UserAuthForm() {
           description: error.message,
         });
       } else {
-        router.replace("/dashboard");
+        router.replace("/app/business");
       }
     } catch (error) {
       console.log("error logging in", error);
@@ -157,7 +157,7 @@ export default function UserAuthForm() {
                   type="email"
                   autoComplete="email"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   {...register("email")}
                   error={errors.email?.message}
                 />
@@ -177,7 +177,7 @@ export default function UserAuthForm() {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
                   {...register("password")}
                   error={errors.password?.message}
                 />
@@ -191,7 +191,7 @@ export default function UserAuthForm() {
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
                   <label
                     htmlFor="remember-me"
@@ -204,7 +204,7 @@ export default function UserAuthForm() {
                 <div className="text-sm leading-6">
                   <a
                     href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
+                    className="font-semibold text-primary hover:text-indigo-500"
                   >
                     Forgot password?
                   </a>
@@ -216,7 +216,7 @@ export default function UserAuthForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
               >
                 {formState === "sign-in" ? "Sign in" : "Sign up"}
               </button>
@@ -263,7 +263,7 @@ export default function UserAuthForm() {
             Not a member?{" "}
             <a
               onClick={() => setFormState("sign-up")}
-              className="cursor-pointer font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+              className="cursor-pointer font-semibold leading-6 text-primary hover:text-indigo-500"
             >
               Start a 14 day free trial
             </a>
@@ -274,7 +274,7 @@ export default function UserAuthForm() {
             Already have an account?{" "}
             <a
               onClick={() => setFormState("sign-in")}
-              className="cursor-pointer font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+              className="cursor-pointer font-semibold leading-6 text-primary hover:text-indigo-500"
             >
               Sign in
             </a>

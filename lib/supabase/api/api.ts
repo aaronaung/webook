@@ -5,6 +5,37 @@ type SupabaseOptions = {
   client: SupabaseClient<Database>;
 };
 
+export const getLoggedInUserBusinesses = async ({
+  client,
+}: SupabaseOptions) => {
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  if (!user) {
+    return {
+      user: null,
+      businesses: [],
+    };
+  }
+
+  const { data: businesses } = await client
+    .from("business")
+    .select("*")
+    .eq("owner_id", user?.id);
+  return { user, businesses };
+};
+
+export const getBusinessesByOwnerId = async (
+  userId: string,
+  { client }: SupabaseOptions,
+) => {
+  const { data: businesses } = await client
+    .from("business")
+    .select("*")
+    .eq("owner_id", userId);
+  return businesses;
+};
+
 export const getBusinessScheduleByTimeRange = async (
   businessHandle: string,
   start: Date,

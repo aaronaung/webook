@@ -91,7 +91,7 @@ export default function Schedule({ params }: { params: { handle: string } }) {
           </div>
 
           <section className="mt-4 w-full lg:mt-0 lg:pl-14">
-            <p className="my-4 text-sm font-semibold text-black/70">
+            <p className="text- my-4 text-sm font-semibold">
               {format(selectedDay, "MMMM dd")}
             </p>
             {data?.length > 1 && (
@@ -105,7 +105,7 @@ export default function Schedule({ params }: { params: { handle: string } }) {
               />
             )}
 
-            <ol className="mt-4 space-y-1 text-sm leading-6 text-gray-500">
+            <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
               {selectedDayServiceSlots.length > 0 ? (
                 selectedDayServiceSlots.map((slot) => (
                   <Link href={`/${params.handle}/${slot.id}/booking`}>

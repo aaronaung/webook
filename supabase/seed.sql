@@ -10,7 +10,7 @@ values
   'julian.talens@gmail.com'
 );
 
-insert into public.business (title, description, handle, user_id)
+insert into public.business (title, description, handle, owner_id)
 values
 (
   'Offstage',

@@ -25,8 +25,8 @@ export default function AnimatedTabs({
           key={tab.id}
           onClick={() => onChange(tab.id)}
           className={`${
-            value === tab.id ? "" : "hover:text-black/60"
-          } relative rounded-full px-3 py-1.5 text-sm font-medium text-black outline-sky-400 transition focus-visible:outline-2`}
+            value === tab.id ? "" : "hover:text-muted-foreground"
+          } relative rounded-full px-3 py-1.5 text-sm font-medium outline-sky-400 transition focus-visible:outline-2`}
           style={{
             WebkitTapHighlightColor: "transparent",
           }}
