@@ -45,45 +45,66 @@ export interface Database {
       }
       business: {
         Row: {
+          address: string | null
+          city: string | null
+          country_code: string | null
+          cover_photo_url: string | null
           created_at: string | null
           description: string | null
           email: string | null
           handle: string
           id: string
           inactive: boolean | null
+          logo_url: string | null
+          owner_id: string
           phone: string | null
+          state: string | null
           title: string
           updated_at: string | null
-          user_id: string
+          zip: string | null
         }
         Insert: {
+          address?: string | null
+          city?: string | null
+          country_code?: string | null
+          cover_photo_url?: string | null
           created_at?: string | null
           description?: string | null
           email?: string | null
           handle: string
           id?: string
           inactive?: boolean | null
+          logo_url?: string | null
+          owner_id: string
           phone?: string | null
+          state?: string | null
           title: string
           updated_at?: string | null
-          user_id: string
+          zip?: string | null
         }
         Update: {
+          address?: string | null
+          city?: string | null
+          country_code?: string | null
+          cover_photo_url?: string | null
           created_at?: string | null
           description?: string | null
           email?: string | null
           handle?: string
           id?: string
           inactive?: boolean | null
+          logo_url?: string | null
+          owner_id?: string
           phone?: string | null
+          state?: string | null
           title?: string
           updated_at?: string | null
-          user_id?: string
+          zip?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "business_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "business_owner_id_fkey"
+            columns: ["owner_id"]
             referencedRelation: "user"
             referencedColumns: ["id"]
           }
@@ -293,6 +314,7 @@ export interface Database {
         Row: {
           created_at: string | null
           email: string | null
+          email_verified_at: string | null
           first_name: string | null
           id: string
           last_name: string | null
@@ -301,6 +323,7 @@ export interface Database {
         Insert: {
           created_at?: string | null
           email?: string | null
+          email_verified_at?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null
@@ -309,6 +332,7 @@ export interface Database {
         Update: {
           created_at?: string | null
           email?: string | null
+          email_verified_at?: string | null
           first_name?: string | null
           id?: string
           last_name?: string | null

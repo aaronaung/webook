@@ -156,10 +156,9 @@ export default function UserAuthForm() {
                 <InputText
                   rhfKey="email"
                   register={register}
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
+                  inputProps={{
+                    autoComplete: "email",
+                  }}
                   error={errors.email?.message}
                 />
               </div>
@@ -176,10 +175,9 @@ export default function UserAuthForm() {
                 <InputShowHide
                   rhfKey="password"
                   register={register}
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
+                  inputProps={{
+                    autoComplete: "current-password",
+                  }}
                   error={errors.password?.message}
                 />
               </div>

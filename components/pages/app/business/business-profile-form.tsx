@@ -1,14 +1,24 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import InputAddress from "@/components/ui/input/address";
+import FileDropzone from "@/components/ui/input/file-dropzone";
 import InputMask from "@/components/ui/input/mask";
 import InputSelect from "@/components/ui/input/select";
 import InputText from "@/components/ui/input/text";
 import InputTextArea from "@/components/ui/input/textarea";
+import { toast } from "@/components/ui/use-toast";
 import { countries } from "@/lib/consts/countries";
+import { BUCKETS } from "@/lib/consts/storage";
+import { supaClientComponentClient } from "@/lib/supabase/client-side";
+import { Tables } from "@/types/db.extension";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { useDebounce } from "usehooks-ts";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   handle: z.string().min(1).max(25),
@@ -20,25 +30,154 @@ const formSchema = z.object({
   city: z.string().min(1).max(100),
   state: z.string().min(1).max(100),
   zip: z.string().min(1).max(100),
-  country: z.string().min(1).max(100),
+  country_code: z.string().min(1).max(100),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
-export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
+const FILE_SIZE_LIMIT = 1000000; // in bytes
+
+export default function BusinessProfileForm({
+  onBack,
+  business,
+  loggedInUser,
+}: {
+  onBack?: () => void;
+  business?: Tables<"business">;
+  loggedInUser: User;
+}) {
   const {
     register,
     handleSubmit,
     reset,
     setValue,
+    setError,
+    clearErrors,
+    trigger,
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormSchemaType>({
     resolver: zodResolver(formSchema),
   });
+  const router = useRouter();
+  const logoRef = useRef<HTMLInputElement>(null);
+
+  const [logoFile, setLogoFile] = useState<File>();
+  const [coverPhotoFile, setCoverPhotoFile] = useState<File>();
+  const [handle, setHandle] = useState<string>("");
+  const debouncedHandleValue = useDebounce<string>(handle, 1000);
+
+  useEffect(() => {
+    if (debouncedHandleValue) {
+      (async () => {
+        const exists = await checkIfHandleExists(debouncedHandleValue);
+        if (exists) {
+          setError("handle", {
+            message: "This handle is already taken.",
+            type: "custom",
+          });
+        } else {
+          clearErrors("handle");
+        }
+      })();
+    }
+  }, [debouncedHandleValue]);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles[0].size > FILE_SIZE_LIMIT) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please upload a file smaller than 1MB.",
+      });
+      return;
+    }
+    setCoverPhotoFile(acceptedFiles[0]);
+  }, []);
+
+  const onLogoFileChange = useCallback((e: any) => {
+    const file = e.target.files[0];
+    if (file.size > FILE_SIZE_LIMIT) {
+      toast({
+        variant: "destructive",
+        title: "File too large",
+        description: "Please upload a file smaller than 1MB.",
+      });
+      return;
+    }
+    setLogoFile(file);
+  }, []);
+
+  async function checkIfHandleExists(handle: string) {
+    try {
+      const { count } = await supaClientComponentClient()
+        .from("business")
+        .select("*", { count: "exact", head: true })
+        .eq("handle", handle);
+
+      return count && count > 0;
+    } catch (error) {
+      console.log(error);
+      // we can't check if the handle exists, so we'll just assume it does to err on the safe side.
+      return true;
+    }
+  }
 
   async function handleFormSubmit(values: FormSchemaType) {
-    console.log(values);
+    if (!logoFile || !coverPhotoFile) {
+      toast({
+        variant: "destructive",
+        title: "Missing file",
+        description: "Please upload a logo and cover photo.",
+      });
+      return;
+    }
+    try {
+      const handleExists = await checkIfHandleExists(values.handle);
+      if (handleExists) {
+        setError(
+          "handle",
+          {
+            message: "This handle is already taken.",
+            type: "custom",
+          },
+          {
+            shouldFocus: true,
+          },
+        );
+        toast({
+          variant: "destructive",
+          title: "Handle already exists",
+          description: "Please choose a different handle.",
+        });
+        return;
+      }
+
+      const results = await Promise.all([
+        supaClientComponentClient()
+          .storage.from(BUCKETS.publicBusinessAssets)
+          .upload(`/logos/${values.handle}`, logoFile),
+        supaClientComponentClient()
+          .storage.from(BUCKETS.publicBusinessAssets)
+          .upload(`/cover-photos/${values.handle}`, coverPhotoFile),
+        supaClientComponentClient()
+          .from("business")
+          .upsert({ ...values, owner_id: loggedInUser.id }),
+      ]);
+
+      for (const result of results) {
+        console.log(result);
+        if (result.error) {
+          throw result.error;
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+      });
+    }
   }
 
   return (
@@ -67,6 +206,7 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
                 inputProps={{
                   placeholder: "janesmith",
                 }}
+                onChange={(e) => setHandle(e.target.value)}
                 error={errors.handle?.message}
               />
             </div>
@@ -128,6 +268,7 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
                   setValue("city", location.city);
                   setValue("state", location.state);
                   setValue("zip", location.zip);
+                  trigger(["city", "state", "zip"]);
                 }}
                 control={control}
                 label="Address"
@@ -171,7 +312,7 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
             </div>
             <div className="sm:col-span-2">
               <InputSelect
-                rhfKey="country"
+                rhfKey="country_code"
                 control={control}
                 options={countries.map((country) => ({
                   label: country.name,
@@ -181,7 +322,7 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
                 inputProps={{
                   placeholder: "United States",
                 }}
-                error={errors.country?.message}
+                error={errors.country_code?.message}
               />
             </div>
 
@@ -193,16 +334,36 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
                 Logo
               </label>
               <div className="mt-2 flex items-center gap-x-3">
-                <UserCircleIcon
-                  className="h-12 w-12 text-muted-foreground"
-                  aria-hidden="true"
+                {logoFile ? (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={URL.createObjectURL(logoFile)}
+                      alt="Logo"
+                      className="h-12 w-12 rounded-full"
+                    />
+                  </div>
+                ) : (
+                  <UserCircleIcon
+                    className="h-12 w-12 text-muted-foreground"
+                    aria-hidden="true"
+                  />
+                )}
+                <input
+                  ref={logoRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={onLogoFileChange}
                 />
-                <button
+                <Button
                   type="button"
-                  className="rounded-md bg-background px-2.5 py-1.5 text-sm font-semibold text-foreground shadow-sm ring-1 ring-inset ring-muted hover:bg-gray-50"
+                  className="bg-secondary text-foreground hover:bg-secondary/80"
+                  onClick={() => {
+                    logoRef.current?.click();
+                  }}
                 >
-                  Change
-                </button>
+                  {logoFile ? "Change" : "Upload"}
+                </Button>
               </div>
             </div>
 
@@ -213,32 +374,16 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
               >
                 Cover photo
               </label>
-              <div className="mt-2 flex justify-center rounded-lg border border-dashed border-foreground/25 px-6 py-10">
-                <div className="text-center">
+
+              <FileDropzone
+                onDrop={onDrop}
+                defaultIcon={
                   <PhotoIcon
                     className="mx-auto h-12 w-12 text-muted-foreground"
                     aria-hidden="true"
                   />
-                  <div className="mt-4 flex text-sm leading-6 text-muted-foreground">
-                    <label
-                      htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md bg-background font-semibold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 hover:text-indigo-500"
-                    >
-                      <span>Upload a file</span>
-                      <input
-                        id="file-upload"
-                        name="file-upload"
-                        type="file"
-                        className="sr-only"
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs leading-5 text-muted-foreground">
-                    PNG, JPG, GIF up to 10MB
-                  </p>
-                </div>
-              </div>
+                }
+              />
             </div>
           </div>
         </div>
@@ -248,7 +393,13 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
         <Button
           type="button"
           className="bg-secondary text-foreground hover:bg-secondary/90"
-          onClick={onBack}
+          onClick={() => {
+            if (onBack) {
+              onBack();
+            } else {
+              router.replace("/app/business");
+            }
+          }}
         >
           Cancel
         </Button>

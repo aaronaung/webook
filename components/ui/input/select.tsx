@@ -10,6 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../select";
+import React from "react";
+import { cn } from "@/lib/utils";
 
 type InputSelectOption = {
   label: string;
@@ -20,38 +22,51 @@ type InputSelectProps = ControlledRhfInputProps & {
   options: InputSelectOption[];
   defaultValue?: any;
 };
-export default function InputSelect(props: InputSelectProps) {
-  const input = ({ field }: { field: ControllerRenderProps }) => (
-    <InputDecorator {...props}>
-      <Select
-        onValueChange={(value) => {
-          console.log(value);
-          field.onChange(value);
-        }}
-        {...field}
-      >
-        <SelectTrigger className="mt-1.5 w-full">
-          <SelectValue placeholder={props.inputProps?.placeholder} />
-        </SelectTrigger>
-        <SelectContent className="max-h-[250px] overflow-scroll">
-          <SelectGroup>
-            {props.options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </InputDecorator>
-  );
+const InputSelect = React.forwardRef<HTMLButtonElement, InputSelectProps>(
+  (props, ref) => {
+    const input = ({ field }: { field: ControllerRenderProps }) => (
+      <InputDecorator {...props}>
+        <Select
+          onValueChange={(value) => {
+            field.onChange(value);
+          }}
+          {...field}
+        >
+          <SelectTrigger
+            ref={ref}
+            className={cn(
+              "mt-1.5 w-full",
+              !field.value && "text-muted-foreground",
+            )}
+          >
+            <SelectValue placeholder={props.inputProps?.placeholder} />
+          </SelectTrigger>
+          <SelectContent className="max-h-[250px] overflow-scroll">
+            <SelectGroup>
+              {props.options.map((option) => (
+                <SelectItem
+                  className="cursor-pointer"
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </InputDecorator>
+    );
 
-  return (
-    <Controller
-      name={props.rhfKey}
-      control={props.control}
-      rules={props.disableValidation ? { validate: () => true } : undefined}
-      render={(args) => input(args)}
-    />
-  );
-}
+    return (
+      <Controller
+        name={props.rhfKey}
+        control={props.control}
+        rules={props.disableValidation ? { validate: () => true } : undefined}
+        render={(args) => input(args)}
+      />
+    );
+  },
+);
+
+export default InputSelect;

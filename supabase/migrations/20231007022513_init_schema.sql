@@ -22,7 +22,10 @@ create table "public"."business" (
     "address" text,
     "city" text,
     "state" text,
-    "zip" text
+    "zip" text,
+    "country_code" text,
+    "logo_url" text,
+    "cover_photo_url" text
 );
 
 
@@ -187,16 +190,23 @@ using (true);
 /*
 * This trigger automatically creates a user entry when a new user signs up via Supabase Auth.
 */ 
-create function public.update_user_info()
+/**
+* This trigger automatically creates a user entry when a new user signs up via Supabase Auth.
+*/ 
+create function public.handle_new_user() 
 returns trigger as $$
 begin
-  update public.user 
-  set email_verified_at = new.email_confirmed_at, updated_at = new.updated_at, first_name = new.raw_user_meta_data->>'first_name', last_name = new.raw_user_meta_data->>'last_name'
-  where id = new.id;
+  insert into public.users (id)
+  values (new.id);
   return new;
 end;
 $$ language plpgsql security definer;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
 
-create trigger on_auth_user_updated
-  after update on auth.users
-  for each row execute procedure public.update_user_info();
+-- Create public business assets bucket.
+insert into storage.buckets
+  (id, name)
+values
+  ('public-business-assets', 'public-business-assets');
