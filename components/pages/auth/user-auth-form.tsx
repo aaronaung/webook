@@ -5,10 +5,11 @@ import { useState } from "react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "@/components/ui/use-toast";
+import InputText from "@/components/ui/input/text";
+import InputShowHide from "@/components/ui/input/show-hide";
 
 type FormState = "sign-in" | "sign-up";
 
@@ -152,13 +153,13 @@ export default function UserAuthForm() {
                 Email address
               </label>
               <div className="mt-2">
-                <Input
+                <InputText
+                  rhfKey="email"
+                  register={register}
                   id="email"
                   type="email"
                   autoComplete="email"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                  {...register("email")}
                   error={errors.email?.message}
                 />
               </div>
@@ -172,13 +173,13 @@ export default function UserAuthForm() {
                 Password
               </label>
               <div className="mt-2">
-                <Input
+                <InputShowHide
+                  rhfKey="password"
+                  register={register}
                   id="password"
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6"
-                  {...register("password")}
                   error={errors.password?.message}
                 />
               </div>

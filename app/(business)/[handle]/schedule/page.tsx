@@ -1,6 +1,6 @@
 "use client";
 
-import Calendar from "@/components/ui/calendar";
+import CalendarV2 from "@/components/ui/calendar-v2";
 import ServiceSlot from "@/components/pages/business/schedule/service-slot";
 import { useBusinessScheduleByTimeRange } from "@/lib/hooks/use-business-schedule-by-time-range";
 import { add, format, isAfter, isSameDay, parse, startOfToday } from "date-fns";
@@ -84,7 +84,7 @@ export default function Schedule({ params }: { params: { handle: string } }) {
       <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
         <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
           <div className="lg:pr-14">
-            <Calendar
+            <CalendarV2
               defaultSelectedDay={selectedDay}
               onDateSelect={(newDate) => setSelectedDay(newDate)}
             />

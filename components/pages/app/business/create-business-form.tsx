@@ -1,11 +1,48 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import InputAddress from "@/components/ui/input/address";
+import InputMask from "@/components/ui/input/mask";
+import InputSelect from "@/components/ui/input/select";
+import InputText from "@/components/ui/input/text";
+import InputTextArea from "@/components/ui/input/textarea";
+import { countries } from "@/lib/consts/countries";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import z from "zod";
+
+const formSchema = z.object({
+  handle: z.string().min(1).max(25),
+  title: z.string().min(1).max(25),
+  email: z.string().email(),
+  phone: z.string().min(10).max(15),
+  description: z.string().min(1).max(1000),
+  address: z.string().min(1).max(100),
+  city: z.string().min(1).max(100),
+  state: z.string().min(1).max(100),
+  zip: z.string().min(1).max(100),
+  country: z.string().min(1).max(100),
+});
+
+type FormSchemaType = z.infer<typeof formSchema>;
 
 export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<FormSchemaType>({
+    resolver: zodResolver(formSchema),
+  });
+
+  async function handleFormSubmit(values: FormSchemaType) {
+    console.log(values);
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(handleFormSubmit)}>
       <div className="space-y-12">
         <div className="border-b border-foreground/10 pb-12">
           <h2 className="text-base font-semibold leading-7 text-foreground">
@@ -18,116 +55,133 @@ export default function CreateBusinessForm({ onBack }: { onBack: () => void }) {
 
           <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-6">
             <div className="sm:col-span-3">
-              <label
-                htmlFor="handle"
-                className="block text-sm font-medium leading-6 text-foreground"
-              >
-                Business handle
-              </label>
-              <div className="flex items-center">
-                <span className="mt-1 flex select-none items-center pr-3 text-sm text-muted-foreground">
-                  webook.com/
-                </span>
-                <Input
-                  type="text"
-                  name="handle"
-                  id="handle"
-                  autoComplete="handle"
-                  placeholder="janesmith"
-                />
-              </div>
+              <InputText
+                label="Business handle"
+                prefix={
+                  <span className="select-none pr-2 text-sm text-muted-foreground">
+                    webook.com/
+                  </span>
+                }
+                rhfKey="handle"
+                register={register}
+                inputProps={{
+                  placeholder: "janesmith",
+                }}
+                error={errors.handle?.message}
+              />
             </div>
             <div className="sm:col-span-3">
-              <Input
-                type="text"
+              <InputText
+                rhfKey="title"
+                register={register}
                 label="Title"
-                name="title"
-                id="title"
-                autoComplete="title"
-                placeholder="The business title your customers will see."
+                inputProps={{
+                  placeholder: "Smith Car Wash",
+                }}
+                error={errors.title?.message}
               />
             </div>
             <div className="sm:col-span-3">
-              <Input
-                type="text"
+              <InputText
+                rhfKey="email"
+                register={register}
                 label="Email"
-                name="email"
-                id="email"
-                autoComplete="email"
-                placeholder="Your business contact email address."
+                inputProps={{
+                  autoComplete: "email",
+                  placeholder: "janesmith@gmail.com",
+                }}
+                error={errors.email?.message}
               />
             </div>
             <div className="sm:col-span-3">
-              <Input
-                type="text"
+              <InputMask
+                rhfKey="phone"
+                register={register}
+                maskProps={{
+                  mask: "(999) 999-9999",
+                  placeholder: "(000) 000-0000",
+                  alwaysShowMask: false,
+                }}
                 label="Phone"
-                name="phone"
-                id="phone"
-                autoComplete="phone"
-                placeholder="Your business contact phone number."
+                error={errors.phone?.message}
               />
             </div>
 
             <div className="col-span-full">
               <div className="mt-2">
-                <Textarea
+                <InputTextArea
+                  rhfKey="description"
+                  register={register}
                   label="Description"
-                  id="about"
-                  name="about"
-                  rows={3}
-                  defaultValue={""}
-                  placeholder="Briefly describe what your business does."
+                  textareaProps={{
+                    rows: 3,
+                    placeholder: "Briefly describe what your business does.",
+                  }}
+                  error={errors.description?.message}
                 />
               </div>
             </div>
             <div className="sm:col-span-full">
-              <Input
-                type="text"
+              <InputAddress
+                rhfKey="address"
+                onPlaceSelected={(location) => {
+                  setValue("city", location.city);
+                  setValue("state", location.state);
+                  setValue("zip", location.zip);
+                }}
+                control={control}
                 label="Address"
-                name="address"
-                id="address"
-                autoComplete="address"
-                placeholder="The address line 1 of your business."
+                inputProps={{
+                  placeholder: "123 Main St",
+                  autoComplete: "address",
+                }}
+                error={errors.address?.message}
               />
             </div>
             <div className="sm:col-span-2">
-              <Input
-                type="text"
+              <InputText
+                rhfKey="city"
+                register={register}
                 label="City"
-                name="city"
-                id="city"
-                autoComplete="city"
-                placeholder="City"
+                inputProps={{
+                  placeholder: "Los Angeles",
+                }}
+                error={errors.city?.message}
               />
             </div>
             <div className="sm:col-span-1">
-              <Input
-                type="text"
+              <InputText
+                rhfKey="state"
+                register={register}
                 label="State"
-                name="state"
-                id="state"
-                autoComplete="state"
-                placeholder="State"
+                inputProps={{
+                  placeholder: "CA",
+                }}
+                error={errors.state?.message}
               />
             </div>
             <div className="sm:col-span-1">
-              <Input
-                type="text"
+              <InputMask
+                maskProps={{ mask: "99999", placeholder: "12345" }}
+                rhfKey="zip"
+                register={register}
                 label="Zip"
-                name="zip"
-                id="zip"
-                autoComplete="zip"
-                placeholder="Zip"
+                error={errors.zip?.message}
               />
             </div>
             <div className="sm:col-span-2">
-              <Input
-                type="text"
+              <InputSelect
+                rhfKey="country"
+                control={control}
+                options={countries.map((country) => ({
+                  label: country.name,
+                  value: country.code,
+                }))}
                 label="Country"
-                name="country"
-                id="country"
-                autoComplete="country"
-                placeholder="Country"
+                inputProps={{
+                  placeholder: "United States",
+                }}
+                error={errors.country?.message}
               />
             </div>
 
