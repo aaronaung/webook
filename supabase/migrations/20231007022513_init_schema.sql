@@ -196,7 +196,7 @@ using (true);
 create function public.handle_new_user() 
 returns trigger as $$
 begin
-  insert into public.users (id)
+  insert into public.user (id)
   values (new.id);
   return new;
 end;
@@ -210,3 +210,9 @@ insert into storage.buckets
   (id, name)
 values
   ('public-business-assets', 'public-business-assets');
+
+create policy "Enable upload access for authenticated users"
+on storage.objects for insert to authenticated with check (
+    -- restrict bucket
+    bucket_id = 'public-business-assets'
+);

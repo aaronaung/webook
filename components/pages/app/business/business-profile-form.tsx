@@ -65,6 +65,7 @@ export default function BusinessProfileForm({
   const [logoFile, setLogoFile] = useState<File>();
   const [coverPhotoFile, setCoverPhotoFile] = useState<File>();
   const [handle, setHandle] = useState<string>("");
+  const [handleExists, setHandleExists] = useState<boolean>(false);
   const debouncedHandleValue = useDebounce<string>(handle, 1000);
 
   useEffect(() => {
@@ -76,10 +77,15 @@ export default function BusinessProfileForm({
             message: "This handle is already taken.",
             type: "custom",
           });
+          setHandleExists(true);
         } else {
           clearErrors("handle");
+          setHandleExists(false);
         }
       })();
+    } else {
+      clearErrors("handle");
+      setHandleExists(false);
     }
   }, [debouncedHandleValue]);
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -122,7 +128,7 @@ export default function BusinessProfileForm({
     }
   }
 
-  async function handleFormSubmit(values: FormSchemaType) {
+  async function onFormSuccess(values: FormSchemaType) {
     if (!logoFile || !coverPhotoFile) {
       toast({
         variant: "destructive",
@@ -132,7 +138,6 @@ export default function BusinessProfileForm({
       return;
     }
     try {
-      const handleExists = await checkIfHandleExists(values.handle);
       if (handleExists) {
         setError(
           "handle",
@@ -165,11 +170,12 @@ export default function BusinessProfileForm({
       ]);
 
       for (const result of results) {
-        console.log(result);
         if (result.error) {
           throw result.error;
         }
       }
+      // todo - celebrate with a toast.
+      router.replace("/app/business");
     } catch (err) {
       console.log(err);
       toast({
@@ -180,8 +186,29 @@ export default function BusinessProfileForm({
     }
   }
 
+  function onFormError() {
+    if (handleExists) {
+      setError(
+        "handle",
+        {
+          message: "This handle is already taken.",
+          type: "custom",
+        },
+        {
+          shouldFocus: true,
+        },
+      );
+      toast({
+        variant: "destructive",
+        title: "Handle already exists",
+        description: "Please choose a different handle.",
+      });
+      return;
+    }
+  }
+
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
+    <form onSubmit={handleSubmit(onFormSuccess, onFormError)}>
       <div className="space-y-12">
         <div className="border-b border-foreground/10 pb-12">
           <h2 className="text-base font-semibold leading-7 text-foreground">
