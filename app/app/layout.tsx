@@ -18,10 +18,10 @@ export default async function Layout({
   }
 
   return (
-    <div className="min-h-full">
+    <div className="h-full">
       <Navbar navigation={navigation} userNavigation={userNavigation} />
 
-      <div className="py-10">
+      <div className="h-full py-10">
         {/* <header>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">
@@ -29,8 +29,8 @@ export default async function Layout({
             </h1>
           </div>
         </header> */}
-        <main>
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <main className="h-full">
+          <div className="mx-auto h-full max-w-7xl px-6 lg:px-8">
             <Suspense fallback={<>LOADING...</>}>{children}</Suspense>
           </div>
         </main>

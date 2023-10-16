@@ -1,5 +1,5 @@
 export const navigation = [
-  { name: "Business", href: "/app/business" },
+  { name: "Business", href: "/app/business/schedule" },
   { name: "Personal", href: "/app/personal" },
 ];
 

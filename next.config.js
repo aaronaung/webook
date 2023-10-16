@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -30,6 +31,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "www.svgrepo.com",
         port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "54321",
         pathname: "/**",
       },
     ],

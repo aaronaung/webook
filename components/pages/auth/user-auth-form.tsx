@@ -48,7 +48,7 @@ export default function UserAuthForm() {
           description: error.message,
         });
       } else {
-        router.replace("/app/business");
+        router.replace("/app/business/schedule");
       }
     } catch (error) {
       console.log("error logging in", error);

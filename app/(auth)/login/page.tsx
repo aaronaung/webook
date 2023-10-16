@@ -18,7 +18,7 @@ export default async function LoginPage() {
   const user = await getAuthUser({ client: supaServerComponentClient() });
 
   if (user) {
-    redirect("/app/business");
+    redirect("/app/business/schedule");
   }
 
   return (

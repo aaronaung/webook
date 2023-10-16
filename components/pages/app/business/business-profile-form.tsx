@@ -21,16 +21,30 @@ import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-  handle: z.string().min(1).max(25),
-  title: z.string().min(1).max(25),
-  email: z.string().email(),
-  phone: z.string().min(10).max(15),
-  description: z.string().min(1).max(1000),
-  address: z.string().min(1).max(100),
-  city: z.string().min(1).max(100),
-  state: z.string().min(1).max(100),
-  zip: z.string().min(1).max(100),
-  country_code: z.string().min(1).max(100),
+  handle: z
+    .string()
+    .min(1, { message: "Handle must be at least 1 character." })
+    .max(25, { message: "Handle must be at most 25 characters." })
+    .regex(/^[a-zA-Z0-9]+$/, { message: "Handle must be alphanumeric." }),
+  title: z
+    .string()
+    .min(1, { message: "Title is required." })
+    .max(25, { message: "Title must be at most 25 characters." }),
+  email: z.string().email({ message: "Invalid email address." }),
+  phone: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 digits." })
+    .transform((val) => val.replace(/\D/g, ""))
+    .refine((val) => val.length > 9, { message: "Invalid phone number." }),
+  description: z
+    .string()
+    .min(1, { message: "Description is required." })
+    .max(200, { message: "Description must be at most 200 characters." }),
+  address: z.string().min(1, { message: "Address is required." }),
+  city: z.string().min(1, { message: "City is required." }),
+  state: z.string().min(1, { message: "State is required." }),
+  zip: z.string().min(1, { message: "Zip code is required." }),
+  country_code: z.string().min(1, { message: "Country code is required." }),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -129,6 +143,7 @@ export default function BusinessProfileForm({
   }
 
   async function onFormSuccess(values: FormSchemaType) {
+    console.log(values);
     if (!logoFile || !coverPhotoFile) {
       toast({
         variant: "destructive",
@@ -175,7 +190,7 @@ export default function BusinessProfileForm({
         }
       }
       // todo - celebrate with a toast.
-      router.replace("/app/business");
+      router.replace("/app/business/schedule");
     } catch (err) {
       console.log(err);
       toast({
@@ -186,7 +201,8 @@ export default function BusinessProfileForm({
     }
   }
 
-  function onFormError() {
+  function onFormError(values) {
+    console.log(values);
     if (handleExists) {
       setError(
         "handle",
@@ -366,7 +382,7 @@ export default function BusinessProfileForm({
                     <img
                       src={URL.createObjectURL(logoFile)}
                       alt="Logo"
-                      className="h-12 w-12 rounded-full"
+                      className="h-12 w-12 rounded-full object-cover"
                     />
                   </div>
                 ) : (
@@ -424,7 +440,7 @@ export default function BusinessProfileForm({
             if (onBack) {
               onBack();
             } else {
-              router.replace("/app/business");
+              router.replace("/app/business/schedule");
             }
           }}
         >
