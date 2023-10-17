@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import {

@@ -1,3 +1,4 @@
+import PriceTag from "@/components/ui/price-tag";
 import { BusinessServiceSlot } from "@/types";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -38,7 +39,6 @@ export default function ServiceSlot({ slot }: { slot: BusinessServiceSlot }) {
               alt={staffName || ""}
               width={46}
               height={46}
-              objectFit="cover"
             />
           </dd>
         ))}
@@ -49,9 +49,7 @@ export default function ServiceSlot({ slot }: { slot: BusinessServiceSlot }) {
           <p className="text-foreground">{staffName}</p>
         </div>
         <div className="flex flex-col items-end justify-center gap-1">
-          <span className="ml-1 inline-flex flex-shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-            ${((slot.service?.price || 0) / 100).toFixed(2)}
-          </span>
+          <PriceTag price={slot.service.price} />
           <p className="text-muted-foreground">
             <time dateTime={slot.start || ""}>
               {format(startDateTime, "h:mm a")}

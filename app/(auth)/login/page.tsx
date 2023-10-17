@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import UserAuthForm from "@/components/pages/auth/user-auth-form";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { getAuthUser } from "@/lib/supabase/api/api";
+import { getAuthUser } from "@/lib/supabase/api/user";
 import { supaServerComponentClient } from "@/lib/supabase/server-side";
 
 export const metadata: Metadata = {

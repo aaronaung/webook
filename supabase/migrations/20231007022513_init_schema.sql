@@ -196,7 +196,7 @@ using (true);
 create function public.handle_new_user() 
 returns trigger as $$
 begin
-  insert into public.user (id)
+  insert into public.user (id) -- TODO (IMPORTANT): Collect other fields.
   values (new.id);
   return new;
 end;
@@ -216,3 +216,9 @@ on storage.objects for insert to authenticated with check (
     -- restrict bucket
     bucket_id = 'public-business-assets'
 );
+
+create policy "Public Access"
+on storage.objects
+for select                              -- Allow read access
+to anon, authenticated                  -- Allow access to anonymous and authenticated users
+using ( bucket_id = 'my_bucket_id' );   -- Identify the bucket

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getBusinessScheduleByTimeRange } from "../supabase/api/api";
+import { getBusinessScheduleByTimeRange } from "../supabase/api/business";
 import { BusinessSchedule } from "../../types";
 import { supaClientComponentClient } from "../supabase/client-side";
 

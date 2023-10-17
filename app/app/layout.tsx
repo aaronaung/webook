@@ -1,7 +1,7 @@
 import { navigation, userNavigation } from "./navigation";
 import { Suspense } from "react";
 import Navbar from "@/components/pages/app/navbar/navbar";
-import { getAuthUser } from "@/lib/supabase/api/api";
+import { getAuthUser } from "@/lib/supabase/api/user";
 import { supaServerComponentClient } from "@/lib/supabase/server-side";
 import { redirect } from "next/navigation";
 

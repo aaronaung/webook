@@ -42,14 +42,14 @@ export default function Navbar({
     });
 
   return (
-    <aside className="flex h-full overflow-x-auto border-b border-gray-900/5 pb-4 lg:block lg:w-64 lg:flex-none lg:border-0">
-      <nav className="h-full flex-none px-4 sm:px-6 lg:px-0">
+    <aside className="flex overflow-x-auto border-b border-gray-900/5 pb-4 md:h-full lg:block lg:w-64 lg:flex-none lg:border-0">
+      <nav className="flex-none px-4 sm:px-6 md:h-full lg:px-0">
         <ul
           role="list"
-          className="flex h-full gap-x-3 gap-y-1 whitespace-nowrap lg:flex-col"
+          className="flex items-center gap-x-3 gap-y-1 whitespace-nowrap md:h-full md:items-start lg:flex-col"
         >
           {navigation.map((item) => (
-            <li key={item.name}>
+            <li key={item.name} className="lg:w-48">
               <Link
                 key={item.name}
                 href={item.href}
@@ -74,25 +74,23 @@ export default function Navbar({
               </Link>
             </li>
           ))}
-          <li className="mb-10 mt-auto">
+          <li className="md:mb-10 md:mt-auto">
             {currentBusiness && (
               <>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <li>
-                      <div className="flex cursor-pointer items-center gap-x-2 rounded-md py-2 pl-2 pr-3 font-medium hover:bg-secondary hover:text-primary ">
-                        <Image
-                          src={logoUrl}
-                          alt="Logo"
-                          className="h-8 w-8 rounded-full"
-                          width={8}
-                          height={8}
-                        />
-                        <p className="ml-1 overflow-hidden text-ellipsis text-sm">
-                          {currentBusiness?.title}
-                        </p>
-                      </div>
-                    </li>
+                    <div className="flex cursor-pointer items-center gap-x-2 rounded-md py-2 pl-2 pr-3 font-medium hover:bg-secondary hover:text-primary ">
+                      <Image
+                        src={logoUrl}
+                        alt="Logo"
+                        className="h-8 w-8 rounded-full"
+                        width={8}
+                        height={8}
+                      />
+                      <p className="ml-1 overflow-hidden text-ellipsis text-sm">
+                        {currentBusiness?.title}
+                      </p>
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56">
                     <DropdownMenuLabel>Switch Business</DropdownMenuLabel>

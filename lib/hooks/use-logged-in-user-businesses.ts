@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getLoggedInUserBusinesses } from "../supabase/api/api";
+import { getLoggedInUserBusinesses } from "../supabase/api/business";
 import { supaClientComponentClient } from "../supabase/client-side";
 
 export const useLoggedInUserBusinesses = () => {
