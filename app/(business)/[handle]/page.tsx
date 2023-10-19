@@ -1,7 +1,7 @@
-import Navbar from "@/components/pages/business/navbar/navbar";
+import Navbar from "@/src/components/pages/business/navbar";
 import { redirect } from "next/navigation";
-import { supaStaticRouteClient } from "@/lib/supabase/server-side";
-import Hero from "@/components/pages/business/hero/hero";
+import { supaStaticRouteClient } from "@/src/api/clients/server";
+import Hero from "@/src/components/pages/business/hero";
 
 export default async function ServiceProvider({
   params,

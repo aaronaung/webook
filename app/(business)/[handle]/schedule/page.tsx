@@ -1,8 +1,8 @@
 "use client";
 
-import { useBusinessScheduleByTimeRange } from "@/lib/hooks/use-business-schedule-by-time-range";
+import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedule-by-time-range";
 import { add, format, parse, startOfToday } from "date-fns";
-import Schedule from "@/components/pages/app/business/schedule";
+import Schedule from "@/src/components/pages/shared/schedule";
 
 export default function SchedulePage({
   params,

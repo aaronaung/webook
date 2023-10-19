@@ -1,9 +1,9 @@
 "use client";
 
-import { CurrentBusinessProvider } from "@/components/contexts/current-business";
-import EmptyState from "@/components/pages/app/business/empty-state";
-import Navbar from "@/components/pages/app/business/navbar/navbar";
-import { useLoggedInUserBusinesses } from "@/lib/hooks/use-logged-in-user-businesses";
+import { CurrentBusinessProvider } from "@/src/contexts/current-business";
+import EmptyState from "@/src/components/pages/app/business/empty-state";
+import Navbar from "@/src/components/pages/app/business/navbar";
+import { useLoggedInUserBusinesses } from "@/src/hooks/use-logged-in-user-businesses";
 import _ from "lodash";
 
 export default function Layout({ children }: { children: React.ReactNode }) {

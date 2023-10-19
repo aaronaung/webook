@@ -1,6 +1,6 @@
-import BusinessProfileForm from "@/components/pages/app/business/business-profile-form";
-import { getAuthUser } from "@/lib/supabase/api/user";
-import { supaServerComponentClient } from "@/lib/supabase/server-side";
+import BusinessProfileForm from "@/src/components/forms/business-profile-form";
+import { getAuthUser } from "@/src/api/user";
+import { supaServerComponentClient } from "@/src/api/clients/server";
 import { redirect } from "next/navigation";
 
 export default async function NewBusiness() {

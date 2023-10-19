@@ -2,8 +2,9 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { QueryClient, QueryCache } from "@tanstack/react-query";
-import ReactQueryProvider from "@/components/providers/react-query-provider";
-import { Toaster } from "@/components/ui/toaster";
+import ReactQueryProvider from "@/src/providers/react-query-provider";
+import { Toaster } from "@/src/components/ui/toaster";
+import { ThemeProvider } from "@/src/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,15 +29,23 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
-    <html lang="en" className="bg-background h-full">
+    <html lang="en" className="h-full bg-background">
       <body
         className={`${inter.className} ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         } h-full`}
       >
-        <ReactQueryProvider> {children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </ReactQueryProvider>
         <Toaster />
       </body>
     </html>

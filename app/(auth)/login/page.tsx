@@ -2,12 +2,12 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
-import UserAuthForm from "@/components/pages/auth/user-auth-form";
+import { cn } from "@/src/utils";
+import { buttonVariants } from "@/src/components/ui/button";
+import UserAuthForm from "@/src/components/forms/user-auth-form";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-import { getAuthUser } from "@/lib/supabase/api/user";
-import { supaServerComponentClient } from "@/lib/supabase/server-side";
+import { getAuthUser } from "@/src/api/user";
+import { supaServerComponentClient } from "@/src/api/clients/server";
 
 export const metadata: Metadata = {
   title: "Login",
