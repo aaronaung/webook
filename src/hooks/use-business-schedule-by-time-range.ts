@@ -8,20 +8,16 @@ export const useBusinessScheduleByTimeRange = (
   start: Date,
   end: Date,
 ) => {
-  const {
-    data: result,
-    error,
-    ...props
-  } = useQuery({
+  const { data, error, ...props } = useQuery({
     queryKey: [businessHandle, start, end],
     queryFn: () =>
       getBusinessScheduleByTimeRange(businessHandle, start, end, {
         client: supaClientComponentClient(),
       }),
   });
-  if (error || result?.error) {
+  if (error) {
     console.error(error);
     // direct to error page. TODO: create error page.
   }
-  return { ...props, data: result?.data as BusinessSchedule };
+  return { ...props, data: data as BusinessSchedule };
 };

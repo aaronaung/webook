@@ -19,7 +19,7 @@ export default function InputDecorator({
       >
         {props.children}
       </div>
-      <p className="mt-1 text-muted-foreground">{description}</p>
+      <p className="mt-2 text-sm text-muted-foreground">{description}</p>
       {error && <p className="my-2 text-sm text-destructive">{error}</p>}
     </>
   );

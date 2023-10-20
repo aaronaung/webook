@@ -8,7 +8,7 @@ export const useServiceGroupsWithServices = (businessId: string) => {
     error,
     ...props
   } = useQuery({
-    queryKey: [businessId],
+    queryKey: ["serviceGroups", businessId],
     queryFn: () =>
       getServiceGroupsWithServices(businessId, {
         client: supaClientComponentClient(),

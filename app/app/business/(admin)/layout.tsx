@@ -9,6 +9,9 @@ import _ from "lodash";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = useLoggedInUserBusinesses();
 
+  if (isLoading) {
+    return <>Loading...</>;
+  }
   if (_.isEmpty(data?.businesses) && !isLoading) {
     return <EmptyState />;
   }

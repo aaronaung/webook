@@ -4,7 +4,6 @@ import { cn } from "@/src/utils";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Fragment, useState } from "react";
 import Link from "next/link";
-import { ModeToggle } from "./mode-toggle";
 
 const user = {
   name: "Tom Cook",
@@ -63,7 +62,7 @@ export default function Navbar({
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                <ModeToggle />
+                {/* <ModeToggle /> */}
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">

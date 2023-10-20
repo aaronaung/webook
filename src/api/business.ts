@@ -6,11 +6,13 @@ export const getBusinessScheduleByTimeRange = async (
   end: Date,
   { client }: SupabaseOptions,
 ) => {
-  return await client.rpc("get_business_schedule_in_range", {
+  const { data, error } = await client.rpc("get_business_schedule_in_range", {
     business_handle: businessHandle,
     start_time: start.toISOString(),
     end_time: end.toISOString(),
   });
+  if (error) throw error;
+  return data;
 };
 
 export const getLoggedInUserBusinesses = async ({
@@ -18,6 +20,7 @@ export const getLoggedInUserBusinesses = async ({
 }: SupabaseOptions) => {
   const {
     data: { user },
+    error: userError,
   } = await client.auth.getUser();
   if (!user) {
     return {
@@ -25,10 +28,13 @@ export const getLoggedInUserBusinesses = async ({
       businesses: [],
     };
   }
+  if (userError) throw userError;
 
-  const { data: businesses } = await client
+  const { data: businesses, error: businessesError } = await client
     .from("business")
     .select("*")
     .eq("owner_id", user?.id);
+  if (businessesError) throw businessesError;
+
   return { user, businesses };
 };

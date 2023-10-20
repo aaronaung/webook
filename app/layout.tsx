@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import { QueryClient, QueryCache } from "@tanstack/react-query";
 import ReactQueryProvider from "@/src/providers/react-query-provider";
 import { Toaster } from "@/src/components/ui/toaster";
-import { ThemeProvider } from "@/src/providers/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -37,14 +36,15 @@ export default function RootLayout({
         } h-full`}
       >
         <ReactQueryProvider>
-          <ThemeProvider
+          {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}
+          {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          > */}
+          {children}
+          {/* </ThemeProvider> */}
         </ReactQueryProvider>
         <Toaster />
       </body>

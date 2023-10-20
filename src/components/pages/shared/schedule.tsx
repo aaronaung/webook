@@ -99,7 +99,7 @@ export default function Schedule({
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
           {selectedDayServiceSlots.length > 0 ? (
             selectedDayServiceSlots.map((slot) => (
-              <Link href={`/${handle}/${slot.id}/booking`}>
+              <Link key={slot.id} href={`/${handle}/${slot.id}/booking`}>
                 <ServiceSlot slot={slot} key={slot.id} />
               </Link>
             ))
