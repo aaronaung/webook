@@ -43,11 +43,11 @@ export default function Navbar({
     });
 
   return (
-    <aside className="flex overflow-x-auto border-b border-gray-900/5 pb-4 md:h-full lg:block lg:w-64 lg:flex-none lg:border-0">
-      <nav className="flex-none px-4 sm:px-6 md:h-full lg:px-0">
+    <aside className="flex overflow-x-auto pb-4 lg:block lg:h-full lg:w-64 lg:flex-none">
+      <nav className="flex-none px-4 sm:px-6 lg:h-full lg:px-0">
         <ul
           role="list"
-          className="flex items-center gap-x-3 gap-y-1 whitespace-nowrap md:h-full md:items-start lg:flex-col"
+          className="flex items-center gap-x-3 gap-y-1 whitespace-nowrap lg:h-full lg:flex-col"
         >
           {navigation.map((item) => (
             <li key={item.name} className="lg:w-48">
@@ -74,7 +74,7 @@ export default function Navbar({
               </Link>
             </li>
           ))}
-          <li className="md:mb-10 md:mt-auto">
+          <li className="lg:mb-10 lg:mt-auto">
             {currentBusiness && (
               <>
                 <DropdownMenu>

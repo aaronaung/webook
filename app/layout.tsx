@@ -33,7 +33,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
-        } h-full`}
+        } h-full overflow-hidden`}
       >
         <ReactQueryProvider>
           {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}

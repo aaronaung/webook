@@ -7,7 +7,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/src/components/ui/card";
 import PriceTag from "@/src/components/ui/price-tag";
 import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedule-by-time-range";
@@ -54,8 +53,9 @@ export default function SchedulePage() {
       <div className="col-span-1 md:col-span-2">
         {_.isEmpty(serviceGroups) ? (
           <>
-            <Card className="w-full">
+            <Card className="w-full ">
               <CardHeader>
+                <h3 className="text-medium font-semibold">No services found</h3>
                 <CardDescription>
                   In order to add service slots to your calendar, you must first
                   define services your business offers.
@@ -78,9 +78,21 @@ export default function SchedulePage() {
               {serviceGroups.map((sg) => (
                 <Card className="w-full">
                   <CardHeader>
-                    <CardTitle>{sg.title}</CardTitle>
+                    <h3 className="text-medium font-semibold">{sg.title}</h3>
+                    {_.isEmpty(sg.services) && (
+                      <CardDescription>
+                        This service group doesn't have any services yet.
+                      </CardDescription>
+                    )}
                   </CardHeader>
                   <CardContent>
+                    {_.isEmpty(sg.services) && (
+                      <Button
+                        onClick={() => router.push("/app/business/services")}
+                      >
+                        Add Services
+                      </Button>
+                    )}
                     <ul role="list" className="divide-y divide-gray-100">
                       {(sg.services || []).map((service) => (
                         <li

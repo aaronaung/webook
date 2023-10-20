@@ -19,7 +19,11 @@ const columns = [
   }),
   columnHelper.accessor("image_url", {
     header: "Image",
+
     cell: ({ row }) => {
+      if (!row.getValue("image_url")) {
+        return <></>;
+      }
       return (
         <img
           className="h-12 w-12 rounded-full"
@@ -30,11 +34,14 @@ const columns = [
   }),
   columnHelper.display({
     id: "actions",
+
     cell: ({ row }) => {
-      <div>
-        <PencilSquareIcon className="h-12 w-12" />
-        <TrashIcon className="h-12 w-12" />
-      </div>;
+      return (
+        <div className="flex gap-x-3">
+          <PencilSquareIcon className="h-5 w-5 cursor-pointer rounded-full text-secondary-foreground hover:bg-secondary" />
+          <TrashIcon className=" h-5 w-5 cursor-pointer rounded-full text-destructive hover:bg-secondary" />
+        </div>
+      );
     },
   }),
 ];
