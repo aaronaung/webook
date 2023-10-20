@@ -13,6 +13,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
+import ServicesTable from "@/src/components/tables/services-table";
 
 export default function Services() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -27,7 +28,7 @@ export default function Services() {
     return <></>;
   }
   return (
-    <div className="flex justify-center">
+    <div className="flex w-full justify-center">
       <SaveServiceGroupDialog
         isOpen={isCreateSGDialogOpen}
         toggleOpen={() => setIsCreateSGDialogOpen(!isCreateSGDialogOpen)}
@@ -47,11 +48,11 @@ export default function Services() {
           </Button>
         </div>
       ) : (
-        <div>
+        <div className="w-full">
           <Button onClick={() => setIsCreateSGDialogOpen(true)}>
             New Group
           </Button>
-          <Tabs defaultValue="account" className="w-[400px]">
+          <Tabs defaultValue="account">
             <TabsList>
               {serviceGroups.map((sg) => (
                 <TabsTrigger key={sg.id} value={sg.id}>
@@ -62,11 +63,21 @@ export default function Services() {
             {serviceGroups.map((sg) => (
               <TabsContent key={sg.id} value={sg.id}>
                 {/** todo - add datatable here */}
-                <ul>
-                  {(sg.services || []).map((s) => (
-                    <li key={s.id}>{s.title}</li>
-                  ))}
-                </ul>
+                {_.isEmpty(sg.services) ? (
+                  <div className="mt-20 flex flex-col items-center gap-y-2 text-center">
+                    <Square3Stack3DIcon className="h-12 w-12" />
+                    <h3 className="">No service found</h3>
+
+                    <Button
+                      className="mt-2"
+                      onClick={() => setIsCreateSGDialogOpen(true)}
+                    >
+                      Start by creating one
+                    </Button>
+                  </div>
+                ) : (
+                  <ServicesTable data={sg.services || []} />
+                )}
               </TabsContent>
             ))}
           </Tabs>
