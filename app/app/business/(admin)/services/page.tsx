@@ -4,40 +4,151 @@ import { Button } from "@/src/components/ui/button";
 import { useServiceGroupsWithServices } from "@/src/hooks/use-service-groups-with-services";
 import {
   PencilSquareIcon,
-  PlusIcon,
   Square3Stack3DIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
 import { SaveServiceGroupDialog } from "@/src/components/dialogs/save-service-group-dialog";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
-import ServicesTable from "@/src/components/tables/services-table";
+import ServicesTable, {
+  RowAction,
+} from "@/src/components/tables/services-table";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "@/src/components/ui/context-menu";
+import { SaveServiceGroupFormSchemaType } from "@/src/components/forms/save-service-group-form";
+import { PlusIcon } from "lucide-react";
+import { SaveServiceDialog } from "@/src/components/dialogs/save-service-dialog";
+import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
+import { Row } from "@tanstack/react-table";
+import { Tables } from "@/types/db.extension";
+import { useDeleteServiceGroup } from "@/src/hooks/use-delete-service-group";
+import { useDeleteService } from "@/src/hooks/use-delete-service";
+import { ServiceGroupWithServices } from "@/types";
+import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service groups and mobile)
 export default function Services() {
   const { currentBusiness } = useCurrentBusinessContext();
   const router = useRouter();
 
-  const [isCreateSGDialogOpen, setIsCreateSGDialogOpen] = useState(false);
-
   const { data: serviceGroups, isLoading: isServiceGroupsLoading } =
     useServiceGroupsWithServices(currentBusiness?.id);
+  const { mutate: deleteServiceGroup, isPending: isDeleteSgPending } =
+    useDeleteServiceGroup(currentBusiness.id);
+  const { mutate: deleteService, isPending: isDeleteSvcPending } =
+    useDeleteService(currentBusiness.id);
+
+  const [sgDialogState, setSgDialogState] = useState<{
+    isOpen: boolean;
+    data?: SaveServiceGroupFormSchemaType;
+  }>({
+    isOpen: false,
+  });
+
+  const [svcDialogState, setSvcDialogState] = useState<{
+    isOpen: boolean;
+    data?: SaveServiceFormSchemaType & { id?: string };
+    serviceGroupId?: string;
+  }>({
+    isOpen: false,
+  });
+
+  const [confirmDeleteDialogState, setConfirmDeleteDialogState] = useState<{
+    isOpen: boolean;
+    serviceGroupId?: string;
+  }>({
+    isOpen: false,
+  });
+
+  const onSvcRowAction = useCallback(
+    (row: Row<Tables<"service">>, action: RowAction) => {
+      switch (action) {
+        case RowAction.EDIT:
+          setSvcDialogState({
+            isOpen: !svcDialogState.isOpen,
+            data: {
+              id: row.original.id,
+              title: row.original.title,
+              price: row.original.price ?? 0,
+              booking_limit: row.original.booking_limit ?? 0,
+            },
+            serviceGroupId: row.original.service_group_id ?? undefined,
+          });
+          break;
+        case RowAction.DELETE:
+          if (!isDeleteSvcPending) {
+            deleteService(row.original.id);
+          }
+          break;
+        default:
+          console.error("Unknown row action");
+      }
+    },
+    [],
+  );
+
+  function handleSgDelete(sg: ServiceGroupWithServices) {
+    if (!_.isEmpty(sg.services)) {
+      setConfirmDeleteDialogState({
+        isOpen: true,
+        serviceGroupId: sg.id,
+      });
+      return;
+    }
+    if (!isDeleteSgPending) {
+      deleteServiceGroup(sg.id);
+    }
+  }
 
   if (isServiceGroupsLoading) {
     return <></>;
   }
   return (
     <div className="flex w-full justify-center">
+      <DeleteConfirmationDialog
+        label="Deleting service group will delete all services in it. Are you sure?"
+        isOpen={confirmDeleteDialogState.isOpen}
+        toggleOpen={() =>
+          setConfirmDeleteDialogState({
+            ...confirmDeleteDialogState,
+            isOpen: !confirmDeleteDialogState.isOpen,
+          })
+        }
+        onDelete={() => {
+          deleteServiceGroup(confirmDeleteDialogState.serviceGroupId!);
+        }}
+      />
       <SaveServiceGroupDialog
-        isOpen={isCreateSGDialogOpen}
-        toggleOpen={() => setIsCreateSGDialogOpen(!isCreateSGDialogOpen)}
+        isOpen={sgDialogState.isOpen}
+        data={sgDialogState.data}
+        toggleOpen={() =>
+          setSgDialogState({ ...sgDialogState, isOpen: !sgDialogState.isOpen })
+        }
+      />
+      <SaveServiceDialog
+        isOpen={svcDialogState.isOpen}
+        data={svcDialogState.data}
+        serviceGroupId={svcDialogState.serviceGroupId}
+        toggleOpen={() =>
+          setSvcDialogState({
+            ...svcDialogState,
+            isOpen: !svcDialogState.isOpen,
+          })
+        }
       />
       {_.isEmpty(serviceGroups) ? (
         <div className="flex  max-w-[400px] flex-col items-center gap-y-2 text-center">
@@ -48,7 +159,12 @@ export default function Services() {
           </p>
           <Button
             className="mt-2"
-            onClick={() => setIsCreateSGDialogOpen(true)}
+            onClick={() =>
+              setSgDialogState({
+                data: undefined,
+                isOpen: !sgDialogState.isOpen,
+              })
+            }
           >
             Start by creating one
           </Button>
@@ -56,33 +172,53 @@ export default function Services() {
       ) : (
         <div className="w-full">
           <Tabs defaultValue={serviceGroups[0].id}>
-            <div className="flex flex-col items-center justify-between md:flex-row">
-              <div className="max-w-full flex-grow overflow-x-scroll md:max-w-[600px]">
-                <TabsList>
-                  {serviceGroups.map((sg) => (
-                    <TabsTrigger key={sg.id} value={sg.id}>
-                      {sg.title}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </div>
-              <div className="mt-4 flex space-x-2 md:mt-0">
-                <Button onClick={() => setIsCreateSGDialogOpen(true)}>
-                  <PlusIcon className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => setIsCreateSGDialogOpen(true)}
-                >
-                  <PencilSquareIcon className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => setIsCreateSGDialogOpen(true)}
-                >
-                  <TrashIcon className="h-5 w-5" />
-                </Button>
-              </div>
+            <div className="flex max-w-full items-center overflow-x-scroll">
+              <TabsList className="relative overflow-visible">
+                {serviceGroups.map((sg) => (
+                  <ContextMenu key={sg.id}>
+                    <ContextMenuTrigger>
+                      <TabsTrigger key={sg.id} value={sg.id}>
+                        {sg.title}
+                      </TabsTrigger>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="w-fit min-w-[200px]">
+                      <ContextMenuLabel inset>{sg.title}</ContextMenuLabel>
+                      <ContextMenuSeparator />
+                      <ContextMenuItem
+                        inset
+                        onClick={() =>
+                          setSgDialogState({
+                            data: sg,
+                            isOpen: !sgDialogState.isOpen,
+                          })
+                        }
+                      >
+                        Edit
+                        <ContextMenuShortcut>
+                          <PencilSquareIcon className="h-5 w-5" />
+                        </ContextMenuShortcut>
+                      </ContextMenuItem>
+                      <ContextMenuItem inset onClick={() => handleSgDelete(sg)}>
+                        Delete
+                        <ContextMenuShortcut>
+                          <TrashIcon className="h-5 w-5 text-destructive" />
+                        </ContextMenuShortcut>
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                ))}
+              </TabsList>
+              <Button
+                className="ml-2"
+                onClick={() =>
+                  setSgDialogState({
+                    data: undefined,
+                    isOpen: !sgDialogState.isOpen,
+                  })
+                }
+              >
+                <PlusIcon className="h-5 w-5" />
+              </Button>
             </div>
 
             {serviceGroups.map((sg) => (
@@ -91,18 +227,40 @@ export default function Services() {
                   <div className="mt-20 flex flex-col items-center gap-y-2 text-center">
                     <Square3Stack3DIcon className="h-12 w-12" />
                     <h3 className="">No service found</h3>
-
                     <Button
                       className="mt-2"
-                      onClick={() => setIsCreateSGDialogOpen(true)}
+                      onClick={() =>
+                        setSvcDialogState({
+                          isOpen: !svcDialogState.isOpen,
+                          data: undefined,
+                          serviceGroupId: sg.id,
+                        })
+                      }
                     >
                       Start by creating one
                     </Button>
                   </div>
                 ) : (
-                  <div className="mt-6 max-h-[600px] overflow-scroll ">
-                    <ServicesTable data={sg.services || []} />
-                  </div>
+                  <>
+                    <div className="mt-4 max-h-[600px] overflow-scroll ">
+                      <ServicesTable
+                        data={sg.services || []}
+                        onRowAction={onSvcRowAction}
+                      />
+                    </div>
+                    <Button
+                      className="float-right mt-2"
+                      onClick={() =>
+                        setSvcDialogState({
+                          isOpen: !svcDialogState.isOpen,
+                          data: undefined,
+                          serviceGroupId: sg.id,
+                        })
+                      }
+                    >
+                      <PlusIcon className="mr-1 h-5 w-5" /> New service
+                    </Button>
+                  </>
                 )}
               </TabsContent>
             ))}

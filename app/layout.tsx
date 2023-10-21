@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { QueryClient, QueryCache } from "@tanstack/react-query";
 import ReactQueryProvider from "@/src/providers/react-query-provider";
 import { Toaster } from "@/src/components/ui/toaster";
+import { toast } from "@/src/components/ui/use-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,12 +15,15 @@ export const metadata: Metadata = {
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    // @todo: this could be useful - https://tkdodo.eu/blog/breaking-react-querys-api-on-purpose#defining-on-demand-messages
-    // onError: (error, query) => {
-    //   if (query.meta.errorMessage) {
-    //     toast.error(query.meta.errorMessage)
-    //   }
-    // },
+    onError: (error, query) => {
+      if (query?.meta?.errorMessage) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: `${query.meta.errorMessage}: ${error.message}`,
+        });
+      }
+    },
   }),
 });
 

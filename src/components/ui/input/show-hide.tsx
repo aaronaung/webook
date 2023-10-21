@@ -20,10 +20,12 @@ const InputShowHide = React.forwardRef<HTMLInputElement, InputShowHideProps>(
         >
           <input
             {...props.inputProps}
-            {...props.register(
-              props.rhfKey,
-              props.disableValidation ? { validate: () => true } : {},
-            )}
+            {...(props.register && props.rhfKey
+              ? props.register(props.rhfKey, {
+                  ...props.registerOptions,
+                  ...(props.disableValidation ? { validate: () => true } : {}),
+                })
+              : {})}
             name={props.rhfKey}
             id={props.rhfKey}
             className="w-full border-0 bg-transparent p-0 pr-3 focus:ring-0"

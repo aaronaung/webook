@@ -21,10 +21,12 @@ const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
           {props.prefix}
           <input
             {...props.inputProps}
-            {...props.register(
-              props.rhfKey,
-              props.disableValidation ? { validate: () => true } : {},
-            )}
+            {...(props.register && props.rhfKey
+              ? props.register(props.rhfKey, {
+                  ...props.registerOptions,
+                  ...(props.disableValidation ? { validate: () => true } : {}),
+                })
+              : {})}
             {...(props.onChange ? { onChange: props.onChange } : {})}
             name={props.rhfKey}
             id={props.rhfKey}

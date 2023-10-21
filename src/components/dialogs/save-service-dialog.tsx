@@ -6,25 +6,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import SaveServiceGroupForm, {
-  SaveServiceGroupFormSchemaType,
-} from "../forms/save-service-group-form";
 import { useRef } from "react";
-import { useSaveServiceGroup } from "@/src/hooks/use-save-service-group";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
+import SaveServiceForm, {
+  SaveServiceFormSchemaType,
+} from "../forms/save-service-form";
+import { useSaveService } from "@/src/hooks/use-save-service";
 
-export function SaveServiceGroupDialog({
+export function SaveServiceDialog({
   data,
   toggleOpen,
   isOpen,
+  serviceGroupId,
 }: {
-  data?: SaveServiceGroupFormSchemaType & { id?: string };
+  data?: SaveServiceFormSchemaType & { id?: string };
   toggleOpen: () => void;
   isOpen: boolean;
+  serviceGroupId?: string;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveServiceGroup, isPending } = useSaveServiceGroup(
+  const { mutate: saveService, isPending } = useSaveService(
     currentBusiness.id,
     {
       onSettled: () => {
@@ -36,11 +38,11 @@ export function SaveServiceGroupDialog({
     formRef?.current?.requestSubmit();
   };
 
-  const handleOnFormSuccess = (formValues: SaveServiceGroupFormSchemaType) => {
-    saveServiceGroup({
+  const handleOnFormSuccess = (formValues: SaveServiceFormSchemaType) => {
+    saveService({
       ...formValues,
-      ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service group (not creating a new one)
-      business_id: currentBusiness.id,
+      ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service  (not creating a new one)
+      service_group_id: serviceGroupId,
     });
   };
 
@@ -48,9 +50,9 @@ export function SaveServiceGroupDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Service group</DialogTitle>
+          <DialogTitle>Service</DialogTitle>
         </DialogHeader>
-        <SaveServiceGroupForm
+        <SaveServiceForm
           ref={formRef}
           defaultValues={data}
           onFormSuccess={handleOnFormSuccess}

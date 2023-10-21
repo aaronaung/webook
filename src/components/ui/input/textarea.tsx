@@ -22,10 +22,12 @@ const InputTextArea = React.forwardRef<HTMLTextAreaElement, InputTextAreaProps>(
           {props.prefix}
           <textarea
             {...props.textareaProps}
-            {...props.register(
-              props.rhfKey,
-              props.disableValidation ? { validate: () => true } : {},
-            )}
+            {...(props.register && props.rhfKey
+              ? props.register(props.rhfKey, {
+                  ...props.registerOptions,
+                  ...(props.disableValidation ? { validate: () => true } : {}),
+                })
+              : {})}
             name={props.rhfKey}
             id={props.rhfKey}
             className="w-full border-0 bg-transparent p-0 pr-3 text-sm focus:ring-0"

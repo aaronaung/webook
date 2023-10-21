@@ -11,7 +11,11 @@ export default function InputDecorator({
 }: React.PropsWithChildren<CommonRhfInputProps>) {
   return (
     <>
-      {label && <Label htmlFor={rhfKey}>{label}</Label>}
+      {label && (
+        <Label className="leading-4" htmlFor={rhfKey}>
+          {label}
+        </Label>
+      )}
       <div
         className={cn(
           error && "rounded-md ring-1 ring-destructive ring-offset-background",

@@ -13,10 +13,12 @@ const InputMask = React.forwardRef<ReactInputMask, InputMaskProps>(
         <ReactInputMask
           {...props.inputProps}
           {...props.maskProps}
-          {...props.register(
-            props.rhfKey,
-            props.disableValidation ? { validate: () => true } : {},
-          )}
+          {...(props.register && props.rhfKey
+            ? props.register(props.rhfKey, {
+                ...props.registerOptions,
+                ...(props.disableValidation ? { validate: () => true } : {}),
+              })
+            : {})}
           name={props.rhfKey}
           id={props.rhfKey}
           className={cn(

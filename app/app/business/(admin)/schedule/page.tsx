@@ -42,15 +42,15 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-x-8 md:grid-cols-5">
-      <div className="col-span-1 md:col-span-3">
+    <div className="grid h-full grid-cols-2 gap-x-8 lg:grid-cols-5">
+      <div className="col-span-1 overflow-y-auto lg:col-span-3">
         <Schedule
           data={data}
           handle={currentBusiness?.handle}
           serviceSlotsClassName="mt-4"
         />
       </div>
-      <div className="col-span-1 md:col-span-2">
+      <div className="col-span-1 overflow-y-auto lg:col-span-2">
         {_.isEmpty(serviceGroups) ? (
           <>
             <Card className="w-full ">

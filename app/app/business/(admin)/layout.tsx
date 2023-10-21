@@ -20,8 +20,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <CurrentBusinessProvider initialBusinesses={data?.businesses || []}>
       <div className="mx-auto h-full max-w-7xl px-4 lg:flex lg:gap-x-2">
         <Navbar businesses={data?.businesses || []} />
-        <main className="pb-25 max-h-full overflow-scroll px-4 py-4 sm:px-6 md:pb-20 lg:flex-auto lg:px-0 lg:pb-16 lg:pt-0">
-          <div>{children}</div>
+        <main className="max-h-full px-4 py-4 pb-28 sm:px-6 lg:flex-auto lg:px-0 lg:pb-16 lg:pt-0">
+          {children}
         </main>
       </div>
     </CurrentBusinessProvider>

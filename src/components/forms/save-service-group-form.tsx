@@ -14,6 +14,7 @@ const formSchema = z.object({
 export type SaveServiceGroupFormSchemaType = z.infer<typeof formSchema>;
 
 type SaveServiceGroupFromProps = {
+  defaultValues?: SaveServiceGroupFormSchemaType;
   onFormSuccess: (formValues: SaveServiceGroupFormSchemaType) => void;
 };
 
@@ -26,6 +27,7 @@ const SaveServiceGroupForm = React.forwardRef<
     handleSubmit,
     formState: { errors },
   } = useForm<SaveServiceGroupFormSchemaType>({
+    defaultValues: props.defaultValues,
     resolver: zodResolver(formSchema),
   });
 
