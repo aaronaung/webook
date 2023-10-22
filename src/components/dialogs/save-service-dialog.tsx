@@ -19,7 +19,7 @@ export function SaveServiceDialog({
   isOpen,
   serviceGroupId,
 }: {
-  data?: SaveServiceFormSchemaType & { id?: string };
+  data?: SaveServiceFormSchemaType;
   toggleOpen: () => void;
   isOpen: boolean;
   serviceGroupId?: string;
@@ -50,7 +50,7 @@ export function SaveServiceDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Service</DialogTitle>
+          <DialogTitle>{data ? "Edit" : "Add"} Service</DialogTitle>
         </DialogHeader>
         <SaveServiceForm
           ref={formRef}

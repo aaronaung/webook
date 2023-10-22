@@ -17,9 +17,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
-import ServicesTable, {
-  RowAction,
-} from "@/src/components/tables/services-table";
+import ServicesTable from "@/src/components/tables/services-table";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -39,6 +37,7 @@ import { useDeleteServiceGroup } from "@/src/hooks/use-delete-service-group";
 import { useDeleteService } from "@/src/hooks/use-delete-service";
 import { ServiceGroupWithServices } from "@/types";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
+import { RowAction } from "@/src/components/tables/types";
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service groups and mobile)
 export default function Services() {
@@ -217,7 +216,7 @@ export default function Services() {
                   })
                 }
               >
-                <PlusIcon className="h-5 w-5" />
+                <PlusIcon className="mr-1 h-5 w-5" /> New group
               </Button>
             </div>
 

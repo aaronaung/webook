@@ -49,7 +49,7 @@ const formSchema = z.object({
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
-const FILE_SIZE_LIMIT = 1000000; // in bytes
+const FILE_SIZE_LIMIT = 1000000; // 1MB in bytes
 
 export default function BusinessProfileForm({
   onBack,
@@ -143,7 +143,6 @@ export default function BusinessProfileForm({
   }
 
   async function onFormSuccess(values: FormSchemaType) {
-    console.log(values);
     if (!logoFile || !coverPhotoFile) {
       toast({
         variant: "destructive",

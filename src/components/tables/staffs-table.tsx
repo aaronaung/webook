@@ -4,50 +4,47 @@ import { Row, createColumnHelper } from "@tanstack/react-table";
 import { DataTable } from "../ui/data-table";
 import { useEffect, useMemo, useState } from "react";
 import { RowAction } from "./types";
-import Image from "../ui/image";
 import { BUCKETS } from "@/src/consts/storage";
+import Image from "../ui/image";
 import { fetchWithRetry, getTimestampedObjUrl } from "@/src/utils";
 
-const columnHelper = createColumnHelper<Tables<"service">>();
+const columnHelper = createColumnHelper<Tables<"staff">>();
 
-function SvcImgCell({ row }: { row: Row<Tables<"service">> }) {
-  const [imgExists, setImgExists] = useState<boolean>(false);
-  const imgUrl = getTimestampedObjUrl(
+function StaffHeadshotCell({ row }: { row: Row<Tables<"staff">> }) {
+  const [headshotExists, setHeadshotExists] = useState<boolean>(false);
+  const headshotUrl = getTimestampedObjUrl(
     BUCKETS.publicBusinessAssets,
-    `services/${row.original.id}`,
+    `staff_headshots/${row.original.id}`,
     row.original.updated_at,
   );
 
   useEffect(() => {
-    fetchWithRetry(imgUrl, { method: "HEAD" })
+    fetchWithRetry(headshotUrl, { method: "HEAD" })
       .then(() => {
-        setImgExists(true);
+        setHeadshotExists(true);
       })
       .catch(() => {
-        setImgExists(false);
+        setHeadshotExists(false);
       });
-  }, [imgUrl]);
+  }, [headshotUrl]);
 
-  if (imgExists) {
+  if (headshotExists) {
     return (
       <Image
         className="h-12 w-12 rounded-full"
-        src={`${imgUrl}&random=${Date.now()}`} // random forces the image to reload
+        src={`${headshotUrl}&random=${Date.now()}`} // random forces the image to reload
       ></Image>
     );
   }
   return <></>;
 }
 
-type ServicesTableProp = {
-  data: Tables<"service">[];
-  onRowAction: (row: Row<Tables<"service">>, action: RowAction) => void;
+type StaffTableProp = {
+  data: Tables<"staff">[];
+  onRowAction: (row: Row<Tables<"staff">>, action: RowAction) => void;
 };
 
-export default function ServicesTable({
-  data,
-  onRowAction,
-}: ServicesTableProp) {
+export default function StaffsTable({ data, onRowAction }: StaffTableProp) {
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
@@ -55,30 +52,29 @@ export default function ServicesTable({
         enableHiding: true,
       }),
       columnHelper.accessor("image_url", {
-        header: "Image",
-        cell: ({ row }) => <SvcImgCell row={row} />,
+        header: "Headshot",
+        cell: ({ row }) => <StaffHeadshotCell row={row} />,
       }),
-      columnHelper.accessor("title", {
-        header: "Title",
+      columnHelper.accessor("first_name", {
+        header: "First name",
       }),
-      columnHelper.accessor("description", {
-        header: "Description",
+      columnHelper.accessor("last_name", {
+        header: "Last name",
       }),
-      columnHelper.accessor("price", {
-        header: "Price",
-        cell: ({ row }) =>
-          `$${(((row.getValue("price") as number) ?? 0) / 100).toFixed(2)}`,
+      columnHelper.accessor("email", {
+        header: "Email",
       }),
-      columnHelper.accessor("booking_limit", {
-        header: "Booking limit",
+      columnHelper.accessor("instagram_handle", {
+        header: "Instagram",
       }),
       columnHelper.accessor("updated_at", {
         header: "Last updated",
         cell: ({ row }) => {
-          return new Date(row.original.updated_at!).toLocaleString();
+          return new Date(row.getValue("updated_at") as string).toLocaleString(
+            "en-US",
+          );
         },
       }),
-
       columnHelper.display({
         id: "actions",
         cell: ({ row }) => {

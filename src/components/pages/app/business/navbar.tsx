@@ -74,7 +74,7 @@ export default function Navbar({
               </Link>
             </li>
           ))}
-          <li className="lg:mb-10 lg:mt-auto">
+          <li className="lg:mb-10 lg:mt-auto lg:w-48">
             {currentBusiness && (
               <>
                 <DropdownMenu>

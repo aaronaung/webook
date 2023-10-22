@@ -11,7 +11,9 @@ const formSchema = z.object({
     .max(25, { message: "Title must be at most 25 characters." }),
 });
 
-export type SaveServiceGroupFormSchemaType = z.infer<typeof formSchema>;
+export type SaveServiceGroupFormSchemaType = z.infer<typeof formSchema> & {
+  id?: string;
+};
 
 type SaveServiceGroupFromProps = {
   defaultValues?: SaveServiceGroupFormSchemaType;

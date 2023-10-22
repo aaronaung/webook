@@ -14,13 +14,13 @@ const formSchema = z.object({
       message: "Title must be at most 25 characters.",
     }),
   price: z
-    .number({ required_error: "Price cannot be empty." })
+    .number({ invalid_type_error: "Price cannot be empty." })
     .positive({
       message: "Price must be a positive number.",
     })
     .transform((val) => val * 100),
   booking_limit: z
-    .number({ required_error: "Booking limit cannot be empty." })
+    .number({ invalid_type_error: "Booking limit cannot be empty." })
     .step(1, "Booking limit must be a whole number.")
     .positive({
       message: "Booking limit must be a positive number.",
@@ -32,7 +32,9 @@ type SaveServiceFromProps = {
   onFormSuccess: (formValues: SaveServiceFormSchemaType) => void;
 };
 
-export type SaveServiceFormSchemaType = z.infer<typeof formSchema>;
+export type SaveServiceFormSchemaType = z.infer<typeof formSchema> & {
+  id?: string;
+};
 
 const SaveServiceForm = React.forwardRef<HTMLFormElement, SaveServiceFromProps>(
   (props, ref) => {
@@ -43,7 +45,9 @@ const SaveServiceForm = React.forwardRef<HTMLFormElement, SaveServiceFromProps>(
     } = useForm<SaveServiceFormSchemaType>({
       defaultValues: {
         ...props.defaultValues,
-        price: (props.defaultValues?.price || 0) / 100,
+        price: props.defaultValues?.price
+          ? props.defaultValues.price / 100
+          : undefined,
       },
       resolver: zodResolver(formSchema),
     });
@@ -53,12 +57,7 @@ const SaveServiceForm = React.forwardRef<HTMLFormElement, SaveServiceFromProps>(
     }
 
     return (
-      <form
-        ref={ref}
-        onSubmit={handleSubmit(onFormSuccess, (errors) => {
-          console.log(errors);
-        })}
-      >
+      <form ref={ref} onSubmit={handleSubmit(onFormSuccess)}>
         <InputText
           rhfKey="title"
           register={register}

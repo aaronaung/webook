@@ -9,7 +9,8 @@ export const getServiceGroupsWithServices = async (
   const { data: serviceGroups, error: serviceGroupsError } = await client
     .from("service_group")
     .select("*")
-    .eq("business_id", businessId);
+    .eq("business_id", businessId)
+    .order("created_at", { ascending: true });
   if (serviceGroupsError) throw serviceGroupsError;
 
   const { data: services, error: servicesError } = await client
@@ -18,22 +19,17 @@ export const getServiceGroupsWithServices = async (
     .in(
       "service_group_id",
       (serviceGroups || []).map((serviceGroup) => serviceGroup.id),
-    );
+    )
+    .order("created_at", { ascending: true });
   if (servicesError) throw servicesError;
 
   // We do client side sorting, since we expect the service groups and services to be in the tens only.
-  return (serviceGroups || [])
-    .map((serviceGroup) => ({
-      ...serviceGroup,
-      services: (services || [])
-        .filter((service) => service.service_group_id === serviceGroup.id)
-        .sort((a, b) =>
-          new Date(a.created_at!) < new Date(b.created_at!) ? -1 : 1,
-        ),
-    }))
-    .sort((a, b) =>
-      new Date(a.created_at!) < new Date(b.created_at!) ? -1 : 1,
-    ); // we may need to provide user picked ordering in the future.
+  return (serviceGroups || []).map((serviceGroup) => ({
+    ...serviceGroup,
+    services: (services || []).filter(
+      (service) => service.service_group_id === serviceGroup.id,
+    ),
+  }));
 };
 
 export const saveServiceGroup = async (

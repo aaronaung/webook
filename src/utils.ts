@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { supaClientComponentClient } from "./api/clients/browser";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -17,3 +18,48 @@ export function getAuthCallbackUrl() {
   url = url.concat("/api/auth/callback");
   return url;
 }
+
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function fetchWithRetry(
+  url: string,
+  options?: RequestInit,
+  retries = 3,
+  timeout = 1500,
+) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`[${response.status}]: ${response.statusText}`);
+    }
+    return response;
+  } catch (err) {
+    if (retries === 0) {
+      throw err;
+    }
+    await sleep(timeout);
+    return fetchWithRetry(url, options, retries - 1, timeout);
+  }
+}
+
+// NOTE: This function does something very specific. It constructs a supabase storage object url with the timestamp as the version attached to the url as query param. This is usually used to bust the cache on the image url.
+export const getTimestampedObjUrl = (
+  bucket: string,
+  path: string,
+  timestamp?: string | null,
+): string => {
+  const { data } = supaClientComponentClient()
+    .storage.from(bucket)
+    .getPublicUrl(path);
+
+  if (!timestamp) {
+    return data.publicUrl;
+  }
+
+  const imgVersion = new Date(timestamp).getTime();
+  const url = new URL(data.publicUrl);
+  url.searchParams.set("version", imgVersion.toString());
+  return url.toString();
+};
