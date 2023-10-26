@@ -61,9 +61,6 @@ export default function ServicesTable({
       columnHelper.accessor("title", {
         header: "Title",
       }),
-      columnHelper.accessor("description", {
-        header: "Description",
-      }),
       columnHelper.accessor("price", {
         header: "Price",
         cell: ({ row }) =>

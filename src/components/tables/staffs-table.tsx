@@ -31,7 +31,7 @@ function StaffHeadshotCell({ row }: { row: Row<Tables<"staff">> }) {
   if (headshotExists) {
     return (
       <Image
-        className="h-12 w-12 rounded-full"
+        className="h-12 w-12 self-center rounded-full"
         src={`${headshotUrl}&random=${Date.now()}`} // random forces the image to reload
       ></Image>
     );

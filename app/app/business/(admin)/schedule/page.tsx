@@ -81,7 +81,7 @@ export default function SchedulePage() {
                     <h3 className="text-medium font-semibold">{sg.title}</h3>
                     {_.isEmpty(sg.services) && (
                       <CardDescription>
-                        This service group doesn't have any services yet.
+                        This service group doesn't have any services.
                       </CardDescription>
                     )}
                   </CardHeader>
