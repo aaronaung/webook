@@ -1,4 +1,4 @@
-import { SupabaseOptions } from "./api";
+import { SupabaseOptions } from "./types";
 
 export const getBusinessScheduleByTimeRange = async (
   businessHandle: string,

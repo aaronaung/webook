@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
 import { BUCKETS } from "@/src/consts/storage";
-import { supaClientComponentClient } from "@/src/api/clients/browser";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { cn } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { BuildingOfficeIcon } from "@heroicons/react/24/outline";

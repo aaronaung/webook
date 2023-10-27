@@ -1,8 +1,8 @@
 import { navigation, userNavigation } from "./navigation";
 import { Suspense } from "react";
 import Navbar from "@/src/components/pages/app/navbar";
-import { getAuthUser } from "@/src/api/user";
-import { supaServerComponentClient } from "@/src/api/clients/server";
+import { getAuthUser } from "@/src/data/user";
+import { supaServerComponentClient } from "@/src/data/clients/server";
 import { redirect } from "next/navigation";
 
 export default async function Layout({

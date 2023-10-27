@@ -53,6 +53,7 @@ create table "public"."service_group" (
     "title" text not null,
     "description" text,
     "priority" integer,
+    "duration" bigint not null,
     "is_horizontal" boolean not null default false,
     "business_id" uuid not null
 );
@@ -66,7 +67,6 @@ create table "public"."service_slot" (
     "updated_at" timestamp with time zone default now(),
     "service_id" uuid not null,
     "start" timestamp with time zone ,
-    "duration" bigint not null,
     "repeat_start" timestamp with time zone ,
     "repeat_interval" bigint,
     "repeat_count" bigint,

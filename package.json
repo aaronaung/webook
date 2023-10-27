@@ -25,6 +25,7 @@
     "@supabase/auth-helpers-nextjs": "^0.8.1",
     "@supabase/auth-ui-react": "^0.4.5",
     "@supabase/supabase-js": "^2.38.0",
+    "@t3-oss/env-nextjs": "^0.7.1",
     "@tailwindcss/forms": "^0.5.6",
     "@tanstack/react-query": "^5.0.0-rc.5",
     "@tanstack/react-query-devtools": "^4.36.1",
@@ -37,6 +38,7 @@
     "country-list": "^2.3.0",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.16.4",
+    "jsrsasign": "^10.8.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.284.0",
     "next": "13.5.4",
@@ -56,6 +58,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/jsrsasign": "^10.5.11",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

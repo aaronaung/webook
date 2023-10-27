@@ -1,5 +1,5 @@
 import { ServiceGroupWithServices } from "@/types";
-import { SupabaseOptions } from "./api";
+import { SupabaseOptions } from "./types";
 import { Tables } from "@/types/db.extension";
 
 export const getServiceGroupsWithServices = async (

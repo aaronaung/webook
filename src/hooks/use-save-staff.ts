@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveStaff } from "../api/staff";
+import { saveStaff } from "../data/staff";
 import { Tables } from "@/types/db.extension";
-import { supaClientComponentClient } from "../api/clients/browser";
+import { supaClientComponentClient } from "../data/clients/browser";
 import { BUCKETS } from "../consts/storage";
 import { sleep } from "../utils";
 

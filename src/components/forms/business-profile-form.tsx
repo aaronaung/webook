@@ -9,7 +9,7 @@ import InputTextArea from "@/src/components/ui/input/textarea";
 import { toast } from "@/src/components/ui/use-toast";
 import { countries } from "@/src/consts/countries";
 import { BUCKETS } from "@/src/consts/storage";
-import { supaClientComponentClient } from "@/src/api/clients/browser";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { Tables } from "@/types/db.extension";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";

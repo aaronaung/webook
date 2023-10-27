@@ -1,6 +1,6 @@
 "use client";
 
-import { supaClientComponentClient } from "@/src/api/clients/browser";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { useState } from "react";
 import z from "zod";
 import { useForm } from "react-hook-form";

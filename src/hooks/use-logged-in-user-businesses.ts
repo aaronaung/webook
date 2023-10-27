@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getLoggedInUserBusinesses } from "../api/business";
-import { supaClientComponentClient } from "../api/clients/browser";
+import { getLoggedInUserBusinesses } from "../data/business";
+import { supaClientComponentClient } from "../data/clients/browser";
 
 export const useLoggedInUserBusinesses = () => {
   const { data, error, ...props } = useQuery({

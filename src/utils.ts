@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { supaClientComponentClient } from "./api/clients/browser";
+import { supaClientComponentClient } from "./data/clients/browser";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

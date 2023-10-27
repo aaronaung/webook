@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteService } from "../api/service";
-import { supaClientComponentClient } from "../api/clients/browser";
+import { deleteService } from "../data/service";
+import { supaClientComponentClient } from "../data/clients/browser";
 
 export const useDeleteService = (businessId?: string) => {
   const queryClient = useQueryClient();

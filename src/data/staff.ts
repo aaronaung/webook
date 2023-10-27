@@ -1,5 +1,5 @@
 import { Tables } from "@/types/db.extension";
-import { SupabaseOptions } from "./api";
+import { SupabaseOptions } from "./types";
 
 export const getStaffs = async (
   businessId: string,

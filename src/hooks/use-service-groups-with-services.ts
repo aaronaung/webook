@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { supaClientComponentClient } from "../api/clients/browser";
-import { getServiceGroupsWithServices } from "../api/service";
+import { supaClientComponentClient } from "../data/clients/browser";
+import { getServiceGroupsWithServices } from "../data/service";
 
 export const useServiceGroupsWithServices = (businessId: string) => {
   const {

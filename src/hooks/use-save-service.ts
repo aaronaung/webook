@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveService } from "../api/service";
+import { saveService } from "../data/service";
 import { Tables } from "@/types/db.extension";
-import { supaClientComponentClient } from "../api/clients/browser";
+import { supaClientComponentClient } from "../data/clients/browser";
 
 export const useSaveService = (
   businessId: string,
