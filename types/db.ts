@@ -115,6 +115,7 @@ export interface Database {
           booking_limit: number | null
           created_at: string | null
           description: string | null
+          duration: number
           id: string
           image_url: string | null
           price: number | null
@@ -126,6 +127,7 @@ export interface Database {
           booking_limit?: number | null
           created_at?: string | null
           description?: string | null
+          duration: number
           id?: string
           image_url?: string | null
           price?: number | null
@@ -137,6 +139,7 @@ export interface Database {
           booking_limit?: number | null
           created_at?: string | null
           description?: string | null
+          duration?: number
           id?: string
           image_url?: string | null
           price?: number | null
@@ -196,7 +199,6 @@ export interface Database {
       service_slot: {
         Row: {
           created_at: string | null
-          duration: number
           id: string
           image_url: string | null
           repeat_count: number | null
@@ -208,7 +210,6 @@ export interface Database {
         }
         Insert: {
           created_at?: string | null
-          duration: number
           id?: string
           image_url?: string | null
           repeat_count?: number | null
@@ -220,7 +221,6 @@ export interface Database {
         }
         Update: {
           created_at?: string | null
-          duration?: number
           id?: string
           image_url?: string | null
           repeat_count?: number | null

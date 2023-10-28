@@ -46,10 +46,11 @@ values
   FALSE
 );
 
-insert into public.service (service_group_id, title, booking_limit, price, image_url)
+insert into public.service (service_group_id, duration, title, booking_limit, price, image_url)
 values
 (
   (select id from public.service_group where title = 'Studio rental'),
+  3600000, -- 1 hours in milliseconds
   'Small room rental (1-10 people hourly)',
   NULL,
   60000,
@@ -57,6 +58,7 @@ values
 ),
 (
   (select id from public.service_group where title = 'Studio rental'),
+  3600000, -- 1 hours in milliseconds
   'Large room rental (10+ people hourly)',
   NULL,
   80000,
@@ -82,10 +84,9 @@ WITH schedule_data AS (
       ('OCTOBER 6 2023 5:00PM PDT',  'Small room rental (1-10 people hourly)')
   ) AS schedule (date, service_title)
 )
-INSERT INTO service_slot (start, duration, repeat_start, repeat_interval, repeat_count, service_id)
+INSERT INTO service_slot (start, repeat_start, repeat_interval, repeat_count, service_id)
 SELECT
   date::timestamptz AS start,
-  3600000 AS duration, -- 1 hours in milliseconds
   date::timestamptz AS repeat_start,
   604800000 AS repeat_interval, -- 7 days in milliseconds
   4 as repeat_count,
@@ -111,9 +112,10 @@ FROM handle_list hl
 JOIN business b ON b.handle = 'offstage';
 
 /* Insert offstage class service group <> service */
-INSERT INTO service (title, service_group_id, price, booking_limit)
+INSERT INTO service (title, duration, service_group_id, price, booking_limit)
 SELECT DISTINCT
   regexp_replace(substring(line from '\(([^\)]+)\)'), '\(', '', 'g') AS title,
+  5400000 AS duration, -- 1.5 hours in milliseconds
   sg.id AS service_group_id,
   1200 AS price,
   100 AS booking_limit
@@ -181,10 +183,9 @@ WITH schedule_data AS (
       ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class')
   ) AS schedule (date, staff_handle, service_title)
 )
-INSERT INTO service_slot (start, duration, repeat_start, repeat_interval, repeat_count, service_id)
+INSERT INTO service_slot (start, repeat_start, repeat_interval, repeat_count, service_id)
 SELECT
   date::timestamptz AS start,
-  5400000 AS duration, -- 1.5 hours in milliseconds
   date::timestamptz AS repeat_start,
   604800000 AS repeat_interval, -- 7 days in milliseconds
   4 as repeat_count,

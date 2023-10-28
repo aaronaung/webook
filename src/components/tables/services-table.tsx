@@ -54,17 +54,28 @@ export default function ServicesTable({
         header: "",
         enableHiding: true,
       }),
-      columnHelper.accessor("image_url", {
-        header: "Image",
-        cell: ({ row }) => <SvcImgCell row={row} />,
-      }),
+      // columnHelper.accessor("image_url", {
+      //   header: "Image",
+      //   cell: ({ row }) => <SvcImgCell row={row} />,
+      // }),
       columnHelper.accessor("title", {
         header: "Title",
       }),
       columnHelper.accessor("price", {
         header: "Price",
         cell: ({ row }) =>
-          `$${(((row.getValue("price") as number) ?? 0) / 100).toFixed(2)}`,
+          // parseFloat is used to remove trailing zeros
+          `$${parseFloat(
+            (((row.getValue("price") as number) ?? 0) / 100).toFixed(2),
+          )}`,
+      }),
+      columnHelper.accessor("duration", {
+        header: "Duration",
+        cell: ({ row }) =>
+          // parseFloat is used to remove trailing zeros
+          `${parseFloat(
+            (((row.getValue("duration") as number) ?? 0) / 60000).toFixed(2),
+          )} mins`,
       }),
       columnHelper.accessor("booking_limit", {
         header: "Booking limit",

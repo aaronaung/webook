@@ -42,15 +42,15 @@ export default function SchedulePage() {
   }
 
   return (
-    <div className="grid h-full grid-cols-2 gap-x-8 lg:grid-cols-5">
-      <div className="col-span-1 overflow-y-auto lg:col-span-3">
+    <div className="grid h-full grid-cols-2 gap-x-8">
+      <div className="col-span-1 overflow-y-auto">
         <Schedule
           data={data}
           handle={currentBusiness?.handle}
           serviceSlotsClassName="mt-4"
         />
       </div>
-      <div className="col-span-1 overflow-y-auto lg:col-span-2">
+      <div className="col-span-1 overflow-y-auto">
         {_.isEmpty(serviceGroups) ? (
           <>
             <Card className="w-full ">
@@ -76,8 +76,8 @@ export default function SchedulePage() {
             </p>
             <div className="grid gap-y-4">
               {serviceGroups.map((sg) => (
-                <Card className="w-full">
-                  <CardHeader>
+                <Card key={sg.id} className="w-full">
+                  <CardHeader className="p-4">
                     <h3 className="text-medium font-semibold">{sg.title}</h3>
                     {_.isEmpty(sg.services) && (
                       <CardDescription>
@@ -85,7 +85,7 @@ export default function SchedulePage() {
                       </CardDescription>
                     )}
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="p-4">
                     {_.isEmpty(sg.services) && (
                       <Button
                         onClick={() => router.push("/app/business/services")}

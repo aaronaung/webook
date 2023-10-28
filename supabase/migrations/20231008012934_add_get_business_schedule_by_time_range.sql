@@ -27,7 +27,6 @@ BEGIN
                     jsonb_build_object(
                         'id', ss.id,
                         'start', ss.start,
-                        'duration', ss.duration,
                         'repeat_start', ss.repeat_start,
                         'repeat_interval', ss.repeat_interval,
                         'repeat_count', ss.repeat_count,
@@ -37,7 +36,8 @@ BEGIN
                             'title', s.title,
                             'booking_limit', s.booking_limit,
                             'description', s.description,
-                            'image_url', s.image_url
+                            'image_url', s.image_url,
+                            'duration', s.duration
                         ),
                         'staffs', (
                             SELECT json_agg(jsonb_build_object(

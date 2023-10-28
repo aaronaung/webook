@@ -83,6 +83,7 @@ export default function Services() {
               id: row.original.id,
               title: row.original.title,
               price: row.original.price ?? 0,
+              duration: row.original.duration ?? 0,
               booking_limit: row.original.booking_limit ?? 0,
             },
             serviceGroupId: row.original.service_group_id ?? undefined,

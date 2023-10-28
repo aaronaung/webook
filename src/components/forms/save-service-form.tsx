@@ -10,8 +10,8 @@ const formSchema = z.object({
     .min(1, {
       message: "Title is required.",
     })
-    .max(25, {
-      message: "Title must be at most 25 characters.",
+    .max(50, {
+      message: "Title must be at most 50 characters.",
     }),
   price: z
     .number({ invalid_type_error: "Price cannot be empty." })
@@ -19,6 +19,12 @@ const formSchema = z.object({
       message: "Price must be a positive number.",
     })
     .transform((val) => val * 100),
+  duration: z
+    .number({ invalid_type_error: "Duration cannot be empty." })
+    .positive({
+      message: "Duration must be a positive number.",
+    })
+    .transform((val) => val * 6000),
   booking_limit: z
     .number({ invalid_type_error: "Booking limit cannot be empty." })
     .step(1, "Booking limit must be a whole number.")
@@ -48,6 +54,9 @@ const SaveServiceForm = React.forwardRef<HTMLFormElement, SaveServiceFromProps>(
         price: props.defaultValues?.price
           ? props.defaultValues.price / 100
           : undefined,
+        duration: props.defaultValues?.duration
+          ? props.defaultValues.duration / 6000
+          : undefined,
       },
       resolver: zodResolver(formSchema),
     });
@@ -74,6 +83,15 @@ const SaveServiceForm = React.forwardRef<HTMLFormElement, SaveServiceFromProps>(
           inputProps={{ placeholder: "12.5", type: "number", step: "any" }}
           prefix={<span className="mr-1 text-muted-foreground">$</span>}
           label="Price"
+        />
+        <InputText
+          rhfKey="duration"
+          register={register}
+          registerOptions={{ valueAsNumber: true }}
+          error={errors.duration?.message}
+          inputProps={{ placeholder: "60", type: "number", step: "any" }}
+          suffix={<span className="mr-1 text-muted-foreground">mins</span>}
+          label="Duration"
         />
         <InputText
           rhfKey="booking_limit"

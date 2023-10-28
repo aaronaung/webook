@@ -40,6 +40,7 @@ create table "public"."service" (
     "description" text,
     "booking_limit" bigint,
     "image_url" text,
+    "duration" bigint not null,
     "price" bigint
 );
 
@@ -53,7 +54,6 @@ create table "public"."service_group" (
     "title" text not null,
     "description" text,
     "priority" integer,
-    "duration" bigint not null,
     "is_horizontal" boolean not null default false,
     "business_id" uuid not null
 );
@@ -187,9 +187,6 @@ for select
 to public
 using (true);
 
-/*
-* This trigger automatically creates a user entry when a new user signs up via Supabase Auth.
-*/ 
 /**
 * This trigger automatically creates a user entry when a new user signs up via Supabase Auth.
 */ 
