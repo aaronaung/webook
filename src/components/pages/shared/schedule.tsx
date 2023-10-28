@@ -78,6 +78,9 @@ export default function Schedule({
         <CalendarV2
           defaultSelectedDay={selectedDay}
           onDateSelect={(newDate) => setSelectedDay(newDate)}
+          onServiceDrop={(service, day) => {
+            console.log("SERVICE DROPED", service, day);
+          }}
         />
       </div>
 

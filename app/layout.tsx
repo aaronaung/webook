@@ -5,6 +5,7 @@ import { QueryClient, QueryCache } from "@tanstack/react-query";
 import ReactQueryProvider from "@/src/providers/react-query-provider";
 import { Toaster } from "@/src/components/ui/toaster";
 import { toast } from "@/src/components/ui/use-toast";
+import ReactDnDProvider from "@/src/providers/react-dnd-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,15 +41,17 @@ export default function RootLayout({
         } h-full overflow-hidden`}
       >
         <ReactQueryProvider>
-          {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}
-          {/* <ThemeProvider
+          <ReactDnDProvider>
+            {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}
+            {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           > */}
-          {children}
-          {/* </ThemeProvider> */}
+            {children}
+            {/* </ThemeProvider> */}
+          </ReactDnDProvider>
         </ReactQueryProvider>
         <Toaster />
       </body>

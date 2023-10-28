@@ -8,12 +8,12 @@ import {
   CardDescription,
   CardHeader,
 } from "@/src/components/ui/card";
-import PriceTag from "@/src/components/ui/price-tag";
 import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedule-by-time-range";
 import { useServiceGroupsWithServices } from "@/src/hooks/use-service-groups-with-services";
 import { parse, startOfToday, format, add } from "date-fns";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
+import DraggableServiceItem from "@/src/components/pages/business/schedule/draggable-service-item";
 
 export default function SchedulePage() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -95,40 +95,10 @@ export default function SchedulePage() {
                     )}
                     <ul role="list" className="divide-y divide-gray-100">
                       {(sg.services || []).map((service) => (
-                        <li
+                        <DraggableServiceItem
                           key={service.id}
-                          className="flex cursor-pointer flex-wrap items-center justify-between gap-x-6 gap-y-4 rounded-md p-2 hover:bg-secondary sm:flex-nowrap"
-                        >
-                          <div>
-                            <p className="text-sm font-medium leading-6 text-secondary-foreground">
-                              {service.title}
-                            </p>
-                            {service.description && (
-                              <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                                {service.description}
-                              </p>
-                            )}
-                          </div>
-                          <dl className="flex w-full flex-none justify-between gap-x-8 sm:w-auto">
-                            {service.image_url && (
-                              <div className="flex -space-x-0.5">
-                                <dt className="sr-only">Image</dt>
-                                <dd key={service.id}>
-                                  <img
-                                    className="h-10 w-10 rounded-full bg-gray-50 ring-2 ring-white"
-                                    src={service.image_url}
-                                    alt={service.title}
-                                  />
-                                </dd>
-                              </div>
-                            )}
-
-                            <dt>
-                              <span className="sr-only">Price</span>
-                              <PriceTag price={service.price} />
-                            </dt>
-                          </dl>
-                        </li>
+                          service={service}
+                        />
                       ))}
                     </ul>
                   </CardContent>

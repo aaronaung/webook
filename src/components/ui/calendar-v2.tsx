@@ -9,20 +9,22 @@ import {
   format,
   getDay,
   isEqual,
-  isSameMonth,
-  isToday,
   parse,
   startOfToday,
 } from "date-fns";
 import { useState } from "react";
+import { Tables } from "@/types/db.extension";
+import CalendarV2Day from "./calendar-v2-day";
 
 type CalendarV2Props = {
+  onServiceDrop?: (item: Tables<"service">, day: Date) => void;
   onDateSelect?: (date: Date) => void;
   defaultSelectedDay?: Date;
   className?: string;
 };
 export default function CalendarV2({
   onDateSelect,
+  onServiceDrop,
   defaultSelectedDay,
   className,
 }: CalendarV2Props) {
@@ -96,31 +98,13 @@ export default function CalendarV2({
               "py-1.5",
             )}
           >
-            <button
-              type="button"
-              onClick={() => handleDateSelect(day)}
-              className={cn(
-                isEqual(day, selectedDay) && "text-white",
-                !isEqual(day, selectedDay) && isToday(day) && "text-red-500",
-                !isEqual(day, selectedDay) &&
-                  !isToday(day) &&
-                  isSameMonth(day, firstDayCurrentMonth) &&
-                  "text-gray-900",
-                !isEqual(day, selectedDay) &&
-                  !isToday(day) &&
-                  !isSameMonth(day, firstDayCurrentMonth) &&
-                  "text-gray-400",
-                isEqual(day, selectedDay) && isToday(day) && "bg-red-500",
-                isEqual(day, selectedDay) && !isToday(day) && "bg-gray-900",
-                !isEqual(day, selectedDay) && "hover:bg-gray-200",
-                (isEqual(day, selectedDay) || isToday(day)) && "font-semibold",
-                "mx-auto flex h-8 w-8 items-center justify-center rounded-full",
-              )}
-            >
-              <time dateTime={format(day, "yyyy-MM-dd")}>
-                {format(day, "d")}
-              </time>
-            </button>
+            <CalendarV2Day
+              day={day}
+              isSelected={isEqual(day, selectedDay)}
+              firstDayCurrentMonth={firstDayCurrentMonth}
+              onDaySelect={handleDateSelect}
+              onServiceDrop={onServiceDrop}
+            />
           </div>
         ))}
       </div>
