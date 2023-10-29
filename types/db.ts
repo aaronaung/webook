@@ -201,9 +201,9 @@ export interface Database {
           created_at: string | null
           id: string
           image_url: string | null
-          repeat_count: number | null
-          repeat_interval: number | null
-          repeat_start: string | null
+          recurrence_count: number | null
+          recurrence_interval: number | null
+          recurrence_start: string | null
           service_id: string
           start: string | null
           updated_at: string | null
@@ -212,9 +212,9 @@ export interface Database {
           created_at?: string | null
           id?: string
           image_url?: string | null
-          repeat_count?: number | null
-          repeat_interval?: number | null
-          repeat_start?: string | null
+          recurrence_count?: number | null
+          recurrence_interval?: number | null
+          recurrence_start?: string | null
           service_id: string
           start?: string | null
           updated_at?: string | null
@@ -223,9 +223,9 @@ export interface Database {
           created_at?: string | null
           id?: string
           image_url?: string | null
-          repeat_count?: number | null
-          repeat_interval?: number | null
-          repeat_start?: string | null
+          recurrence_count?: number | null
+          recurrence_interval?: number | null
+          recurrence_start?: string | null
           service_id?: string
           start?: string | null
           updated_at?: string | null

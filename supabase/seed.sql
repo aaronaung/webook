@@ -84,12 +84,12 @@ WITH schedule_data AS (
       ('OCTOBER 6 2023 5:00PM PDT',  'Small room rental (1-10 people hourly)')
   ) AS schedule (date, service_title)
 )
-INSERT INTO service_slot (start, repeat_start, repeat_interval, repeat_count, service_id)
+INSERT INTO service_slot (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
 SELECT
   date::timestamptz AS start,
-  date::timestamptz AS repeat_start,
-  604800000 AS repeat_interval, -- 7 days in milliseconds
-  4 as repeat_count,
+  date::timestamptz AS recurrence_start,
+  604800000 AS recurrence_interval, -- 7 days in milliseconds
+  4 as recurrence_count,
   (select id from service s where s.title = service_title limit 1) AS service_id
 FROM 
   schedule_data
@@ -183,12 +183,12 @@ WITH schedule_data AS (
       ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class')
   ) AS schedule (date, staff_handle, service_title)
 )
-INSERT INTO service_slot (start, repeat_start, repeat_interval, repeat_count, service_id)
+INSERT INTO service_slot (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
 SELECT
   date::timestamptz AS start,
-  date::timestamptz AS repeat_start,
-  604800000 AS repeat_interval, -- 7 days in milliseconds
-  4 as repeat_count,
+  date::timestamptz AS recurrence_start,
+  604800000 AS recurrence_interval, -- 7 days in milliseconds
+  4 as recurrence_count,
   (select id from service s where s.title = service_title limit 1) AS service_id
 FROM 
   schedule_data

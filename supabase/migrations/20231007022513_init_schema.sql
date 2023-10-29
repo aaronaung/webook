@@ -67,9 +67,9 @@ create table "public"."service_slot" (
     "updated_at" timestamp with time zone default now(),
     "service_id" uuid not null,
     "start" timestamp with time zone ,
-    "repeat_start" timestamp with time zone ,
-    "repeat_interval" bigint,
-    "repeat_count" bigint,
+    "recurrence_start" timestamp with time zone ,
+    "recurrence_interval" bigint,
+    "recurrence_count" bigint,
     "image_url" text
 );
 

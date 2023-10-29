@@ -24,8 +24,8 @@
                   "start": "2023-10-07T02:30:00+00:00",
                   "duration": 5400000,
                   "image_url": null,
-                  "repeat_start": "2023-10-07T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T02:30:00+00:00",
+                  "recurrence_interval": 604800000
           },
           {
               "staffs": [
@@ -60,8 +60,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -97,8 +97,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -134,8 +134,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -171,8 +171,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -208,8 +208,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -245,8 +245,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -282,8 +282,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "f8951a1e-7d2f-4d10-b372-759d94d267ae",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -319,8 +319,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "ede96138-bdf1-4aef-b86f-8dc7652d710b",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T04:15:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T04:15:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -356,8 +356,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "836ee3f8-829e-4c80-b1cb-3f44203a25e8",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T02:45:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T02:45:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -393,8 +393,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -430,8 +430,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -467,8 +467,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "20212dfe-a86a-495a-a109-b17191bad9ba",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -504,8 +504,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "8424b79f-5d0f-47f4-8bf3-20c23e452988",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -541,8 +541,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "b24c40e2-ad28-4e88-9428-a713d915abbb",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T04:15:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T04:15:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -578,8 +578,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "7e7a5cdc-7817-4e5f-878b-3e707451b120",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -615,8 +615,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -652,8 +652,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -689,8 +689,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "ede96138-bdf1-4aef-b86f-8dc7652d710b",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T04:15:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T04:15:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -726,8 +726,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "20212dfe-a86a-495a-a109-b17191bad9ba",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -763,8 +763,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "8424b79f-5d0f-47f4-8bf3-20c23e452988",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -800,8 +800,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -837,8 +837,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -874,8 +874,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "ede96138-bdf1-4aef-b86f-8dc7652d710b",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T02:45:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T02:45:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -911,8 +911,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "20212dfe-a86a-495a-a109-b17191bad9ba",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -948,8 +948,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "8424b79f-5d0f-47f4-8bf3-20c23e452988",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T01:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T01:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -985,8 +985,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -1022,8 +1022,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-05T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-05T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -1059,8 +1059,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "c47c8dfd-ddbf-4d13-b347-69d15acd59a3",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-07T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-07T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -1096,8 +1096,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "7e7a5cdc-7817-4e5f-878b-3e707451b120",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -1133,8 +1133,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "350e5418-4cc8-401c-89e6-1a2ea502f87d",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T04:00:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T04:00:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -1170,8 +1170,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "2203ab1d-d581-42af-8f03-07f140d9e5d7",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           },
           {
@@ -1207,8 +1207,8 @@
                   "created_at": "2023-10-10T00:16:42.746706+00:00",
                   "service_id": "5085071c-f7f9-45f9-a15e-1cb5683a9cfd",
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
-                  "repeat_start": "2023-10-06T02:30:00+00:00",
-                  "repeat_interval": 604800000
+                  "recurrence_start": "2023-10-06T02:30:00+00:00",
+                  "recurrence_interval": 604800000
               }
           }
       ]

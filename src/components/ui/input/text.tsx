@@ -14,7 +14,8 @@ const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
       <InputDecorator {...props}>
         <div
           className={cn(
-            "mt-1.5 flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50",
+            "mt-1.5 flex h-10 w-full items-center rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus:ring-1",
+            props.disabled && "cursor-not-allowed opacity-50",
             props.className,
           )}
         >
@@ -27,7 +28,11 @@ const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
                   ...(props.disableValidation ? { validate: () => true } : {}),
                 })
               : {})}
+            {...(props.value ? { value: props.value } : {})}
             {...(props.onChange ? { onChange: props.onChange } : {})}
+            {...(props.defaultValue
+              ? { defaultValue: props.defaultValue }
+              : {})}
             name={props.rhfKey}
             id={props.rhfKey}
             className="w-full border-0 bg-transparent p-0 pr-3 text-sm focus:ring-0"

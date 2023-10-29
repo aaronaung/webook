@@ -27,9 +27,9 @@ BEGIN
                     jsonb_build_object(
                         'id', ss.id,
                         'start', ss.start,
-                        'repeat_start', ss.repeat_start,
-                        'repeat_interval', ss.repeat_interval,
-                        'repeat_count', ss.repeat_count,
+                        'recurrence_start', ss.recurrence_start,
+                        'recurrence_interval', ss.recurrence_interval,
+                        'recurrence_count', ss.recurrence_count,
                         'image_url', ss.image_url,
                         'service', jsonb_build_object(
                             'price', s.price,
@@ -37,7 +37,8 @@ BEGIN
                             'booking_limit', s.booking_limit,
                             'description', s.description,
                             'image_url', s.image_url,
-                            'duration', s.duration
+                            'duration', s.duration,
+                            'id', s.id
                         ),
                         'staffs', (
                             SELECT json_agg(jsonb_build_object(
@@ -63,41 +64,41 @@ BEGIN
         AND (
             -- Include slots within the specified timestamp range
             (ss.start >= start_time AND ss.start <= end_time)
-            OR (ss.repeat_start IS NOT NULL
+            OR (ss.recurrence_start IS NOT NULL
                 AND (
-                    -- If the slot repeat_start is within the specified range
-                    (ss.repeat_start >= start_time AND ss.repeat_start <= end_time) OR
+                    -- If the slot recurrence_start is within the specified range
+                    (ss.recurrence_start >= start_time AND ss.recurrence_start <= end_time) OR
 
                     -- Check if the recurring event has occurrences in the specified range
                     /* 
                       start_time = 24
-                      repeat_start = 2
+                      recurrence_start = 2
                       interval = 10
-                      num_intervals_to_jump = ((start_time - repeat_start) / repeat_interval) + 1
-                      future_start = repeat_start + (repeat_interval * num_intervals_to_jump) 
+                      num_intervals_to_jump = ((start_time - recurrence_start) / recurrence_interval) + 1
+                      future_start = recurrence_start + (recurrence_interval * num_intervals_to_jump) 
                       future_start >= start_time and =< end_time
                      */
-                    (ss.repeat_start <= start_time
+                    (ss.recurrence_start <= start_time
                         AND (
                             -- if repeat count is null, we treat the recurrence as infinite, and continue to evaluate occurences.
-                            ss.repeat_count IS NULL OR (
+                            ss.recurrence_count IS NULL OR (
                                 -- num repeat repeat intervals to jump <= repeat count
-                                FLOOR((EXTRACT(EPOCH FROM (start_time::timestamptz - ss.repeat_start)) * 1000) / ss.repeat_interval) + 1 <= ss.repeat_count 
+                                FLOOR((EXTRACT(EPOCH FROM (start_time::timestamptz - ss.recurrence_start)) * 1000) / ss.recurrence_interval) + 1 <= ss.recurrence_count 
                             ))
-                        AND ((EXTRACT(EPOCH FROM ss.repeat_start) * 1000) +
+                        AND ((EXTRACT(EPOCH FROM ss.recurrence_start) * 1000) +
                             -- total jumped
-                            (ss.repeat_interval * 
+                            (ss.recurrence_interval * 
                                 (
                                     -- num repeat intervals to jump 
-                                    FLOOR((EXTRACT(EPOCH FROM (start_time::timestamptz - ss.repeat_start)) * 1000) / ss.repeat_interval) + 1
+                                    FLOOR((EXTRACT(EPOCH FROM (start_time::timestamptz - ss.recurrence_start)) * 1000) / ss.recurrence_interval) + 1
                                 )
                             )) <= (EXTRACT(EPOCH FROM (end_time::timestamptz)) * 1000)
-                        AND ((EXTRACT(EPOCH FROM ss.repeat_start) * 1000) + 
+                        AND ((EXTRACT(EPOCH FROM ss.recurrence_start) * 1000) + 
                             -- total jumped
-                            (ss.repeat_interval * 
+                            (ss.recurrence_interval * 
                                 (
                                     -- num repeat intervals to jump
-                                    FLOOR((EXTRACT(EPOCH FROM (start_time::timestamptz - ss.repeat_start)) * 1000) / ss.repeat_interval) + 1
+                                    FLOOR((EXTRACT(EPOCH FROM (start_time::timestamptz - ss.recurrence_start)) * 1000) / ss.recurrence_interval) + 1
                                 )
                             )) >= (EXTRACT(EPOCH FROM (start_time::timestamptz)) * 1000)
                     )

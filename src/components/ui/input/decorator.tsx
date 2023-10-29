@@ -10,7 +10,7 @@ export default function InputDecorator({
   ...props
 }: React.PropsWithChildren<CommonRhfInputProps>) {
   return (
-    <>
+    <div className={props.className}>
       {label && (
         <Label className="leading-4" htmlFor={rhfKey}>
           {label}
@@ -25,6 +25,6 @@ export default function InputDecorator({
       </div>
       <p className="mt-2 text-sm text-muted-foreground">{description}</p>
       {error && <p className="my-2 text-sm text-destructive">{error}</p>}
-    </>
+    </div>
   );
 }

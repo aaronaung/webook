@@ -12,6 +12,7 @@ import {
 } from "../select";
 import React from "react";
 import { cn } from "@/src/utils";
+import _ from "lodash";
 
 type InputSelectOption = {
   label: string;
@@ -27,10 +28,16 @@ const InputSelect = React.forwardRef<HTMLButtonElement, InputSelectProps>(
     const input = ({ field }: { field: ControllerRenderProps }) => (
       <InputDecorator {...props}>
         <Select
-          onValueChange={(value) => {
-            field.onChange(value);
-          }}
-          {...field}
+          {..._.omit(field, ["ref"])} // passing ref throws a warning.
+          {...(props.value ? { value: props.value } : {})}
+          {...(props.onChange
+            ? { onValueChange: props.onChange }
+            : {
+                onValueChange: (value) => {
+                  field.onChange(value);
+                },
+              })}
+          {...props}
         >
           <SelectTrigger
             ref={ref}
@@ -60,7 +67,7 @@ const InputSelect = React.forwardRef<HTMLButtonElement, InputSelectProps>(
 
     return (
       <Controller
-        name={props.rhfKey}
+        name={props.rhfKey || ""}
         control={props.control}
         rules={props.disableValidation ? { validate: () => true } : undefined}
         render={(args) => input(args)}

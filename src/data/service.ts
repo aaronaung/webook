@@ -74,3 +74,26 @@ export const deleteService = async (
   const { error } = await client.from("service").delete().eq("id", serviceId);
   if (error) throw error;
 };
+
+export const saveServiceSlot = async (
+  serviceSlot: Partial<Tables<"service_slot">>,
+  { client }: SupabaseOptions,
+) => {
+  const { data, error } = await client
+    .from("service_slot")
+    .upsert({ ...(serviceSlot as Tables<"service_slot">) })
+    .select();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteServiceSlot = async (
+  serviceSlotId: string,
+  { client }: SupabaseOptions,
+) => {
+  const { error } = await client
+    .from("service_slot")
+    .delete()
+    .eq("id", serviceSlotId);
+  if (error) throw error;
+};

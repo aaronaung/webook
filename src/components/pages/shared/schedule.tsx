@@ -4,9 +4,10 @@ import CalendarV2 from "@/src/components/ui/calendar-v2";
 import ServiceSlot from "@/src/components/pages/shared/service-slot";
 import { format, isAfter, isSameDay, startOfToday } from "date-fns";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import AnimatedTabs from "@/src/components/ui/animated-tabs";
 import { BusinessSchedule } from "@/types";
+import { Tables } from "@/types/db.extension";
 
 export default function Schedule({
   handle,
@@ -23,6 +24,11 @@ export default function Schedule({
   const [selectedDay, setSelectedDay] = useState(today);
   const [selectedTab, setSelectedTab] = useState(data?.[0]?.id);
 
+  const onServiceDrop = useCallback(
+    (service: Tables<"service">, day: Date) => {},
+    [],
+  );
+
   const selectedDayServiceSlots = useMemo(() => {
     return (
       (data || [])
@@ -31,10 +37,10 @@ export default function Schedule({
         )
         ?.service_slots.filter((slot) => {
           const startDateTime = slot.start ? new Date(slot.start) : null;
-          const repeatStartDateTime = slot.repeat_start
-            ? new Date(slot.repeat_start)
+          const repeatStartDateTime = slot.recurrence_start
+            ? new Date(slot.recurrence_start)
             : null;
-          const repeatInterval = slot.repeat_interval;
+          const repeatInterval = slot.recurrence_interval;
 
           if (!startDateTime) {
             return false;
@@ -56,8 +62,8 @@ export default function Schedule({
                 repeatInterval,
             ) + 1;
           if (
-            slot.repeat_count &&
-            repeatIntervalsToJump > slot.repeat_count - 1
+            slot.recurrence_count &&
+            repeatIntervalsToJump > slot.recurrence_count - 1
           ) {
             return false;
           }
@@ -78,9 +84,7 @@ export default function Schedule({
         <CalendarV2
           defaultSelectedDay={selectedDay}
           onDateSelect={(newDate) => setSelectedDay(newDate)}
-          onServiceDrop={(service, day) => {
-            console.log("SERVICE DROPED", service, day);
-          }}
+          onServiceDrop={onServiceDrop}
         />
       </div>
 
