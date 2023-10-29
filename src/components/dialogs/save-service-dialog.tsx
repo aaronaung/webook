@@ -50,7 +50,7 @@ export function SaveServiceDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} Service</DialogTitle>
+          <DialogTitle>{data ? "Edit" : "Add"} service</DialogTitle>
         </DialogHeader>
         <SaveServiceForm
           ref={formRef}

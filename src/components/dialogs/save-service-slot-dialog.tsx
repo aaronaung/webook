@@ -46,13 +46,13 @@ export function SaveServiceSlotDialog({
       start: formValues.start.toISOString(),
       recurrence_start: formValues.recurrenceEnabled
         ? formValues.recurrence_start?.toISOString()
-        : undefined,
+        : null,
       recurrence_interval: formValues.recurrenceEnabled
         ? formValues.recurrence_interval
-        : undefined,
+        : null,
       recurrence_count: formValues.recurrenceEnabled
         ? formValues.recurrence_count
-        : undefined,
+        : null,
     });
   };
 
@@ -60,7 +60,7 @@ export function SaveServiceSlotDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} Service slot</DialogTitle>
+          <DialogTitle>{data?.id ? "Edit" : "Add"} service slot</DialogTitle>
         </DialogHeader>
         <SaveServiceSlotForm
           ref={formRef}

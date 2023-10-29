@@ -21,7 +21,7 @@ import _ from "lodash";
 import { useRouter } from "next/navigation";
 import DnDCalendar, { localizer } from "@/src/components/ui/dnd-calendar";
 import { useCallback, useMemo, useState } from "react";
-import { View, Views } from "react-big-calendar";
+import { SlotInfo, View, Views } from "react-big-calendar";
 import { Badge } from "@/src/components/ui/badge";
 import { Tables } from "@/types/db.extension";
 import {
@@ -31,6 +31,7 @@ import {
 import { SaveServiceSlotFormSchemaType } from "@/src/components/forms/save-service-slot-form";
 import { SaveServiceSlotDialog } from "@/src/components/dialogs/save-service-slot-dialog";
 import { BusinessServiceSlot } from "@/types";
+import { useStaffs } from "@/src/hooks/use-staffs";
 
 export default function SchedulePage() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -49,19 +50,29 @@ export default function SchedulePage() {
     isOpen: boolean;
     data?: SaveServiceSlotFormSchemaType & { id?: string };
     service?: Tables<"service">;
+    staffs?: Tables<"staff">[];
+
+    // The "available" props are only used when creating a new service slot for user to select data (services, staffs) from.
+    availableServices?: Tables<"service">[];
+    availableStaffs?: Tables<"staff">[];
   }>({
     isOpen: false,
   });
 
   // @todo (important) - right now we only fetch 6 month window of data, and we don't have a dynamic way of fetching more data as the user moves around the calendar.
-  const { data, isLoading } = useBusinessScheduleByTimeRange(
-    currentBusiness?.handle,
-    add(firstDayCurrentMonth, { months: -3 }),
-    add(firstDayCurrentMonth, { months: 3 }),
-  );
+  const { data, isLoading: isBusinessScheduleDataLoading } =
+    useBusinessScheduleByTimeRange(
+      currentBusiness?.handle,
+      add(firstDayCurrentMonth, { months: -3 }),
+      add(firstDayCurrentMonth, { months: 3 }),
+    );
 
   const { data: serviceGroups, isLoading: isServicesLoading } =
     useServiceGroupsWithServices(currentBusiness?.id);
+
+  const { data: staffs, isLoading: isStaffsLoading } = useStaffs(
+    currentBusiness?.id,
+  );
 
   const services = useMemo(() => {
     return serviceGroups?.map((sg) => sg.services)?.flat() || [];
@@ -90,23 +101,54 @@ export default function SchedulePage() {
 
   const onEventDrop = useCallback(
     (args: EventInteractionArgs<BusinessServiceSlot>) => {
-      console.log(args.event);
       setSvcSlotDialogState({
         isOpen: true,
         data: {
           id: args.event.id,
           start: args.start as Date,
-          recurrence_count: args.event.recurrence_count || undefined,
-          recurrence_interval: args.event.recurrence_interval || undefined,
+          recurrence_count: args.event.recurrence_count ?? undefined,
+          recurrence_interval: args.event.recurrence_interval ?? undefined,
           recurrence_start: args.event.recurrence_start
             ? new Date(args.event.recurrence_start)
             : undefined,
         },
         service: args.event.service,
+        staffs: args.event.staffs,
       });
     },
     [],
   );
+
+  const onSelectEvent = useCallback((event: BusinessServiceSlot) => {
+    setSvcSlotDialogState({
+      isOpen: true,
+      data: {
+        id: event.id,
+        start: new Date(event.start),
+        recurrence_count: event.recurrence_count ?? undefined,
+        recurrence_interval: event.recurrence_interval ?? undefined,
+        recurrence_start: event.recurrence_start
+          ? new Date(event.recurrence_start)
+          : undefined,
+      },
+      service: event.service,
+      staffs: event.staffs,
+    });
+  }, []);
+
+  const onSelectSlot = useCallback((slotInfo: SlotInfo) => {
+    setSvcSlotDialogState({
+      isOpen: true,
+      data: {
+        start: slotInfo.start,
+        recurrence_count: undefined,
+        recurrence_interval: undefined,
+        recurrence_start: undefined,
+      },
+      availableServices: services,
+      availableStaffs: staffs,
+    });
+  }, []);
 
   const onDropFromOutside = useCallback((args: DragFromOutsideItemArgs) => {
     console.log("on drop from outside", args);
@@ -116,7 +158,7 @@ export default function SchedulePage() {
     setDraggedService(draggedService);
   };
 
-  if (isLoading || isServicesLoading) {
+  if (isBusinessScheduleDataLoading || isServicesLoading || isStaffsLoading) {
     // todo - add a loading state.
     return <>Loading...</>;
   }
@@ -185,7 +227,14 @@ export default function SchedulePage() {
           eventPropGetter={(event) => ({ className: "isDraggable" })}
           onView={(view) => setCalView(view)}
           localizer={localizer}
-          onEventDrop={onEventDrop}
+          onEventDrop={
+            onEventDrop as any /* todo - the library typing is all messed up */
+          }
+          onSelectEvent={
+            onSelectEvent as any /* todo - the library typing is all messed up */
+          }
+          selectable
+          onSelectSlot={onSelectSlot}
           scrollToTime={add(startOfToday(), { hours: 8 })}
           style={{ height: "100vh" }}
           min={add(startOfToday(), { hours: 8 })}

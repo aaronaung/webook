@@ -53,7 +53,7 @@ export function SaveStaffDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} Staff</DialogTitle>
+          <DialogTitle>{data ? "Edit" : "Add"} staff</DialogTitle>
         </DialogHeader>
         <SaveStaffForm
           ref={formRef}

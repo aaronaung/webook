@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Tables } from "@/types/db.extension";
@@ -51,6 +51,7 @@ const SaveServiceSlotForm = React.forwardRef<
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<SaveServiceSlotFormSchemaType>({
     defaultValues: {
@@ -64,9 +65,40 @@ const SaveServiceSlotForm = React.forwardRef<
     resolver: zodResolver(formSchema),
   });
 
-  const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
+  const [recurrenceEnabled, setRecurrenceEnabled] = useState(
+    Boolean(props.defaultValues?.recurrence_start),
+  );
+  const [recurrenceErr, setRecurrenceErr] = useState("");
+
+  useEffect(() => {
+    const subscription = watch((value) => {
+      setRecurrenceErr(determineRecurrenceErr(value));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, recurrenceEnabled]);
+
+  const determineRecurrenceErr = (
+    formValues: Partial<SaveServiceSlotFormSchemaType>,
+  ) => {
+    // We have to check for these values when recurrence is enabled because they are not required in the form schema.
+    if (
+      recurrenceEnabled &&
+      (!formValues.recurrence_count ||
+        !formValues.recurrence_interval ||
+        !formValues.recurrence_start)
+    ) {
+      return "Recurrence count, interval, and start are required when recurrence is enabled.";
+    }
+    return "";
+  };
 
   async function onFormSuccess(formValues: SaveServiceSlotFormSchemaType) {
+    const err = determineRecurrenceErr(formValues);
+    setRecurrenceErr(err);
+    if (err) {
+      return;
+    }
+
     props.onFormSuccess({
       ...formValues,
       recurrenceEnabled: recurrenceEnabled,
@@ -75,7 +107,7 @@ const SaveServiceSlotForm = React.forwardRef<
 
   return (
     <form ref={ref} onSubmit={handleSubmit(onFormSuccess)}>
-      <InputText defaultValue={props.service?.title} disabled label="Title" />
+      <Label>{props.service?.title}</Label>
       <InputDateTimePicker
         rhfKey="start"
         control={control}
@@ -124,6 +156,9 @@ const SaveServiceSlotForm = React.forwardRef<
             description="How many times should this event repeat? Leave it empty for infinite recurrence."
             label="Recurrence count"
           />
+          {recurrenceErr && (
+            <p className="my-2 text-sm text-destructive">{recurrenceErr}</p>
+          )}
         </>
       )}
     </form>

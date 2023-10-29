@@ -12,5 +12,5 @@ export type BusinessServiceGroup = Tables<"service_group"> & {
 export type BusinessSchedule = BusinessServiceGroup[];
 
 export type ServiceGroupWithServices = Tables<"service_group"> & {
-  services?: Tables<"service">[];
+  services: Tables<"service">[];
 };

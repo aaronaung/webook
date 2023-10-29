@@ -48,7 +48,7 @@ export function SaveServiceGroupDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} Service Group</DialogTitle>
+          <DialogTitle>{data ? "Edit" : "Add"} service group</DialogTitle>
         </DialogHeader>
         <SaveServiceGroupForm
           ref={formRef}

@@ -205,7 +205,7 @@ export interface Database {
           recurrence_interval: number | null
           recurrence_start: string | null
           service_id: string
-          start: string | null
+          start: string
           updated_at: string | null
         }
         Insert: {
@@ -216,7 +216,7 @@ export interface Database {
           recurrence_interval?: number | null
           recurrence_start?: string | null
           service_id: string
-          start?: string | null
+          start: string
           updated_at?: string | null
         }
         Update: {
@@ -227,7 +227,7 @@ export interface Database {
           recurrence_interval?: number | null
           recurrence_start?: string | null
           service_id?: string
-          start?: string | null
+          start?: string
           updated_at?: string | null
         }
         Relationships: [

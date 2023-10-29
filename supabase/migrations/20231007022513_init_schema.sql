@@ -66,7 +66,7 @@ create table "public"."service_slot" (
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
     "service_id" uuid not null,
-    "start" timestamp with time zone ,
+    "start" timestamp with time zone not null,
     "recurrence_start" timestamp with time zone ,
     "recurrence_interval" bigint,
     "recurrence_count" bigint,
