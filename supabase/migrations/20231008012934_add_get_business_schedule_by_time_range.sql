@@ -49,15 +49,15 @@ BEGIN
                                 'last_name', staff.last_name,
                                 'instagram_handle', staff.instagram_handle
                             ))
-                            FROM public.service_slot_staff AS sss
+                            FROM public.service_event_staff AS sss
                             JOIN public.staff AS staff ON sss.staff_id = staff.id
-                            WHERE sss.service_slot_id = ss.id
+                            WHERE sss.service_event_id = ss.id
                         )
                    ) ORDER BY ss.start
-               ) AS service_slots
+               ) AS service_events
         FROM public.service_group AS sg
         JOIN public.service AS s ON sg.id = s.service_group_id
-        JOIN public.service_slot AS ss ON s.id = ss.service_id
+        JOIN public.service_event AS ss ON s.id = ss.service_id
         WHERE sg.business_id = (
             SELECT id FROM public.business WHERE handle = business_handle
         )

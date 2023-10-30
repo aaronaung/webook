@@ -65,7 +65,7 @@ values
   'https://www.inspiredancestudio.com/uploads/4/9/9/6/4996741/studio-1_orig.jpg'
 );
 
-/* Insert service slots for studio rental */
+/* Insert service events for studio rental */
 WITH schedule_data AS (
   SELECT 
     date,
@@ -84,7 +84,7 @@ WITH schedule_data AS (
       ('OCTOBER 6 2023 5:00PM PDT',  'Small room rental (1-10 people hourly)')
   ) AS schedule (date, service_title)
 )
-INSERT INTO service_slot (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
+INSERT INTO service_event (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
 SELECT
   date::timestamptz AS start,
   date::timestamptz AS recurrence_start,
@@ -126,7 +126,7 @@ FROM regexp_split_to_table(
 JOIN service_group sg ON sg.title = 'Classes'
 WHERE regexp_replace(substring(line from '\(([^\)]+)\)'), '\(', '', 'g') IS NOT NULL; -- Ensure title is not null
 
-/* Insert service slots based on some schedule */
+/* Insert service events based on some schedule */
 WITH schedule_data AS (
   SELECT
     date,
@@ -183,7 +183,7 @@ WITH schedule_data AS (
       ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class')
   ) AS schedule (date, staff_handle, service_title)
 )
-INSERT INTO service_slot (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
+INSERT INTO service_event (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
 SELECT
   date::timestamptz AS start,
   date::timestamptz AS recurrence_start,
@@ -194,7 +194,7 @@ FROM
   schedule_data
 ORDER BY start;
 
-/* assign staffs to the service slots */
+/* assign staffs to the service events */
 WITH schedule_data AS (
   SELECT
     date,
@@ -251,14 +251,14 @@ WITH schedule_data AS (
       ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class')
   ) AS schedule (date, staff_handle, service_title)
 )
-INSERT INTO service_slot_staff (service_slot_id, staff_id)
+INSERT INTO service_event_staff (service_event_id, staff_id)
 SELECT
-  ss.id AS service_slot_id,
+  ss.id AS service_event_id,
   st.id AS staff_id
 FROM schedule_data
 JOIN staff st ON st.instagram_handle = staff_handle
 JOIN service s ON s.title = service_title
-JOIN service_slot ss ON ss.service_id = s.id
+JOIN service_event ss ON ss.service_id = s.id
 WHERE ss.start = date::timestamptz AND
       ss.service_id = s.id;
 

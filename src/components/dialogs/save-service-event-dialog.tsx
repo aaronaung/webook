@@ -8,26 +8,28 @@ import {
 } from "@/src/components/ui/dialog";
 import { useRef } from "react";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import SaveServiceSlotForm, {
-  SaveServiceSlotFormSchemaType,
-} from "../forms/save-service-slot-form";
+import SaveServiceEventForm, {
+  SaveServiceEventFormSchemaType,
+} from "../forms/save-service-event-form";
 import { Tables } from "@/types/db.extension";
-import { useSaveServiceSlot } from "@/src/hooks/use-save-service-slot";
+import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
 
-export function SaveServiceSlotDialog({
+export function SaveServiceEventDialog({
   data,
   toggleOpen,
   isOpen,
-  service,
+  availableServices,
+  availableStaffs,
 }: {
-  data?: SaveServiceSlotFormSchemaType;
+  data?: Partial<SaveServiceEventFormSchemaType>;
   toggleOpen: () => void;
   isOpen: boolean;
-  service?: Tables<"service">;
+  availableServices?: Tables<"service">[];
+  availableStaffs?: Tables<"staff">[];
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveServiceSlot, isPending } = useSaveServiceSlot(
+  const { mutate: saveServiceEvent, isPending } = useSaveServiceEvent(
     currentBusiness.handle,
     {
       onSettled: () => {
@@ -39,20 +41,21 @@ export function SaveServiceSlotDialog({
     formRef?.current?.requestSubmit();
   };
 
-  const handleOnFormSuccess = (formValues: SaveServiceSlotFormSchemaType) => {
-    saveServiceSlot({
+  const handleOnFormSuccess = (
+    formValues: SaveServiceEventFormSchemaType,
+    recurrenceEnabled: boolean,
+  ) => {
+    saveServiceEvent({
       ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service  (not creating a new one)
-      service_id: service?.id,
+      service_id: formValues.service_id,
       start: formValues.start.toISOString(),
-      recurrence_start: formValues.recurrenceEnabled
+      recurrence_start: recurrenceEnabled
         ? formValues.recurrence_start?.toISOString()
         : null,
-      recurrence_interval: formValues.recurrenceEnabled
+      recurrence_interval: recurrenceEnabled
         ? formValues.recurrence_interval
         : null,
-      recurrence_count: formValues.recurrenceEnabled
-        ? formValues.recurrence_count
-        : null,
+      recurrence_count: recurrenceEnabled ? formValues.recurrence_count : null,
     });
   };
 
@@ -60,13 +63,14 @@ export function SaveServiceSlotDialog({
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data?.id ? "Edit" : "Add"} service slot</DialogTitle>
+          <DialogTitle>{data?.id ? "Edit" : "Add"} service event</DialogTitle>
         </DialogHeader>
-        <SaveServiceSlotForm
+        <SaveServiceEventForm
           ref={formRef}
-          service={service}
           defaultValues={data}
           onFormSuccess={handleOnFormSuccess}
+          availableServices={availableServices}
+          availableStaffs={availableStaffs}
         />
         <DialogFooter>
           <Button onClick={handleSubmitForm} disabled={isPending}>

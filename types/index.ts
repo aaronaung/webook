@@ -1,12 +1,12 @@
 import { Tables } from "./db.extension";
 
-export type BusinessServiceSlot = Tables<"service_slot"> & {
+export type BusinessServiceEvent = Tables<"service_event"> & {
   staffs: Tables<"staff">[];
   service: Tables<"service">;
 } & Tables<"service">;
 
 export type BusinessServiceGroup = Tables<"service_group"> & {
-  service_slots: BusinessServiceSlot[];
+  service_events: BusinessServiceEvent[];
 };
 
 export type BusinessSchedule = BusinessServiceGroup[];

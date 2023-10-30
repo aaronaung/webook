@@ -28,9 +28,9 @@ import {
   DragFromOutsideItemArgs,
   EventInteractionArgs,
 } from "react-big-calendar/lib/addons/dragAndDrop";
-import { SaveServiceSlotFormSchemaType } from "@/src/components/forms/save-service-slot-form";
-import { SaveServiceSlotDialog } from "@/src/components/dialogs/save-service-slot-dialog";
-import { BusinessServiceSlot } from "@/types";
+import { SaveServiceEventFormSchemaType } from "@/src/components/forms/save-service-event-form";
+import { SaveServiceEventDialog } from "@/src/components/dialogs/save-service-event-dialog";
+import { BusinessServiceEvent } from "@/types";
 import { useStaffs } from "@/src/hooks/use-staffs";
 
 export default function SchedulePage() {
@@ -46,13 +46,9 @@ export default function SchedulePage() {
 
   const [calView, setCalView] = useState<View>(Views.MONTH);
   const [draggedService, setDraggedService] = useState<Tables<"service">>();
-  const [svcSlotDialogState, setSvcSlotDialogState] = useState<{
+  const [svcEventDialogState, setSvcEventDialogState] = useState<{
     isOpen: boolean;
-    data?: SaveServiceSlotFormSchemaType & { id?: string };
-    service?: Tables<"service">;
-    staffs?: Tables<"staff">[];
-
-    // The "available" props are only used when creating a new service slot for user to select data (services, staffs) from.
+    data?: Partial<SaveServiceEventFormSchemaType> & { id?: string };
     availableServices?: Tables<"service">[];
     availableStaffs?: Tables<"staff">[];
   }>({
@@ -78,12 +74,12 @@ export default function SchedulePage() {
     return serviceGroups?.map((sg) => sg.services)?.flat() || [];
   }, [serviceGroups]);
 
-  const serviceSlots = useMemo(() => {
+  const serviceEvents = useMemo(() => {
     return (
       data
         ?.map(
           (sg) =>
-            sg.service_slots?.map((ss) => ({
+            sg.service_events?.map((ss) => ({
               title: ss.service.title,
               duration: ss.service.duration,
               price: ss.service.price,
@@ -99,45 +95,42 @@ export default function SchedulePage() {
     );
   }, [data]);
 
-  const onEventDrop = useCallback(
-    (args: EventInteractionArgs<BusinessServiceSlot>) => {
-      setSvcSlotDialogState({
-        isOpen: true,
-        data: {
-          id: args.event.id,
-          start: args.start as Date,
-          recurrence_count: args.event.recurrence_count ?? undefined,
-          recurrence_interval: args.event.recurrence_interval ?? undefined,
-          recurrence_start: args.event.recurrence_start
-            ? new Date(args.event.recurrence_start)
-            : undefined,
-        },
-        service: args.event.service,
-        staffs: args.event.staffs,
-      });
-    },
-    [],
-  );
-
-  const onSelectEvent = useCallback((event: BusinessServiceSlot) => {
-    setSvcSlotDialogState({
+  const openUpdateServiceEventDialog = (
+    event: BusinessServiceEvent,
+    start: Date,
+  ) => {
+    setSvcEventDialogState({
       isOpen: true,
       data: {
         id: event.id,
-        start: new Date(event.start),
+        start,
         recurrence_count: event.recurrence_count ?? undefined,
         recurrence_interval: event.recurrence_interval ?? undefined,
         recurrence_start: event.recurrence_start
           ? new Date(event.recurrence_start)
           : undefined,
+        service_id: event.service.id,
+        staff_ids: event.staffs?.map((s) => s.id),
       },
-      service: event.service,
-      staffs: event.staffs,
     });
+  };
+
+  // When the user moves an existing event, we open the dialog to edit it.
+  const onEventDrop = useCallback(
+    (args: EventInteractionArgs<BusinessServiceEvent>) => {
+      openUpdateServiceEventDialog(args.event, args.start as Date);
+    },
+    [],
+  );
+
+  // When the user clicks on an existing event, we open the dialog to edit it.
+  const onSelectEvent = useCallback((event: BusinessServiceEvent) => {
+    openUpdateServiceEventDialog(event, new Date(event.start));
   }, []);
 
+  // When the user clicks on an empty slot, we open the dialog to create a new event.
   const onSelectSlot = useCallback((slotInfo: SlotInfo) => {
-    setSvcSlotDialogState({
+    setSvcEventDialogState({
       isOpen: true,
       data: {
         start: slotInfo.start,
@@ -145,8 +138,6 @@ export default function SchedulePage() {
         recurrence_interval: undefined,
         recurrence_start: undefined,
       },
-      availableServices: services,
-      availableStaffs: staffs,
     });
   }, []);
 
@@ -165,16 +156,17 @@ export default function SchedulePage() {
 
   return (
     <div className="flex h-full flex-col gap-x-8 overflow-y-auto overscroll-contain">
-      <SaveServiceSlotDialog
-        isOpen={svcSlotDialogState.isOpen}
-        service={svcSlotDialogState.service}
-        data={svcSlotDialogState.data}
+      <SaveServiceEventDialog
+        isOpen={svcEventDialogState.isOpen}
+        data={svcEventDialogState.data}
         toggleOpen={() =>
-          setSvcSlotDialogState({
-            ...svcSlotDialogState,
-            isOpen: !svcSlotDialogState.isOpen,
+          setSvcEventDialogState({
+            ...svcEventDialogState,
+            isOpen: !svcEventDialogState.isOpen,
           })
         }
+        availableServices={services}
+        availableStaffs={staffs}
       />
       <div className="mb-2 flex-shrink-0">
         {_.isEmpty(serviceGroups) ? (
@@ -183,8 +175,8 @@ export default function SchedulePage() {
               <CardHeader>
                 <h3 className="text-medium font-semibold">No services found</h3>
                 <CardDescription>
-                  In order to add service slots to your calendar, you must first
-                  define services your business offers.
+                  In order to add service events to your calendar, you must
+                  first define services your business offers.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -223,7 +215,7 @@ export default function SchedulePage() {
           defaultDate={subDays(today, 25)}
           view={calView}
           onDropFromOutside={onDropFromOutside}
-          events={serviceSlots}
+          events={serviceEvents}
           eventPropGetter={(event) => ({ className: "isDraggable" })}
           onView={(view) => setCalView(view)}
           localizer={localizer}

@@ -2,7 +2,7 @@ create table "public"."booking" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone default now(),
     "booker_id" uuid,
-    "service_slot_id" uuid not null
+    "service_event_id" uuid not null
 );
 
 
@@ -61,7 +61,7 @@ create table "public"."service_group" (
 
 alter table "public"."service_group" enable row level security;
 
-create table "public"."service_slot" (
+create table "public"."service_event" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
@@ -74,15 +74,15 @@ create table "public"."service_slot" (
 );
 
 
-alter table "public"."service_slot" enable row level security;
+alter table "public"."service_event" enable row level security;
 
-create table "public"."service_slot_staff" (
-    "service_slot_id" uuid not null,
+create table "public"."service_event_staff" (
+    "service_event_id" uuid not null,
     "staff_id" uuid not null
 );
 
 
-alter table "public"."service_slot_staff" enable row level security;
+alter table "public"."service_event_staff" enable row level security;
 
 create table "public"."staff" (
     "id" uuid not null default gen_random_uuid(),
@@ -120,9 +120,9 @@ CREATE UNIQUE INDEX service_group_pkey ON public.service_group USING btree (id);
 
 CREATE UNIQUE INDEX service_pkey ON public.service USING btree (id);
 
-CREATE UNIQUE INDEX service_slot_pkey ON public.service_slot USING btree (id);
+CREATE UNIQUE INDEX service_event_pkey ON public.service_event USING btree (id);
 
-CREATE UNIQUE INDEX service_slot_staff_pkey ON public.service_slot_staff USING btree (service_slot_id, staff_id);
+CREATE UNIQUE INDEX service_event_staff_pkey ON public.service_event_staff USING btree (service_event_id, staff_id);
 
 CREATE UNIQUE INDEX staff_pkey ON public.staff USING btree (id);
 
@@ -136,9 +136,9 @@ alter table "public"."service" add constraint "service_pkey" PRIMARY KEY using i
 
 alter table "public"."service_group" add constraint "service_group_pkey" PRIMARY KEY using index "service_group_pkey";
 
-alter table "public"."service_slot" add constraint "service_slot_pkey" PRIMARY KEY using index "service_slot_pkey";
+alter table "public"."service_event" add constraint "service_event_pkey" PRIMARY KEY using index "service_event_pkey";
 
-alter table "public"."service_slot_staff" add constraint "service_slot_staff_pkey" PRIMARY KEY using index "service_slot_staff_pkey";
+alter table "public"."service_event_staff" add constraint "service_event_staff_pkey" PRIMARY KEY using index "service_event_staff_pkey";
 
 alter table "public"."staff" add constraint "staff_pkey" PRIMARY KEY using index "staff_pkey";
 
@@ -148,9 +148,9 @@ alter table "public"."booking" add constraint "booking_booker_id_fkey" FOREIGN K
 
 alter table "public"."booking" validate constraint "booking_booker_id_fkey";
 
-alter table "public"."booking" add constraint "booking_service_slot_id_fkey" FOREIGN KEY (service_slot_id) REFERENCES service_slot(id) not valid;
+alter table "public"."booking" add constraint "booking_service_event_id_fkey" FOREIGN KEY (service_event_id) REFERENCES service_event(id) not valid;
 
-alter table "public"."booking" validate constraint "booking_service_slot_id_fkey";
+alter table "public"."booking" validate constraint "booking_service_event_id_fkey";
 
 alter table "public"."business" add constraint "business_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "user"(id) ON DELETE CASCADE not valid;
 
@@ -164,17 +164,17 @@ alter table "public"."service_group" add constraint "service_group_business_id_f
 
 alter table "public"."service_group" validate constraint "service_group_business_id_fkey";
 
-alter table "public"."service_slot" add constraint "service_slot_service_id_fkey" FOREIGN KEY (service_id) REFERENCES service(id) ON DELETE CASCADE not valid;
+alter table "public"."service_event" add constraint "service_event_service_id_fkey" FOREIGN KEY (service_id) REFERENCES service(id) ON DELETE CASCADE not valid;
 
-alter table "public"."service_slot" validate constraint "service_slot_service_id_fkey";
+alter table "public"."service_event" validate constraint "service_event_service_id_fkey";
 
-alter table "public"."service_slot_staff" add constraint "service_slot_staff_service_slot_id_fkey" FOREIGN KEY (service_slot_id) REFERENCES service_slot(id) ON DELETE CASCADE not valid;
+alter table "public"."service_event_staff" add constraint "service_event_staff_service_event_id_fkey" FOREIGN KEY (service_event_id) REFERENCES service_event(id) ON DELETE CASCADE not valid;
 
-alter table "public"."service_slot_staff" validate constraint "service_slot_staff_service_slot_id_fkey";
+alter table "public"."service_event_staff" validate constraint "service_event_staff_service_event_id_fkey";
 
-alter table "public"."service_slot_staff" add constraint "service_slot_staff_staff_id_fkey" FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE not valid;
+alter table "public"."service_event_staff" add constraint "service_event_staff_staff_id_fkey" FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE not valid;
 
-alter table "public"."service_slot_staff" validate constraint "service_slot_staff_staff_id_fkey";
+alter table "public"."service_event_staff" validate constraint "service_event_staff_staff_id_fkey";
 
 alter table "public"."staff" add constraint "staff_business_id_fkey" FOREIGN KEY (business_id) REFERENCES business(id) ON DELETE CASCADE not valid;
 

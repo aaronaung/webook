@@ -7,8 +7,10 @@ import InputDateTimePicker from "../ui/input/date-time-picker";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import InputText from "../ui/input/text";
+import InputSelect from "../ui/input/select";
 
 const formSchema = z.object({
+  service_id: z.string(),
   start: z.date(),
   recurrence_start: z.date().optional(),
   recurrence_interval: z
@@ -30,22 +32,26 @@ const formSchema = z.object({
       z.nan(),
     ])
     .optional(),
+  staff_ids: z.array(z.string()),
 });
 
-type SaveServiceSlotFromProps = {
-  service?: Tables<"service">;
-  defaultValues?: SaveServiceSlotFormSchemaType;
-  onFormSuccess: (formValues: SaveServiceSlotFormSchemaType) => void;
+type SaveServiceEventFromProps = {
+  availableServices?: Tables<"service">[];
+  availableStaffs?: Tables<"staff">[];
+  defaultValues?: Partial<SaveServiceEventFormSchemaType>;
+  onFormSuccess: (
+    formValues: SaveServiceEventFormSchemaType,
+    recurrenceEnabled: boolean,
+  ) => void;
 };
 
-export type SaveServiceSlotFormSchemaType = z.infer<typeof formSchema> & {
+export type SaveServiceEventFormSchemaType = z.infer<typeof formSchema> & {
   id?: string;
-  recurrenceEnabled?: boolean;
 };
 
-const SaveServiceSlotForm = React.forwardRef<
+const SaveServiceEventForm = React.forwardRef<
   HTMLFormElement,
-  SaveServiceSlotFromProps
+  SaveServiceEventFromProps
 >((props, ref) => {
   const {
     register,
@@ -53,7 +59,7 @@ const SaveServiceSlotForm = React.forwardRef<
     control,
     watch,
     formState: { errors },
-  } = useForm<SaveServiceSlotFormSchemaType>({
+  } = useForm<SaveServiceEventFormSchemaType>({
     defaultValues: {
       ...props.defaultValues,
       recurrence_start:
@@ -72,13 +78,17 @@ const SaveServiceSlotForm = React.forwardRef<
 
   useEffect(() => {
     const subscription = watch((value) => {
-      setRecurrenceErr(determineRecurrenceErr(value));
+      setRecurrenceErr(
+        determineRecurrenceErr(
+          value as Partial<SaveServiceEventFormSchemaType>,
+        ),
+      );
     });
     return () => subscription.unsubscribe();
   }, [watch, recurrenceEnabled]);
 
   const determineRecurrenceErr = (
-    formValues: Partial<SaveServiceSlotFormSchemaType>,
+    formValues: Partial<SaveServiceEventFormSchemaType>,
   ) => {
     // We have to check for these values when recurrence is enabled because they are not required in the form schema.
     if (
@@ -92,22 +102,32 @@ const SaveServiceSlotForm = React.forwardRef<
     return "";
   };
 
-  async function onFormSuccess(formValues: SaveServiceSlotFormSchemaType) {
+  async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
     const err = determineRecurrenceErr(formValues);
     setRecurrenceErr(err);
     if (err) {
       return;
     }
 
-    props.onFormSuccess({
-      ...formValues,
-      recurrenceEnabled: recurrenceEnabled,
-    });
+    props.onFormSuccess(formValues, recurrenceEnabled);
+  }
+
+  function onFormError(errors: any) {
+    console.log(errors);
   }
 
   return (
-    <form ref={ref} onSubmit={handleSubmit(onFormSuccess)}>
-      <Label>{props.service?.title}</Label>
+    <form ref={ref} onSubmit={handleSubmit(onFormSuccess, onFormError)}>
+      <InputSelect
+        rhfKey="service_id"
+        options={(props?.availableServices || []).map((s) => ({
+          label: s.title,
+          value: s.id,
+        }))}
+        control={control}
+        error={errors.service_id?.message}
+        label="Service"
+      />
       <InputDateTimePicker
         rhfKey="start"
         control={control}
@@ -165,4 +185,4 @@ const SaveServiceSlotForm = React.forwardRef<
   );
 });
 
-export default SaveServiceSlotForm;
+export default SaveServiceEventForm;

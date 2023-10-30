@@ -1,20 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveServiceSlot } from "../data/service";
+import { saveServiceEvent } from "../data/service";
 import { Tables } from "@/types/db.extension";
 import { supaClientComponentClient } from "../data/clients/browser";
 
-export const useSaveServiceSlot = (
+export const useSaveServiceEvent = (
   businessHandle: string,
   { onSettled }: { onSettled?: () => void } = {},
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (newServiceSlot: Partial<Tables<"service_slot">>) => {
-      return saveServiceSlot(newServiceSlot, {
+    mutationFn: (newServiceEvent: Partial<Tables<"service_event">>) => {
+      return saveServiceEvent(newServiceEvent, {
         client: supaClientComponentClient(),
       });
     },
-    meta: { errorMessage: "Failed to save service slot" },
+    meta: { errorMessage: "Failed to save service event" },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [businessHandle], // todo (important): for now, we refetch the entire business schedule.

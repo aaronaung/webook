@@ -75,25 +75,25 @@ export const deleteService = async (
   if (error) throw error;
 };
 
-export const saveServiceSlot = async (
-  serviceSlot: Partial<Tables<"service_slot">>,
+export const saveServiceEvent = async (
+  serviceEvent: Partial<Tables<"service_event">>,
   { client }: SupabaseOptions,
 ) => {
   const { data, error } = await client
-    .from("service_slot")
-    .upsert({ ...(serviceSlot as Tables<"service_slot">) })
+    .from("service_event")
+    .upsert({ ...(serviceEvent as Tables<"service_event">) })
     .select();
   if (error) throw error;
   return data;
 };
 
-export const deleteServiceSlot = async (
-  serviceSlotId: string,
+export const deleteServiceEvent = async (
+  serviceEventId: string,
   { client }: SupabaseOptions,
 ) => {
   const { error } = await client
-    .from("service_slot")
+    .from("service_event")
     .delete()
-    .eq("id", serviceSlotId);
+    .eq("id", serviceEventId);
   if (error) throw error;
 };

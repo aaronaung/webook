@@ -37,6 +37,7 @@ const InputSelect = React.forwardRef<HTMLButtonElement, InputSelectProps>(
                   field.onChange(value);
                 },
               })}
+          {...(props.defaultValue ? { defaultValue: props.defaultValue } : {})}
           {...props}
         >
           <SelectTrigger

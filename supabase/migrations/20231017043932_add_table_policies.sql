@@ -35,7 +35,7 @@ with check (true);
 
 
 create policy "Enable all for authenticated users only"
-on "public"."service_slot"
+on "public"."service_event"
 as permissive
 for all
 to authenticated
@@ -44,7 +44,7 @@ with check (true);
 
 
 create policy "Enable all for authenticated users only"
-on "public"."service_slot_staff"
+on "public"."service_event_staff"
 as permissive
 for all
 to authenticated

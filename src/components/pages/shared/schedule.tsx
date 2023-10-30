@@ -1,7 +1,7 @@
 "use client";
 
 import CalendarV2 from "@/src/components/ui/calendar-v2";
-import ServiceSlot from "@/src/components/pages/shared/service-slot";
+import ServiceEvent from "@/src/components/pages/shared/service-event";
 import { format, isAfter, isSameDay, startOfToday } from "date-fns";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
@@ -13,12 +13,12 @@ export default function Schedule({
   handle,
   data,
   calendarClassName,
-  serviceSlotsClassName,
+  serviceEventsClassName,
 }: {
   handle: string;
   data: BusinessSchedule;
   calendarClassName?: string;
-  serviceSlotsClassName?: string;
+  serviceEventsClassName?: string;
 }) {
   const today = startOfToday();
   const [selectedDay, setSelectedDay] = useState(today);
@@ -29,13 +29,13 @@ export default function Schedule({
     [],
   );
 
-  const selectedDayServiceSlots = useMemo(() => {
+  const selectedDayServiceEvents = useMemo(() => {
     return (
       (data || [])
         .find(
           (serviceGroup) => serviceGroup.id === (selectedTab || data?.[0]?.id),
         )
-        ?.service_slots.filter((slot) => {
+        ?.service_events.filter((slot) => {
           const startDateTime = slot.start ? new Date(slot.start) : null;
           const repeatStartDateTime = slot.recurrence_start
             ? new Date(slot.recurrence_start)
@@ -88,7 +88,7 @@ export default function Schedule({
         />
       </div>
 
-      <section className={serviceSlotsClassName}>
+      <section className={serviceEventsClassName}>
         <p className="text- my-4 text-sm font-semibold">
           {format(selectedDay, "MMMM dd")}
         </p>
@@ -104,10 +104,10 @@ export default function Schedule({
         )}
 
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
-          {selectedDayServiceSlots.length > 0 ? (
-            selectedDayServiceSlots.map((slot) => (
+          {selectedDayServiceEvents.length > 0 ? (
+            selectedDayServiceEvents.map((slot) => (
               <Link key={slot.id} href={`/${handle}/${slot.id}/booking`}>
-                <ServiceSlot slot={slot} key={slot.id} />
+                <ServiceEvent slot={slot} key={slot.id} />
               </Link>
             ))
           ) : (

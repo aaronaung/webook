@@ -1,9 +1,9 @@
 import PriceTag from "@/src/components/ui/price-tag";
-import { BusinessServiceSlot } from "@/types";
+import { BusinessServiceEvent } from "@/types";
 import { format } from "date-fns";
 import Image from "next/image";
 
-export default function ServiceSlot({ slot }: { slot: BusinessServiceSlot }) {
+export default function ServiceEvent({ slot }: { slot: BusinessServiceEvent }) {
   const startDateTime = new Date(slot.start || "");
   const staffName = (slot.staffs || [])
     .map((staff) => {

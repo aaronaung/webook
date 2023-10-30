@@ -35,7 +35,7 @@ export default function SchedulePage({
           <Schedule
             data={data}
             handle={params.handle}
-            serviceSlotsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
+            serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
             calendarClassName="lg:pr-14"
           />
         </div>
