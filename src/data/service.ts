@@ -87,6 +87,29 @@ export const saveServiceEvent = async (
   return data;
 };
 
+// This will delete all service event staff for the given service event id, and then upsert the new ones.
+export const saveServiceEventStaff = async (
+  serviceId: string,
+  staffIds: string[],
+  { client }: SupabaseOptions,
+) => {
+  const { error: deleteError } = await client
+    .from("service_event_staff")
+    .delete()
+    .eq("service_event_id", serviceId);
+  if (deleteError) throw deleteError;
+
+  const { error: upsertError } = await client
+    .from("service_event_staff")
+    .upsert(
+      staffIds.map((staffId) => ({
+        service_event_id: serviceId,
+        staff_id: staffId,
+      })),
+    );
+  if (upsertError) throw upsertError;
+};
+
 export const deleteServiceEvent = async (
   serviceEventId: string,
   { client }: SupabaseOptions,

@@ -39,6 +39,7 @@
     "@types/react-window": "^1.8.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "cmdk": "^0.2.0",
     "country-list": "^2.3.0",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.16.4",

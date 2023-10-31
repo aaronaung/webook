@@ -56,6 +56,7 @@ export function SaveServiceEventDialog({
         ? formValues.recurrence_interval
         : null,
       recurrence_count: recurrenceEnabled ? formValues.recurrence_count : null,
+      staff_ids: formValues.staff_ids,
     });
   };
 

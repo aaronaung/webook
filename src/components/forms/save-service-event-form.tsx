@@ -8,6 +8,7 @@ import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import InputText from "../ui/input/text";
 import InputSelect from "../ui/input/select";
+import InputMultiSelect from "../ui/input/multi-select";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -32,7 +33,7 @@ const formSchema = z.object({
       z.nan(),
     ])
     .optional(),
-  staff_ids: z.array(z.string()),
+  staff_ids: z.array(z.string()).optional(),
 });
 
 type SaveServiceEventFromProps = {
@@ -62,6 +63,8 @@ const SaveServiceEventForm = React.forwardRef<
   } = useForm<SaveServiceEventFormSchemaType>({
     defaultValues: {
       ...props.defaultValues,
+      service_id:
+        props.defaultValues?.service_id || props.availableServices?.[0]?.id,
       recurrence_start:
         props.defaultValues?.recurrence_start || props.defaultValues?.start,
       recurrence_interval: props.defaultValues?.recurrence_interval
@@ -128,13 +131,24 @@ const SaveServiceEventForm = React.forwardRef<
         error={errors.service_id?.message}
         label="Service"
       />
+      <InputMultiSelect
+        rhfKey="staff_ids"
+        options={(props?.availableStaffs || []).map((s) => ({
+          label: `${s.first_name} ${s.last_name}`,
+          value: s.id,
+        }))}
+        control={control}
+        error={errors.staff_ids?.message}
+        label="Staffs"
+        inputProps={{ placeholder: "Who will lead the service event?" }}
+      />
       <InputDateTimePicker
         rhfKey="start"
         control={control}
         error={errors.start?.message}
         label="Start"
       />
-      <div className="mb-2 flex items-center space-x-2">
+      <div className="my-3 flex items-center space-x-2">
         <Label htmlFor="enable-recurrence">Recurrence</Label>
         <Switch
           id="enable-recurrence"

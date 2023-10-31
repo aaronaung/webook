@@ -32,6 +32,7 @@ import { SaveServiceEventFormSchemaType } from "@/src/components/forms/save-serv
 import { SaveServiceEventDialog } from "@/src/components/dialogs/save-service-event-dialog";
 import { BusinessServiceEvent } from "@/types";
 import { useStaffs } from "@/src/hooks/use-staffs";
+import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
 
 export default function SchedulePage() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -68,6 +69,10 @@ export default function SchedulePage() {
 
   const { data: staffs, isLoading: isStaffsLoading } = useStaffs(
     currentBusiness?.id,
+  );
+
+  const { mutate: saveServiceEvent } = useSaveServiceEvent(
+    currentBusiness?.handle,
   );
 
   const services = useMemo(() => {
@@ -118,7 +123,11 @@ export default function SchedulePage() {
   // When the user moves an existing event, we open the dialog to edit it.
   const onEventDrop = useCallback(
     (args: EventInteractionArgs<BusinessServiceEvent>) => {
-      openUpdateServiceEventDialog(args.event, args.start as Date);
+      saveServiceEvent({
+        id: args.event.id,
+        start: (args.start as Date).toISOString(),
+        service_id: args.event.service.id,
+      });
     },
     [],
   );
