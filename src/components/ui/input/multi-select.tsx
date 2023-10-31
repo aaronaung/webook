@@ -23,6 +23,7 @@ const InputMultiSelect = React.forwardRef<
       <FancyMultiSelect
         className="mt-1.5"
         options={props.options}
+        disabled={props.disabled}
         selected={field.value}
         onSelectChange={(value) => {
           field.onChange(value);

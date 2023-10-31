@@ -40,6 +40,7 @@ type SaveServiceEventFromProps = {
   availableServices?: Tables<"service">[];
   availableStaffs?: Tables<"staff">[];
   defaultValues?: Partial<SaveServiceEventFormSchemaType>;
+  isRecurrentEvent?: boolean;
   onFormSuccess: (
     formValues: SaveServiceEventFormSchemaType,
     recurrenceEnabled: boolean,
@@ -121,6 +122,11 @@ const SaveServiceEventForm = React.forwardRef<
 
   return (
     <form ref={ref} onSubmit={handleSubmit(onFormSuccess, onFormError)}>
+      {props.isRecurrentEvent && (
+        <p className="mb-1 text-sm text-destructive">
+          This is a recurring event. Updates are not allowed.
+        </p>
+      )}
       <InputSelect
         rhfKey="service_id"
         options={(props?.availableServices || []).map((s) => ({
@@ -130,6 +136,7 @@ const SaveServiceEventForm = React.forwardRef<
         control={control}
         error={errors.service_id?.message}
         label="Service"
+        disabled={props.isRecurrentEvent}
       />
       <InputMultiSelect
         rhfKey="staff_ids"
@@ -141,12 +148,14 @@ const SaveServiceEventForm = React.forwardRef<
         error={errors.staff_ids?.message}
         label="Staffs"
         inputProps={{ placeholder: "Who will lead the service event?" }}
+        disabled={props.isRecurrentEvent}
       />
       <InputDateTimePicker
         rhfKey="start"
         control={control}
         error={errors.start?.message}
         label="Start"
+        disabled={props.isRecurrentEvent}
       />
       <div className="my-3 flex items-center space-x-2">
         <Label htmlFor="enable-recurrence">Recurrence</Label>
@@ -154,6 +163,7 @@ const SaveServiceEventForm = React.forwardRef<
           id="enable-recurrence"
           checked={recurrenceEnabled}
           onCheckedChange={(checked) => setRecurrenceEnabled(checked)}
+          disabled={props.isRecurrentEvent}
         />
       </div>
       {recurrenceEnabled && (
@@ -165,6 +175,7 @@ const SaveServiceEventForm = React.forwardRef<
             label="Recurrence start"
             description="Defaulted to the event start date time."
             className="mb-2"
+            disabled={props.isRecurrentEvent}
           />
           <InputText
             rhfKey="recurrence_interval"
@@ -180,6 +191,7 @@ const SaveServiceEventForm = React.forwardRef<
               step: "any",
             }}
             label="Recurrence interval"
+            disabled={props.isRecurrentEvent}
           />
           <InputText
             rhfKey="recurrence_count"
@@ -189,6 +201,7 @@ const SaveServiceEventForm = React.forwardRef<
             inputProps={{ placeholder: "100", type: "number", step: "any" }}
             description="How many times should this event repeat? Leave it empty for infinite recurrence."
             label="Recurrence count"
+            disabled={props.isRecurrentEvent}
           />
           {recurrenceErr && (
             <p className="my-2 text-sm text-destructive">{recurrenceErr}</p>

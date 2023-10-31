@@ -15,13 +15,14 @@ import {
   format,
   add,
   addMilliseconds,
-  subDays,
+  millisecondsToHours,
+  isSameDay,
 } from "date-fns";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
 import DnDCalendar, { localizer } from "@/src/components/ui/dnd-calendar";
-import { useCallback, useMemo, useState } from "react";
-import { SlotInfo, View, Views } from "react-big-calendar";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { NavigateAction, SlotInfo, View, Views } from "react-big-calendar";
 import { Badge } from "@/src/components/ui/badge";
 import { Tables } from "@/types/db.extension";
 import {
@@ -46,12 +47,11 @@ export default function SchedulePage() {
   );
 
   const [calView, setCalView] = useState<View>(Views.MONTH);
-  const [draggedService, setDraggedService] = useState<Tables<"service">>();
+  const draggedServiceRef = useRef<Tables<"service"> | null>(null);
   const [svcEventDialogState, setSvcEventDialogState] = useState<{
     isOpen: boolean;
     data?: Partial<SaveServiceEventFormSchemaType> & { id?: string };
-    availableServices?: Tables<"service">[];
-    availableStaffs?: Tables<"staff">[];
+    isRecurrentEvent?: boolean;
   }>({
     isOpen: false,
   });
@@ -84,24 +84,78 @@ export default function SchedulePage() {
       data
         ?.map(
           (sg) =>
-            sg.service_events?.map((ss) => ({
-              title: ss.service.title,
-              duration: ss.service.duration,
-              price: ss.service.price,
-              start: new Date(ss?.start || ""),
-              end: addMilliseconds(
-                new Date(ss?.start || ""),
-                ss.service.duration,
-              ),
-              ..._.omit(ss, ["start", "title", "duration", "price"]),
-            })),
+            sg.service_events?.map((se) => {
+              if (
+                se.recurrence_start &&
+                se.recurrence_count &&
+                se.recurrence_interval
+              ) {
+                const calEvents = [];
+                const eventStart = new Date(se.start);
+                const recurrenceStart = new Date(se.recurrence_start);
+
+                if (isSameDay(recurrenceStart, eventStart)) {
+                  calEvents.push({
+                    title: se.service.title,
+                    duration: se.service.duration,
+                    price: se.service.price,
+                    start: eventStart,
+                    end: addMilliseconds(recurrenceStart, se.service.duration),
+                    ..._.omit(se, ["start", "title", "duration", "price"]),
+                  });
+                }
+
+                const numJumps =
+                  Math.floor(
+                    (recurrenceStart.getTime() - eventStart.getTime()) /
+                      se.recurrence_interval,
+                  ) + 1;
+                const firstRecurringStart = add(eventStart, {
+                  hours: numJumps * millisecondsToHours(se.recurrence_interval),
+                });
+                const recurrenceEnd = add(firstRecurringStart, {
+                  hours: millisecondsToHours(
+                    se.recurrence_count * se.recurrence_interval,
+                  ),
+                });
+                for (
+                  let i = firstRecurringStart;
+                  i < recurrenceEnd;
+                  i = add(i, {
+                    hours: millisecondsToHours(se.recurrence_interval),
+                  })
+                ) {
+                  calEvents.push({
+                    title: se.service.title,
+                    duration: se.service.duration,
+                    price: se.service.price,
+                    start: i,
+                    end: addMilliseconds(i, se.service.duration),
+                    isRecurrentEvent: true,
+                    ..._.omit(se, ["start", "title", "duration", "price"]),
+                  });
+                }
+                return calEvents;
+              }
+              return {
+                title: se.service.title,
+                duration: se.service.duration,
+                price: se.service.price,
+                start: new Date(se?.start || ""),
+                end: addMilliseconds(
+                  new Date(se?.start || ""),
+                  se.service.duration,
+                ),
+                ..._.omit(se, ["start", "title", "duration", "price"]),
+              };
+            }),
         )
-        ?.flat() || []
+        ?.flat(2) || []
     );
   }, [data]);
 
   const openUpdateServiceEventDialog = (
-    event: BusinessServiceEvent,
+    event: BusinessServiceEvent & { isRecurrentEvent?: boolean },
     start: Date,
   ) => {
     setSvcEventDialogState({
@@ -117,6 +171,7 @@ export default function SchedulePage() {
         service_id: event.service.id,
         staff_ids: event.staffs?.map((s) => s.id),
       },
+      isRecurrentEvent: event.isRecurrentEvent,
     });
   };
 
@@ -151,11 +206,27 @@ export default function SchedulePage() {
   }, []);
 
   const onDropFromOutside = useCallback((args: DragFromOutsideItemArgs) => {
-    console.log("on drop from outside", args);
+    setSvcEventDialogState({
+      isOpen: true,
+      data: {
+        service_id: draggedServiceRef.current?.id,
+        start: args.start as Date,
+        recurrence_count: undefined,
+        recurrence_interval: undefined,
+        recurrence_start: undefined,
+      },
+    });
   }, []);
 
+  const onNavigate = useCallback(
+    (newDate: Date, view: View, action: NavigateAction) => {
+      // This function does nothing other than enable navigation on the calendar atm.
+    },
+    [],
+  );
+
   const handleOnServiceDrag = (draggedService: Tables<"service">) => {
-    setDraggedService(draggedService);
+    draggedServiceRef.current = draggedService;
   };
 
   if (isBusinessScheduleDataLoading || isServicesLoading || isStaffsLoading) {
@@ -166,8 +237,7 @@ export default function SchedulePage() {
   return (
     <div className="flex h-full flex-col gap-x-8 overflow-y-auto overscroll-contain">
       <SaveServiceEventDialog
-        isOpen={svcEventDialogState.isOpen}
-        data={svcEventDialogState.data}
+        {...svcEventDialogState}
         toggleOpen={() =>
           setSvcEventDialogState({
             ...svcEventDialogState,
@@ -202,26 +272,23 @@ export default function SchedulePage() {
               event.
             </p>
             <div className="mb-3 flex max-w-full flex-wrap gap-1 text-sm">
-              {services.map(
-                (svc) =>
-                  svc && (
-                    <Badge
-                      draggable={true}
-                      className="cursor-pointer"
-                      key={svc.id}
-                      onDragStart={() => handleOnServiceDrag(svc)}
-                    >
-                      {svc.title}
-                    </Badge>
-                  ),
-              )}
+              {services.map((svc) => (
+                <Badge
+                  draggable={true}
+                  className="cursor-pointer"
+                  key={svc.id}
+                  onDragStart={() => handleOnServiceDrag(svc)}
+                >
+                  {svc.title}
+                </Badge>
+              ))}
             </div>
           </>
         )}
       </div>
       <div className="overflow-scroll text-sm">
         <DnDCalendar
-          defaultDate={subDays(today, 25)}
+          defaultDate={today}
           view={calView}
           onDropFromOutside={onDropFromOutside}
           events={serviceEvents}
@@ -239,6 +306,7 @@ export default function SchedulePage() {
           scrollToTime={add(startOfToday(), { hours: 8 })}
           style={{ height: "100vh" }}
           min={add(startOfToday(), { hours: 8 })}
+          onNavigate={onNavigate}
         />
       </div>
     </div>

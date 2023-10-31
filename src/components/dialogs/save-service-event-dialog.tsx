@@ -18,12 +18,14 @@ export function SaveServiceEventDialog({
   data,
   toggleOpen,
   isOpen,
+  isRecurrentEvent,
   availableServices,
   availableStaffs,
 }: {
   data?: Partial<SaveServiceEventFormSchemaType>;
   toggleOpen: () => void;
   isOpen: boolean;
+  isRecurrentEvent?: boolean;
   availableServices?: Tables<"service">[];
   availableStaffs?: Tables<"staff">[];
 }) {
@@ -63,21 +65,26 @@ export function SaveServiceEventDialog({
   return (
     <Dialog open={isOpen} onOpenChange={toggleOpen}>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{data?.id ? "Edit" : "Add"} service event</DialogTitle>
-        </DialogHeader>
+        {!isRecurrentEvent && (
+          <DialogHeader>
+            <DialogTitle>{data?.id ? "Edit" : "Add"} service event</DialogTitle>
+          </DialogHeader>
+        )}
         <SaveServiceEventForm
           ref={formRef}
           defaultValues={data}
+          isRecurrentEvent={isRecurrentEvent}
           onFormSuccess={handleOnFormSuccess}
           availableServices={availableServices}
           availableStaffs={availableStaffs}
         />
-        <DialogFooter>
-          <Button onClick={handleSubmitForm} disabled={isPending}>
-            Save
-          </Button>
-        </DialogFooter>
+        {!isRecurrentEvent && (
+          <DialogFooter>
+            <Button onClick={handleSubmitForm} disabled={isPending}>
+              Save
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -16,6 +16,7 @@ type FancyMultiSelectProps = {
   options: SelectOption[];
   onSelectChange: (selected: string[]) => void;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 export function FancyMultiSelect({
@@ -24,6 +25,7 @@ export function FancyMultiSelect({
   options,
   onSelectChange,
   placeholder,
+  disabled,
 }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -81,6 +83,7 @@ export function FancyMultiSelect({
               <Badge key={value} variant="secondary">
                 {labelMap.get(value)}
                 <button
+                  disabled={disabled}
                   className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -101,6 +104,7 @@ export function FancyMultiSelect({
           {/* Avoid having the "Search" Icon */}
           <CommandPrimitive.Input
             ref={inputRef}
+            disabled={disabled}
             value={inputValue}
             onValueChange={setInputValue}
             onBlur={() => setOpen(false)}

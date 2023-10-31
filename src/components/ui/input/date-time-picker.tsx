@@ -15,6 +15,7 @@ export default function InputDateTimePicker(props: InputDateTimePickerProps) {
         onChange={({ date }) => {
           field.onChange(date);
         }}
+        isDisabled={props.disabled}
       />
     </InputDecorator>
   );
