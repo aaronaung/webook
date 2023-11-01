@@ -19,9 +19,8 @@ const InputMultiSelect = React.forwardRef<
   InputMultiSelectProps
 >((props, ref) => {
   const input = ({ field }: { field: ControllerRenderProps }) => (
-    <InputDecorator {...props}>
+    <InputDecorator {...props} className="mt-1.5">
       <FancyMultiSelect
-        className="mt-1.5"
         options={props.options}
         disabled={props.disabled}
         selected={field.value}

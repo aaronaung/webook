@@ -1,21 +1,21 @@
 import { Controller, ControllerRenderProps } from "react-hook-form";
 import InputDecorator from "./decorator";
 import { ControlledRhfInputProps } from ".";
-import { DateTimePicker } from "../date-time-picker";
 import { cn } from "@/src/utils";
+import { GradientPicker } from "../gradient-picker";
 
-type InputDateTimePickerProps = ControlledRhfInputProps;
+type InputGradientPickerProps = ControlledRhfInputProps;
 
-export default function InputDateTimePicker(props: InputDateTimePickerProps) {
+export default function InputGradientPicker(props: InputGradientPickerProps) {
   const input = ({ field }: { field: ControllerRenderProps }) => (
     <InputDecorator {...props} className="mt-1.5">
-      <DateTimePicker
+      <GradientPicker
         className={cn("w-full", props.className)}
-        value={{ date: field.value, hasTime: true }}
-        onChange={({ date }) => {
-          field.onChange(date);
+        background={field.value}
+        setBackground={(value) => {
+          field.onChange(value);
         }}
-        isDisabled={props.disabled}
+        disabled={props.disabled}
       />
     </InputDecorator>
   );

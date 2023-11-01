@@ -178,6 +178,12 @@ export default function Services() {
                   <ContextMenu key={sg.id}>
                     <ContextMenuTrigger>
                       <TabsTrigger key={sg.id} value={sg.id}>
+                        {sg.color && (
+                          <div
+                            className="mr-1.5 h-3 w-3 rounded !bg-cover !bg-center transition-all"
+                            style={{ background: sg.color }}
+                          ></div>
+                        )}
                         {sg.title}
                       </TabsTrigger>
                     </ContextMenuTrigger>

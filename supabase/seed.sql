@@ -31,19 +31,20 @@ values
   (select id from public.user where email = 'julian.talens@gmail.com')
 );
 
-insert into public.service_group (title, priority, business_id, is_horizontal)
+insert into public.service_group (title, priority, business_id, is_horizontal, color)
 values
 (
   'Studio rental',
   1,
   (select id from public.business where handle = 'offstage'),
-  TRUE
+  TRUE,
+  '#ffa647'
 ),
 (
   'Classes',
   2,
   (select id from public.business where handle = 'offstage'),
-  FALSE
+  '#cd93ff'
 );
 
 insert into public.service (service_group_id, duration, title, booking_limit, price, image_url)

@@ -67,6 +67,14 @@ export default function SchedulePage() {
   const { data: serviceGroups, isLoading: isServicesLoading } =
     useServiceGroupsWithServices(currentBusiness?.id);
 
+  const serviceGroupColorMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    serviceGroups.forEach((sg) => {
+      map[sg.id!] = sg.color;
+    });
+    return map;
+  }, [serviceGroups]);
+
   const { data: staffs, isLoading: isStaffsLoading } = useStaffs(
     currentBusiness?.id,
   );
@@ -276,6 +284,9 @@ export default function SchedulePage() {
                 <Badge
                   draggable={true}
                   className="cursor-pointer"
+                  style={{
+                    background: serviceGroupColorMap[svc.service_group_id],
+                  }}
                   key={svc.id}
                   onDragStart={() => handleOnServiceDrag(svc)}
                 >
