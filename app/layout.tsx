@@ -6,6 +6,7 @@ import ReactQueryProvider from "@/src/providers/react-query-provider";
 import { Toaster } from "@/src/components/ui/toaster";
 import { toast } from "@/src/components/ui/use-toast";
 import ReactDnDProvider from "@/src/providers/react-dnd-provider";
+import { TooltipProvider } from "@/src/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -49,7 +50,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           > */}
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
             {/* </ThemeProvider> */}
           </ReactDnDProvider>
         </ReactQueryProvider>

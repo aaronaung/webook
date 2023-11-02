@@ -17,7 +17,7 @@ create table "public"."business" (
     "description" text,
     "owner_id" uuid not null,
     "phone" text,
-    "email" text,
+    "email" text not null,
     "inactive" boolean default false,
     "address" text,
     "city" text,
@@ -53,6 +53,7 @@ create table "public"."service_group" (
     "updated_at" timestamp with time zone default now(),
     "title" text not null,
     "description" text,
+    "color" text,
     "priority" integer,
     "is_horizontal" boolean not null default false,
     "business_id" uuid not null

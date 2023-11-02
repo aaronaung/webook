@@ -80,6 +80,7 @@ export default function UserAuthForm() {
       } else {
         toast({
           title: "Sign up successful 👋",
+          variant: "success",
           description: "Please check your email for a confirmation link.",
         });
         reset();

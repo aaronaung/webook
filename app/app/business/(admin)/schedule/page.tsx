@@ -35,6 +35,11 @@ import { BusinessServiceEvent } from "@/types";
 import { useStaffs } from "@/src/hooks/use-staffs";
 import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
 
+type CalEvent = BusinessServiceEvent & {
+  isRecurrentEvent?: boolean;
+  color?: boolean;
+};
+
 export default function SchedulePage() {
   const { currentBusiness } = useCurrentBusinessContext();
   const router = useRouter();
@@ -68,9 +73,9 @@ export default function SchedulePage() {
     useServiceGroupsWithServices(currentBusiness?.id);
 
   const serviceGroupColorMap = useMemo(() => {
-    const map: Record<string, string> = {};
+    const map: Record<string, string | null> = {};
     serviceGroups.forEach((sg) => {
-      map[sg.id!] = sg.color;
+      map[sg.id] = sg.color;
     });
     return map;
   }, [serviceGroups]);
@@ -79,9 +84,7 @@ export default function SchedulePage() {
     currentBusiness?.id,
   );
 
-  const { mutate: saveServiceEvent } = useSaveServiceEvent(
-    currentBusiness?.handle,
-  );
+  const { mutate: saveServiceEvent } = useSaveServiceEvent(currentBusiness);
 
   const services = useMemo(() => {
     return serviceGroups?.map((sg) => sg.services)?.flat() || [];
@@ -93,6 +96,14 @@ export default function SchedulePage() {
         ?.map(
           (sg) =>
             sg.service_events?.map((se) => {
+              const baseEvent = {
+                ...se,
+                title: se.service.title,
+                duration: se.service.duration,
+                price: se.service.price,
+                color: serviceGroupColorMap[sg.id],
+              };
+
               if (
                 se.recurrence_start &&
                 se.recurrence_count &&
@@ -104,12 +115,9 @@ export default function SchedulePage() {
 
                 if (isSameDay(recurrenceStart, eventStart)) {
                   calEvents.push({
-                    title: se.service.title,
-                    duration: se.service.duration,
-                    price: se.service.price,
+                    ...baseEvent,
                     start: eventStart,
                     end: addMilliseconds(recurrenceStart, se.service.duration),
-                    ..._.omit(se, ["start", "title", "duration", "price"]),
                   });
                 }
 
@@ -134,27 +142,21 @@ export default function SchedulePage() {
                   })
                 ) {
                   calEvents.push({
-                    title: se.service.title,
-                    duration: se.service.duration,
-                    price: se.service.price,
+                    ...baseEvent,
                     start: i,
                     end: addMilliseconds(i, se.service.duration),
                     isRecurrentEvent: true,
-                    ..._.omit(se, ["start", "title", "duration", "price"]),
                   });
                 }
                 return calEvents;
               }
               return {
-                title: se.service.title,
-                duration: se.service.duration,
-                price: se.service.price,
+                ...baseEvent,
                 start: new Date(se?.start || ""),
                 end: addMilliseconds(
                   new Date(se?.start || ""),
                   se.service.duration,
                 ),
-                ..._.omit(se, ["start", "title", "duration", "price"]),
               };
             }),
         )
@@ -162,10 +164,7 @@ export default function SchedulePage() {
     );
   }, [data]);
 
-  const openUpdateServiceEventDialog = (
-    event: BusinessServiceEvent & { isRecurrentEvent?: boolean },
-    start: Date,
-  ) => {
+  const openUpdateServiceEventDialog = (event: CalEvent, start: Date) => {
     setSvcEventDialogState({
       isOpen: true,
       data: {
@@ -184,19 +183,17 @@ export default function SchedulePage() {
   };
 
   // When the user moves an existing event, we open the dialog to edit it.
-  const onEventDrop = useCallback(
-    (args: EventInteractionArgs<BusinessServiceEvent>) => {
-      saveServiceEvent({
-        id: args.event.id,
-        start: (args.start as Date).toISOString(),
-        service_id: args.event.service.id,
-      });
-    },
-    [],
-  );
+  const onEventDrop = useCallback((args: EventInteractionArgs<CalEvent>) => {
+    saveServiceEvent({
+      id: args.event.id,
+      start: (args.start as Date).toISOString(),
+      service_id: args.event.service.id,
+      service: args.event.service,
+    });
+  }, []);
 
   // When the user clicks on an existing event, we open the dialog to edit it.
-  const onSelectEvent = useCallback((event: BusinessServiceEvent) => {
+  const onSelectEvent = useCallback((event: CalEvent) => {
     openUpdateServiceEventDialog(event, new Date(event.start));
   }, []);
 
@@ -285,7 +282,7 @@ export default function SchedulePage() {
                   draggable={true}
                   className="cursor-pointer"
                   style={{
-                    background: serviceGroupColorMap[svc.service_group_id],
+                    background: serviceGroupColorMap[svc.service_group_id!],
                   }}
                   key={svc.id}
                   onDragStart={() => handleOnServiceDrag(svc)}
@@ -303,7 +300,11 @@ export default function SchedulePage() {
           view={calView}
           onDropFromOutside={onDropFromOutside}
           events={serviceEvents}
-          eventPropGetter={(event) => ({ className: "isDraggable" })}
+          elementProps={{}}
+          eventPropGetter={(event) => ({
+            className: "isDraggable text-sm",
+            style: event.color && { background: event.color },
+          })}
           onView={(view) => setCalView(view)}
           localizer={localizer}
           onEventDrop={

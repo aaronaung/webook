@@ -12,6 +12,7 @@ import SaveServiceGroupForm, {
 import { useRef } from "react";
 import { useSaveServiceGroup } from "@/src/hooks/use-save-service-group";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
+import { Loader2 } from "lucide-react";
 
 export function SaveServiceGroupDialog({
   data,
@@ -57,7 +58,7 @@ export function SaveServiceGroupDialog({
         />
         <DialogFooter>
           <Button onClick={handleSubmitForm} disabled={isPending}>
-            Save
+            {isPending ? <Loader2 className="animate-spin" /> : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

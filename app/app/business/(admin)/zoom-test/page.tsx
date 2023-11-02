@@ -9,7 +9,7 @@ export default function ZoomTest() {
   const [isCreating, setIsCreating] = useState(false);
   const createZoomMeeting = async () => {
     setIsCreating(true);
-    const resp = await fetch("/api/zoom/meeting", { method: "POST" });
+    const resp = await fetch("/api/live-stream/meeting", { method: "POST" });
     const createResult = await resp.json();
     setIsCreating(false);
 

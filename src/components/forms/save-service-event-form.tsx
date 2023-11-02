@@ -9,6 +9,14 @@ import { Label } from "../ui/label";
 import InputText from "../ui/input/text";
 import InputSelect from "../ui/input/select";
 import InputMultiSelect from "../ui/input/multi-select";
+import { useServiceEventLiveStream } from "@/src/hooks/use-service-event-live-stream";
+import {
+  CheckCircleIcon,
+  ClipboardDocumentIcon,
+} from "@heroicons/react/24/outline";
+import _ from "lodash";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { toast } from "../ui/use-toast";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -44,6 +52,7 @@ type SaveServiceEventFromProps = {
   onFormSuccess: (
     formValues: SaveServiceEventFormSchemaType,
     recurrenceEnabled: boolean,
+    liveStreamEnabled: boolean,
   ) => void;
 };
 
@@ -80,6 +89,11 @@ const SaveServiceEventForm = React.forwardRef<
   );
   const [recurrenceErr, setRecurrenceErr] = useState("");
 
+  const { data: liveStreamData, isLoading: isLiveStreamDataLoading } =
+    useServiceEventLiveStream(props.defaultValues?.id);
+
+  const [liveStreamEnabled, setLiveStreamEnabled] = useState(false);
+
   useEffect(() => {
     const subscription = watch((value) => {
       setRecurrenceErr(
@@ -90,6 +104,10 @@ const SaveServiceEventForm = React.forwardRef<
     });
     return () => subscription.unsubscribe();
   }, [watch, recurrenceEnabled]);
+
+  useEffect(() => {
+    setLiveStreamEnabled(!_.isEmpty(liveStreamData));
+  }, [liveStreamData]);
 
   const determineRecurrenceErr = (
     formValues: Partial<SaveServiceEventFormSchemaType>,
@@ -113,13 +131,17 @@ const SaveServiceEventForm = React.forwardRef<
       return;
     }
 
-    props.onFormSuccess(formValues, recurrenceEnabled);
+    props.onFormSuccess(formValues, recurrenceEnabled, liveStreamEnabled);
   }
 
   function onFormError(errors: any) {
     console.log(errors);
   }
 
+  if (isLiveStreamDataLoading) {
+    return <>Loading...</>;
+  }
+  console.log("livestreamdata", liveStreamData);
   return (
     <form ref={ref} onSubmit={handleSubmit(onFormSuccess, onFormError)}>
       {props.isRecurrentEvent && (
@@ -157,6 +179,41 @@ const SaveServiceEventForm = React.forwardRef<
         label="Start"
         disabled={props.isRecurrentEvent}
       />
+      {!isLiveStreamDataLoading && (
+        <div className="my-3">
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="enable-recurrence">Live stream</Label>
+            <Switch
+              id="enable-recurrence"
+              checked={liveStreamEnabled}
+              onCheckedChange={(checked) => setLiveStreamEnabled(checked)}
+              disabled={props.isRecurrentEvent}
+            />
+          </div>
+          {liveStreamEnabled && (
+            <p className="my-1 text-sm text-muted-foreground">
+              Details about live streaming will be available after you save the
+              event.
+            </p>
+          )}
+          {!_.isEmpty(liveStreamData) && liveStreamEnabled && (
+            <>
+              <LiveStreamReadOnlyField
+                prefix={"Start url"}
+                data={liveStreamData[0]?.start_url}
+              />
+              <LiveStreamReadOnlyField
+                prefix={"Join url"}
+                data={liveStreamData[0]?.join_url}
+              />
+              <LiveStreamReadOnlyField
+                prefix={"Password"}
+                data={liveStreamData[0]?.password}
+              />
+            </>
+          )}
+        </div>
+      )}
       <div className="my-3 flex items-center space-x-2">
         <Label htmlFor="enable-recurrence">Recurrence</Label>
         <Switch
@@ -173,7 +230,6 @@ const SaveServiceEventForm = React.forwardRef<
             control={control}
             error={errors.recurrence_start?.message}
             label="Recurrence start"
-            description="Defaulted to the event start date time."
             className="mb-2"
             disabled={props.isRecurrentEvent}
           />
@@ -198,8 +254,11 @@ const SaveServiceEventForm = React.forwardRef<
             register={register}
             registerOptions={{ valueAsNumber: true }}
             error={errors.recurrence_count?.message}
-            inputProps={{ placeholder: "100", type: "number", step: "any" }}
-            description="How many times should this event repeat? Leave it empty for infinite recurrence."
+            inputProps={{
+              placeholder: "How many times should this event repeat?",
+              type: "number",
+              step: "any",
+            }}
             label="Recurrence count"
             disabled={props.isRecurrentEvent}
           />
@@ -211,5 +270,58 @@ const SaveServiceEventForm = React.forwardRef<
     </form>
   );
 });
+
+const LiveStreamReadOnlyField = ({
+  prefix,
+  data,
+}: {
+  prefix: string;
+  data: string | null;
+}) => {
+  return (
+    <InputText
+      inputProps={{
+        className: "truncate",
+        placeholder: data || "Not available",
+        readOnly: true,
+      }}
+      prefix={
+        <span className="mr-2 whitespace-nowrap text-muted-foreground">
+          {prefix}:
+        </span>
+      }
+      suffix={
+        <Tooltip>
+          <TooltipTrigger>
+            <div
+              className="mr-2 p-2 hover:rounded-full hover:bg-secondary"
+              onClick={(e) => {
+                e.preventDefault();
+                if (data) {
+                  navigator.clipboard.writeText(data);
+                }
+                toast({
+                  title: (
+                    <div className="flex items-center">
+                      <CheckCircleIcon className="mr-2 h-5 w-5" />
+                      Copied to clipboard
+                    </div>
+                  ),
+                  variant: "success",
+                  duration: 2000,
+                });
+              }}
+            >
+              <ClipboardDocumentIcon className="h-5 w-5 cursor-pointer" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Copy</p>
+          </TooltipContent>
+        </Tooltip>
+      }
+    />
+  );
+};
 
 export default SaveServiceEventForm;

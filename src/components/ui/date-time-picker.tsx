@@ -169,7 +169,7 @@ const DateTimePicker = (props: DatePickerProps) => {
         <Button
           variant={"outline"}
           className={cn(
-            "h-12 min-w-[240px] justify-start text-left",
+            "h-12 w-full min-w-[240px] justify-start text-left",
             !props.value && "text-muted-foreground",
           )}
           disabled={props.isDisabled}

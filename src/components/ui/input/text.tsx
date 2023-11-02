@@ -36,7 +36,10 @@ const InputText = React.forwardRef<HTMLInputElement, InputTextProps>(
             disabled={props.disabled}
             name={props.rhfKey}
             id={props.rhfKey}
-            className="w-full border-0 bg-transparent p-0 pr-3 text-sm focus:ring-0"
+            className={cn(
+              "w-full border-0 bg-transparent p-0 pr-3 text-sm focus:ring-0",
+              props.inputProps?.className,
+            )}
           />
           {props.suffix}
         </div>

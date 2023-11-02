@@ -12,6 +12,7 @@ import SaveServiceForm, {
   SaveServiceFormSchemaType,
 } from "../forms/save-service-form";
 import { useSaveService } from "@/src/hooks/use-save-service";
+import { Loader2 } from "lucide-react";
 
 export function SaveServiceDialog({
   data,
@@ -59,7 +60,7 @@ export function SaveServiceDialog({
         />
         <DialogFooter>
           <Button onClick={handleSubmitForm} disabled={isPending}>
-            Save
+            {isPending ? <Loader2 className="animate-spin" /> : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

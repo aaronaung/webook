@@ -12,7 +12,7 @@ import SaveStaffForm, {
   SaveStaffFormSchemaType,
 } from "../forms/save-staff-form";
 import { useSaveStaff } from "@/src/hooks/use-save-staff";
-import { Loader2Icon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export function SaveStaffDialog({
   data,
@@ -62,10 +62,7 @@ export function SaveStaffDialog({
         />
         <DialogFooter>
           <Button onClick={handleSubmitForm} disabled={isPending}>
-            {isPending && (
-              <Loader2Icon className="mr-1 animate-spin text-muted-foreground" />
-            )}
-            Save
+            {isPending ? <Loader2 className="animate-spin" /> : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

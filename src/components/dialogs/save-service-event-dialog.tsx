@@ -13,12 +13,14 @@ import SaveServiceEventForm, {
 } from "../forms/save-service-event-form";
 import { Tables } from "@/types/db.extension";
 import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
+import { Loader2 } from "lucide-react";
 
 export function SaveServiceEventDialog({
   data,
   toggleOpen,
   isOpen,
   isRecurrentEvent,
+  service,
   availableServices,
   availableStaffs,
 }: {
@@ -26,13 +28,14 @@ export function SaveServiceEventDialog({
   toggleOpen: () => void;
   isOpen: boolean;
   isRecurrentEvent?: boolean;
+  service?: Tables<"service">;
   availableServices?: Tables<"service">[];
   availableStaffs?: Tables<"staff">[];
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const { currentBusiness } = useCurrentBusinessContext();
   const { mutate: saveServiceEvent, isPending } = useSaveServiceEvent(
-    currentBusiness.handle,
+    currentBusiness,
     {
       onSettled: () => {
         toggleOpen();
@@ -46,6 +49,7 @@ export function SaveServiceEventDialog({
   const handleOnFormSuccess = (
     formValues: SaveServiceEventFormSchemaType,
     recurrenceEnabled: boolean,
+    liveStreamEnabled: boolean,
   ) => {
     saveServiceEvent({
       ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service  (not creating a new one)
@@ -59,6 +63,8 @@ export function SaveServiceEventDialog({
         : null,
       recurrence_count: recurrenceEnabled ? formValues.recurrence_count : null,
       staff_ids: formValues.staff_ids,
+      service: availableServices?.find((s) => s.id === formValues.service_id),
+      live_stream_enabled: liveStreamEnabled,
     });
   };
 
@@ -81,7 +87,7 @@ export function SaveServiceEventDialog({
         {!isRecurrentEvent && (
           <DialogFooter>
             <Button onClick={handleSubmitForm} disabled={isPending}>
-              Save
+              {isPending ? <Loader2 className="animate-spin" /> : "Save"}
             </Button>
           </DialogFooter>
         )}

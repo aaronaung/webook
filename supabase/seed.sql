@@ -10,34 +10,36 @@ values
   'julian.talens@gmail.com'
 );
 
-insert into public.business (title, description, handle, owner_id)
+insert into public.business (title, email, description, handle, owner_id)
 values
 (
   'Offstage',
+  'offstage@gmail.com',
   'Dance studio in the heart of OC offering classes for all ages and skill levels.',
   'offstage',
   (select id from public.user where email = 'offstage@gmail.com')
 ),
 (
   'Shigeto Nakano',
+  'shigeto.nakano@gmail.com',
   'Dancer with years experience in openstyle choreography, and is part of a world-renowned dance crew called S-rank.',
   'shiggy',
   (select id from public.user where email = 'shigeto.nakano@gmail.com')
 ),
 (
   'Julian Talens',
+  'julian.talens@gmail.com',
   'A personal trainer to help you lead a healthier life.',
   'juliantalens',
   (select id from public.user where email = 'julian.talens@gmail.com')
 );
 
-insert into public.service_group (title, priority, business_id, is_horizontal, color)
+insert into public.service_group (title, priority, business_id, color)
 values
 (
   'Studio rental',
   1,
   (select id from public.business where handle = 'offstage'),
-  TRUE,
   '#ffa647'
 ),
 (
