@@ -53,6 +53,7 @@ type SaveServiceEventFromProps = {
     formValues: SaveServiceEventFormSchemaType,
     recurrenceEnabled: boolean,
     liveStreamEnabled: boolean,
+    liveStreamStatusChanged: boolean,
   ) => void;
 };
 
@@ -131,17 +132,20 @@ const SaveServiceEventForm = React.forwardRef<
       return;
     }
 
-    props.onFormSuccess(formValues, recurrenceEnabled, liveStreamEnabled);
+    const initialLiveStreamEnabled = !_.isEmpty(liveStreamData);
+
+    props.onFormSuccess(
+      formValues,
+      recurrenceEnabled,
+      liveStreamEnabled,
+      initialLiveStreamEnabled !== liveStreamEnabled,
+    );
   }
 
   function onFormError(errors: any) {
     console.log(errors);
   }
 
-  if (isLiveStreamDataLoading) {
-    return <>Loading...</>;
-  }
-  console.log("livestreamdata", liveStreamData);
   return (
     <form ref={ref} onSubmit={handleSubmit(onFormSuccess, onFormError)}>
       {props.isRecurrentEvent && (

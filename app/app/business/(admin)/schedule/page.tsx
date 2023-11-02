@@ -90,79 +90,77 @@ export default function SchedulePage() {
     return serviceGroups?.map((sg) => sg.services)?.flat() || [];
   }, [serviceGroups]);
 
-  const serviceEvents = useMemo(() => {
-    return (
-      data
-        ?.map(
-          (sg) =>
-            sg.service_events?.map((se) => {
-              const baseEvent = {
-                ...se,
-                title: se.service.title,
-                duration: se.service.duration,
-                price: se.service.price,
-                color: serviceGroupColorMap[sg.id],
-              };
+  // Using useMemo here causes a bug where the calendar doesn't update.
+  const serviceEvents =
+    (data || [])
+      .map(
+        (sg) =>
+          sg.service_events?.map((se) => {
+            const baseEvent = {
+              ...se,
+              title: se.service.title,
+              duration: se.service.duration,
+              price: se.service.price,
+              color: serviceGroupColorMap[sg.id],
+            };
 
-              if (
-                se.recurrence_start &&
-                se.recurrence_count &&
-                se.recurrence_interval
-              ) {
-                const calEvents = [];
-                const eventStart = new Date(se.start);
-                const recurrenceStart = new Date(se.recurrence_start);
+            if (
+              se.recurrence_start &&
+              se.recurrence_count &&
+              se.recurrence_interval
+            ) {
+              const calEvents = [];
+              const eventStart = new Date(se.start);
+              const recurrenceStart = new Date(se.recurrence_start);
 
-                if (isSameDay(recurrenceStart, eventStart)) {
-                  calEvents.push({
-                    ...baseEvent,
-                    start: eventStart,
-                    end: addMilliseconds(recurrenceStart, se.service.duration),
-                  });
-                }
-
-                const numJumps =
-                  Math.floor(
-                    (recurrenceStart.getTime() - eventStart.getTime()) /
-                      se.recurrence_interval,
-                  ) + 1;
-                const firstRecurringStart = add(eventStart, {
-                  hours: numJumps * millisecondsToHours(se.recurrence_interval),
+              if (isSameDay(recurrenceStart, eventStart)) {
+                calEvents.push({
+                  ...baseEvent,
+                  start: eventStart,
+                  end: addMilliseconds(recurrenceStart, se.service.duration),
                 });
-                const recurrenceEnd = add(firstRecurringStart, {
-                  hours: millisecondsToHours(
-                    se.recurrence_count * se.recurrence_interval,
-                  ),
-                });
-                for (
-                  let i = firstRecurringStart;
-                  i < recurrenceEnd;
-                  i = add(i, {
-                    hours: millisecondsToHours(se.recurrence_interval),
-                  })
-                ) {
-                  calEvents.push({
-                    ...baseEvent,
-                    start: i,
-                    end: addMilliseconds(i, se.service.duration),
-                    isRecurrentEvent: true,
-                  });
-                }
-                return calEvents;
               }
-              return {
-                ...baseEvent,
-                start: new Date(se?.start || ""),
-                end: addMilliseconds(
-                  new Date(se?.start || ""),
-                  se.service.duration,
+
+              const numJumps =
+                Math.floor(
+                  (recurrenceStart.getTime() - eventStart.getTime()) /
+                    se.recurrence_interval,
+                ) + 1;
+              const firstRecurringStart = add(eventStart, {
+                hours: numJumps * millisecondsToHours(se.recurrence_interval),
+              });
+              const recurrenceEnd = add(firstRecurringStart, {
+                hours: millisecondsToHours(
+                  se.recurrence_count * se.recurrence_interval,
                 ),
-              };
-            }),
-        )
-        ?.flat(2) || []
-    );
-  }, [data]);
+              });
+              for (
+                let i = firstRecurringStart;
+                i < recurrenceEnd;
+                i = add(i, {
+                  hours: millisecondsToHours(se.recurrence_interval),
+                })
+              ) {
+                calEvents.push({
+                  ...baseEvent,
+                  start: i,
+                  end: addMilliseconds(i, se.service.duration),
+                  isRecurrentEvent: true,
+                });
+              }
+              return calEvents;
+            }
+            return {
+              ...baseEvent,
+              start: new Date(se?.start || ""),
+              end: addMilliseconds(
+                new Date(se?.start || ""),
+                se.service.duration,
+              ),
+            };
+          }),
+      )
+      ?.flat(2) || [];
 
   const openUpdateServiceEventDialog = (event: CalEvent, start: Date) => {
     setSvcEventDialogState({
@@ -300,8 +298,7 @@ export default function SchedulePage() {
           view={calView}
           onDropFromOutside={onDropFromOutside}
           events={serviceEvents}
-          elementProps={{}}
-          eventPropGetter={(event) => ({
+          eventPropGetter={(event: CalEvent) => ({
             className: "isDraggable text-sm",
             style: event.color && { background: event.color },
           })}

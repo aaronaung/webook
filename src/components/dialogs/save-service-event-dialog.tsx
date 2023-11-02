@@ -50,7 +50,9 @@ export function SaveServiceEventDialog({
     formValues: SaveServiceEventFormSchemaType,
     recurrenceEnabled: boolean,
     liveStreamEnabled: boolean,
+    liveStreamStatusChanged: boolean,
   ) => {
+    console.log("LIVE STREAM STATUS CHANGED", liveStreamStatusChanged);
     saveServiceEvent({
       ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service  (not creating a new one)
       service_id: formValues.service_id,
@@ -64,7 +66,9 @@ export function SaveServiceEventDialog({
       recurrence_count: recurrenceEnabled ? formValues.recurrence_count : null,
       staff_ids: formValues.staff_ids,
       service: availableServices?.find((s) => s.id === formValues.service_id),
-      live_stream_enabled: liveStreamEnabled,
+      live_stream_enabled: liveStreamStatusChanged
+        ? liveStreamEnabled
+        : undefined, // no action needed
     });
   };
 
