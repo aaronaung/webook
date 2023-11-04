@@ -9,7 +9,10 @@ import {
 } from "@heroicons/react/24/outline";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
-import { SaveServiceGroupDialog } from "@/src/components/dialogs/save-service-group-dialog";
+import {
+  SaveServiceGroupDialog,
+  SaveServiceGroupFormSchemaType,
+} from "@/src/components/dialogs/save-service-group-dialog";
 import { useCallback, useState } from "react";
 import {
   Tabs,
@@ -27,7 +30,7 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from "@/src/components/ui/context-menu";
-import { SaveServiceGroupFormSchemaType } from "@/src/components/forms/save-service-group-form";
+
 import { PlusIcon } from "lucide-react";
 import { SaveServiceDialog } from "@/src/components/dialogs/save-service-dialog";
 import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
@@ -53,14 +56,14 @@ export default function Services() {
 
   const [sgDialogState, setSgDialogState] = useState<{
     isOpen: boolean;
-    data?: SaveServiceGroupFormSchemaType;
+    initFormValues?: SaveServiceGroupFormSchemaType;
   }>({
     isOpen: false,
   });
 
   const [svcDialogState, setSvcDialogState] = useState<{
     isOpen: boolean;
-    data?: SaveServiceFormSchemaType & { id?: string };
+    initFormValues?: SaveServiceFormSchemaType;
     serviceGroupId?: string;
   }>({
     isOpen: false,
@@ -79,7 +82,7 @@ export default function Services() {
         case RowAction.EDIT:
           setSvcDialogState({
             isOpen: !svcDialogState.isOpen,
-            data: {
+            initFormValues: {
               id: row.original.id,
               title: row.original.title,
               price: row.original.price ?? 0,
@@ -122,7 +125,7 @@ export default function Services() {
       <DeleteConfirmationDialog
         label="Deleting service group will delete all services in it. Are you sure?"
         isOpen={confirmDeleteDialogState.isOpen}
-        toggleOpen={() =>
+        onClose={() =>
           setConfirmDeleteDialogState({
             ...confirmDeleteDialogState,
             isOpen: !confirmDeleteDialogState.isOpen,
@@ -134,16 +137,16 @@ export default function Services() {
       />
       <SaveServiceGroupDialog
         isOpen={sgDialogState.isOpen}
-        data={sgDialogState.data}
-        toggleOpen={() =>
+        initFormValues={sgDialogState.initFormValues}
+        onClose={() =>
           setSgDialogState({ ...sgDialogState, isOpen: !sgDialogState.isOpen })
         }
       />
       <SaveServiceDialog
         isOpen={svcDialogState.isOpen}
-        data={svcDialogState.data}
+        initFormValues={svcDialogState.initFormValues}
         serviceGroupId={svcDialogState.serviceGroupId}
-        toggleOpen={() =>
+        onClose={() =>
           setSvcDialogState({
             ...svcDialogState,
             isOpen: !svcDialogState.isOpen,
@@ -161,7 +164,7 @@ export default function Services() {
             className="mt-2"
             onClick={() =>
               setSgDialogState({
-                data: undefined,
+                initFormValues: undefined,
                 isOpen: !sgDialogState.isOpen,
               })
             }
@@ -194,7 +197,7 @@ export default function Services() {
                         inset
                         onClick={() =>
                           setSgDialogState({
-                            data: sg,
+                            initFormValues: sg,
                             isOpen: !sgDialogState.isOpen,
                           })
                         }
@@ -218,7 +221,7 @@ export default function Services() {
                 className="ml-2"
                 onClick={() =>
                   setSgDialogState({
-                    data: undefined,
+                    initFormValues: undefined,
                     isOpen: !sgDialogState.isOpen,
                   })
                 }
@@ -238,7 +241,7 @@ export default function Services() {
                       onClick={() =>
                         setSvcDialogState({
                           isOpen: !svcDialogState.isOpen,
-                          data: undefined,
+                          initFormValues: undefined,
                           serviceGroupId: sg.id,
                         })
                       }
@@ -259,7 +262,7 @@ export default function Services() {
                       onClick={() =>
                         setSvcDialogState({
                           isOpen: !svcDialogState.isOpen,
-                          data: undefined,
+                          initFormValues: undefined,
                           serviceGroupId: sg.id,
                         })
                       }

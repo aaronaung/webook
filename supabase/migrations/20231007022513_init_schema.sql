@@ -39,9 +39,8 @@ create table "public"."service" (
     "title" text not null,
     "description" text,
     "booking_limit" bigint,
-    "image_url" text,
     "duration" bigint not null,
-    "price" bigint
+    "price" bigint not null
 );
 
 
@@ -55,7 +54,6 @@ create table "public"."service_group" (
     "description" text,
     "color" text,
     "priority" integer,
-    "is_horizontal" boolean not null default false,
     "business_id" uuid not null
 );
 
@@ -68,10 +66,9 @@ create table "public"."service_event" (
     "updated_at" timestamp with time zone default now(),
     "service_id" uuid not null,
     "start" timestamp with time zone not null,
-    "recurrence_start" timestamp with time zone ,
+    "recurrence_start" timestamp with time zone,
     "recurrence_interval" bigint,
-    "recurrence_count" bigint,
-    "image_url" text
+    "recurrence_count" bigint
 );
 
 
@@ -93,7 +90,6 @@ create table "public"."staff" (
     "instagram_handle" text,
     "first_name" text not null default '',
     "last_name" text not null default '',
-    "image_url" text,
     "business_id" uuid
 );
 

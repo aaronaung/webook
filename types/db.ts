@@ -51,7 +51,7 @@ export interface Database {
           cover_photo_url: string | null
           created_at: string | null
           description: string | null
-          email: string | null
+          email: string
           handle: string
           id: string
           inactive: boolean | null
@@ -70,7 +70,7 @@ export interface Database {
           cover_photo_url?: string | null
           created_at?: string | null
           description?: string | null
-          email?: string | null
+          email: string
           handle: string
           id?: string
           inactive?: boolean | null
@@ -89,7 +89,7 @@ export interface Database {
           cover_photo_url?: string | null
           created_at?: string | null
           description?: string | null
-          email?: string | null
+          email?: string
           handle?: string
           id?: string
           inactive?: boolean | null
@@ -117,8 +117,7 @@ export interface Database {
           description: string | null
           duration: number
           id: string
-          image_url: string | null
-          price: number | null
+          price: number
           service_group_id: string | null
           title: string
           updated_at: string | null
@@ -129,8 +128,7 @@ export interface Database {
           description?: string | null
           duration: number
           id?: string
-          image_url?: string | null
-          price?: number | null
+          price: number
           service_group_id?: string | null
           title: string
           updated_at?: string | null
@@ -141,8 +139,7 @@ export interface Database {
           description?: string | null
           duration?: number
           id?: string
-          image_url?: string | null
-          price?: number | null
+          price?: number
           service_group_id?: string | null
           title?: string
           updated_at?: string | null
@@ -160,7 +157,6 @@ export interface Database {
         Row: {
           created_at: string | null
           id: string
-          image_url: string | null
           recurrence_count: number | null
           recurrence_interval: number | null
           recurrence_start: string | null
@@ -171,7 +167,6 @@ export interface Database {
         Insert: {
           created_at?: string | null
           id?: string
-          image_url?: string | null
           recurrence_count?: number | null
           recurrence_interval?: number | null
           recurrence_start?: string | null
@@ -182,7 +177,6 @@ export interface Database {
         Update: {
           created_at?: string | null
           id?: string
-          image_url?: string | null
           recurrence_count?: number | null
           recurrence_interval?: number | null
           recurrence_start?: string | null
@@ -202,28 +196,31 @@ export interface Database {
       service_event_live_stream: {
         Row: {
           created_at: string
-          id: number
+          id: string
           join_url: string | null
           password: string | null
           service_event_id: string | null
+          start: string
           start_url: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string
-          id?: number
+          id?: string
           join_url?: string | null
           password?: string | null
           service_event_id?: string | null
+          start: string
           start_url?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string
-          id?: number
+          id?: string
           join_url?: string | null
           password?: string | null
           service_event_id?: string | null
+          start?: string
           start_url?: string | null
           updated_at?: string | null
         }
@@ -271,7 +268,6 @@ export interface Database {
           created_at: string | null
           description: string | null
           id: string
-          is_horizontal: boolean
           priority: number | null
           title: string
           updated_at: string | null
@@ -282,7 +278,6 @@ export interface Database {
           created_at?: string | null
           description?: string | null
           id?: string
-          is_horizontal?: boolean
           priority?: number | null
           title: string
           updated_at?: string | null
@@ -293,7 +288,6 @@ export interface Database {
           created_at?: string | null
           description?: string | null
           id?: string
-          is_horizontal?: boolean
           priority?: number | null
           title?: string
           updated_at?: string | null
@@ -314,7 +308,6 @@ export interface Database {
           email: string | null
           first_name: string
           id: string
-          image_url: string | null
           instagram_handle: string | null
           last_name: string
           updated_at: string | null
@@ -325,7 +318,6 @@ export interface Database {
           email?: string | null
           first_name?: string
           id?: string
-          image_url?: string | null
           instagram_handle?: string | null
           last_name?: string
           updated_at?: string | null
@@ -336,7 +328,6 @@ export interface Database {
           email?: string | null
           first_name?: string
           id?: string
-          image_url?: string | null
           instagram_handle?: string | null
           last_name?: string
           updated_at?: string | null
@@ -382,51 +373,15 @@ export interface Database {
       }
     }
     Views: {
-      decrypted_service_event_live_stream: {
-        Row: {
-          created_at: string | null
-          decrypted_password: string | null
-          decrypted_start_url: string | null
-          id: number | null
-          join_url: string | null
-          password: string | null
-          service_event_id: string | null
-          start_url: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          decrypted_password?: never
-          decrypted_start_url?: never
-          id?: number | null
-          join_url?: string | null
-          password?: string | null
-          service_event_id?: string | null
-          start_url?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          decrypted_password?: never
-          decrypted_start_url?: never
-          id?: number | null
-          join_url?: string | null
-          password?: string | null
-          service_event_id?: string | null
-          start_url?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_event_live_stream_service_event_id_fkey"
-            columns: ["service_event_id"]
-            referencedRelation: "service_event"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_business_data: {
+        Args: {
+          business_handle: string
+        }
+        Returns: Json
+      }
       get_business_schedule_in_range: {
         Args: {
           business_handle: string

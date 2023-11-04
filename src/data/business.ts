@@ -15,6 +15,17 @@ export const getBusinessScheduleByTimeRange = async (
   return data;
 };
 
+export const getBusinessData = async (
+  businessHandle: string,
+  { client }: SupabaseOptions,
+) => {
+  const { data, error } = await client.rpc("get_business_data", {
+    business_handle: businessHandle,
+  });
+  if (error) throw error;
+  return data;
+};
+
 export const getLoggedInUserBusinesses = async ({
   client,
 }: SupabaseOptions) => {

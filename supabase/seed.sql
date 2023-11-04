@@ -49,23 +49,21 @@ values
   '#cd93ff'
 );
 
-insert into public.service (service_group_id, duration, title, booking_limit, price, image_url)
+insert into public.service (service_group_id, duration, title, booking_limit, price)
 values
 (
   (select id from public.service_group where title = 'Studio rental'),
   3600000, -- 1 hours in milliseconds
   'Small room rental (1-10 people hourly)',
   NULL,
-  60000,
-  'https://www.inspiredancestudio.com/uploads/4/9/9/6/4996741/studio-3_orig.jpg'
+  60000
 ),
 (
   (select id from public.service_group where title = 'Studio rental'),
   3600000, -- 1 hours in milliseconds
   'Large room rental (10+ people hourly)',
   NULL,
-  80000,
-  'https://www.inspiredancestudio.com/uploads/4/9/9/6/4996741/studio-1_orig.jpg'
+  80000
 );
 
 /* Insert service events for studio rental */
@@ -265,15 +263,6 @@ JOIN service_event ss ON ss.service_id = s.id
 WHERE ss.start = date::timestamptz AND
       ss.service_id = s.id;
 
-/* Add random image_urls to staffs */
-WITH cte AS (
-  SELECT id, 'https://i.pravatar.cc/250?u=mail@' || row_number() OVER () || '.co.uk' AS new_image_url
-  FROM staff
-)
-UPDATE staff AS t
-SET image_url = cte.new_image_url
-FROM cte
-WHERE t.id = cte.id;
 
 /* Insert staff names */
 WITH schedule_data AS (

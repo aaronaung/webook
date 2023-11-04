@@ -50,7 +50,6 @@ export function GradientPicker({
     "#70e2ff",
     "#cd93ff",
     "#09203f",
-    "#101820",
     "#1C4220",
     "#73391D",
     "#4E4544",

@@ -1,68 +1,35 @@
-import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { useRef } from "react";
-import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import SaveServiceForm, {
   SaveServiceFormSchemaType,
 } from "../forms/save-service-form";
-import { useSaveService } from "@/src/hooks/use-save-service";
-import { Loader2 } from "lucide-react";
 
 export function SaveServiceDialog({
-  data,
-  toggleOpen,
+  initFormValues,
+  onClose,
   isOpen,
   serviceGroupId,
 }: {
-  data?: SaveServiceFormSchemaType;
-  toggleOpen: () => void;
+  initFormValues?: SaveServiceFormSchemaType;
+  onClose: () => void;
   isOpen: boolean;
   serviceGroupId?: string;
 }) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveService, isPending } = useSaveService(
-    currentBusiness.id,
-    {
-      onSettled: () => {
-        toggleOpen();
-      },
-    },
-  );
-  const handleSubmitForm = () => {
-    formRef?.current?.requestSubmit();
-  };
-
-  const handleOnFormSuccess = (formValues: SaveServiceFormSchemaType) => {
-    saveService({
-      ...formValues,
-      ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service  (not creating a new one)
-      service_group_id: serviceGroupId,
-    });
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={toggleOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} service</DialogTitle>
+          <DialogTitle>{initFormValues ? "Edit" : "Add"} service</DialogTitle>
         </DialogHeader>
         <SaveServiceForm
-          ref={formRef}
-          defaultValues={data}
-          onFormSuccess={handleOnFormSuccess}
+          defaultValues={initFormValues}
+          onSubmitted={onClose}
+          serviceGroupId={serviceGroupId}
         />
-        <DialogFooter>
-          <Button onClick={handleSubmitForm} disabled={isPending}>
-            {isPending ? <Loader2 className="animate-spin" /> : "Save"}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

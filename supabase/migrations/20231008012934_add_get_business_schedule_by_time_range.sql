@@ -21,7 +21,6 @@ BEGIN
         SELECT  sg.id as id,
                 sg.title as title,
                 sg.priority as priority, 
-                sg.is_horizontal as is_horizontal, 
                 sg.description as description,
                 json_agg(
                     jsonb_build_object(
@@ -30,13 +29,13 @@ BEGIN
                         'recurrence_start', ss.recurrence_start,
                         'recurrence_interval', ss.recurrence_interval,
                         'recurrence_count', ss.recurrence_count,
-                        'image_url', ss.image_url,
+                        'color', sg.color,
                         'service', jsonb_build_object(
+                            'color', sg.color,
                             'price', s.price,
                             'title', s.title,
                             'booking_limit', s.booking_limit,
                             'description', s.description,
-                            'image_url', s.image_url,
                             'duration', s.duration,
                             'id', s.id
                         ),
@@ -44,7 +43,6 @@ BEGIN
                             SELECT json_agg(jsonb_build_object(
                                 'id', staff.id,
                                 'email', staff.email,
-                                'image_url', staff.image_url,
                                 'first_name', staff.first_name,
                                 'last_name', staff.last_name,
                                 'instagram_handle', staff.instagram_handle
@@ -52,6 +50,15 @@ BEGIN
                             FROM public.service_event_staff AS sss
                             JOIN public.staff AS staff ON sss.staff_id = staff.id
                             WHERE sss.service_event_id = ss.id
+                        ),
+                        'live_stream', (
+                            SELECT jsonb_build_object(
+                                'join_url', sls.join_url,
+                                'start_url', sls.start_url,
+                                'password', sls.password
+                            )
+                            FROM public.service_event_live_stream AS sls
+                            WHERE sls.service_event_id = ss.id
                         )
                    ) ORDER BY ss.start
                ) AS service_events

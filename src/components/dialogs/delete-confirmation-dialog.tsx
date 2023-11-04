@@ -10,14 +10,14 @@ import InputText from "../ui/input/text";
 interface DeleteConfirmationDialogProps {
   label?: string;
   isOpen: boolean;
-  toggleOpen: () => void;
+  onClose: () => void;
   onDelete: () => void;
 }
 
 export function DeleteConfirmationDialog({
   label,
   isOpen,
-  toggleOpen,
+  onClose,
   onDelete,
 }: DeleteConfirmationDialogProps) {
   const [inputValue, setInputValue] = useState("");
@@ -29,16 +29,16 @@ export function DeleteConfirmationDialog({
   function handleDelete() {
     onDelete();
     setInputValue("");
-    toggleOpen();
+    onClose();
   }
 
-  function handleToggleOpen() {
+  function handleOnClose() {
     setInputValue("");
-    toggleOpen();
+    onClose();
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleToggleOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOnClose}>
       <DialogContent>
         <div>
           <InputText
@@ -51,7 +51,7 @@ export function DeleteConfirmationDialog({
           />
         </div>
         <DialogFooter>
-          <Button variant="secondary" onClick={toggleOpen}>
+          <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
           <Button

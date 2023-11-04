@@ -1,66 +1,39 @@
-import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
 import SaveServiceGroupForm, {
   SaveServiceGroupFormSchemaType,
 } from "../forms/save-service-group-form";
-import { useRef } from "react";
-import { useSaveServiceGroup } from "@/src/hooks/use-save-service-group";
-import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { Loader2 } from "lucide-react";
 
 export function SaveServiceGroupDialog({
-  data,
-  toggleOpen,
+  initFormValues,
+  onClose,
   isOpen,
 }: {
-  data?: SaveServiceGroupFormSchemaType;
-  toggleOpen: () => void;
+  initFormValues?: SaveServiceGroupFormSchemaType;
+  onClose: () => void;
   isOpen: boolean;
 }) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveServiceGroup, isPending } = useSaveServiceGroup(
-    currentBusiness.id,
-    {
-      onSettled: () => {
-        toggleOpen();
-      },
-    },
-  );
-  const handleSubmitForm = () => {
-    formRef?.current?.requestSubmit();
-  };
-
-  const handleOnFormSuccess = (formValues: SaveServiceGroupFormSchemaType) => {
-    saveServiceGroup({
-      ...formValues,
-      ...(data ? { id: data.id } : {}), // if data exists, then we are editing an existing service group (not creating a new one)
-      business_id: currentBusiness.id,
-    });
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={toggleOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} service group</DialogTitle>
+          <DialogTitle>
+            {initFormValues ? "Edit" : "Add"} service group
+          </DialogTitle>
         </DialogHeader>
+        {/**
+         * It's important to put the form in its own component.
+         * Upon dialog open, this forces a re-render of the component which sets the default values.
+         * RHF only sets the default values on the first render of the component.
+         */}
         <SaveServiceGroupForm
-          ref={formRef}
-          defaultValues={data}
-          onFormSuccess={handleOnFormSuccess}
+          defaultValues={initFormValues}
+          onSubmitted={onClose}
         />
-        <DialogFooter>
-          <Button onClick={handleSubmitForm} disabled={isPending}>
-            {isPending ? <Loader2 className="animate-spin" /> : "Save"}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Tables } from "@/types/db.extension";
@@ -9,7 +9,6 @@ import { Label } from "../ui/label";
 import InputText from "../ui/input/text";
 import InputSelect from "../ui/input/select";
 import InputMultiSelect from "../ui/input/multi-select";
-import { useServiceEventLiveStream } from "@/src/hooks/use-service-event-live-stream";
 import {
   CheckCircleIcon,
   ClipboardDocumentIcon,
@@ -17,6 +16,11 @@ import {
 import _ from "lodash";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { toast } from "../ui/use-toast";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
+import { useCurrentBusinessContext } from "@/src/contexts/current-business";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -44,27 +48,25 @@ const formSchema = z.object({
   staff_ids: z.array(z.string()).optional(),
 });
 
-type SaveServiceEventFromProps = {
+export type SaveServiceEventFormSchemaType = z.infer<typeof formSchema> & {
+  id?: string;
+  live_stream?: Tables<"service_event_live_stream">;
+};
+
+type SaveServiceEventFormProps = {
   availableServices?: Tables<"service">[];
   availableStaffs?: Tables<"staff">[];
   defaultValues?: Partial<SaveServiceEventFormSchemaType>;
   isRecurrentEvent?: boolean;
-  onFormSuccess: (
-    formValues: SaveServiceEventFormSchemaType,
-    recurrenceEnabled: boolean,
-    liveStreamEnabled: boolean,
-    liveStreamStatusChanged: boolean,
-  ) => void;
+  onSubmitted?: () => void;
 };
-
-export type SaveServiceEventFormSchemaType = z.infer<typeof formSchema> & {
-  id?: string;
-};
-
-const SaveServiceEventForm = React.forwardRef<
-  HTMLFormElement,
-  SaveServiceEventFromProps
->((props, ref) => {
+export default function SaveServiceEventForm({
+  availableServices,
+  availableStaffs,
+  defaultValues,
+  isRecurrentEvent,
+  onSubmitted,
+}: SaveServiceEventFormProps) {
   const {
     register,
     handleSubmit,
@@ -73,73 +75,66 @@ const SaveServiceEventForm = React.forwardRef<
     formState: { errors },
   } = useForm<SaveServiceEventFormSchemaType>({
     defaultValues: {
-      ...props.defaultValues,
-      service_id:
-        props.defaultValues?.service_id || props.availableServices?.[0]?.id,
-      recurrence_start:
-        props.defaultValues?.recurrence_start || props.defaultValues?.start,
-      recurrence_interval: props.defaultValues?.recurrence_interval
-        ? props.defaultValues.recurrence_interval / 86400000
+      ...defaultValues,
+      service_id: defaultValues?.service_id || availableServices?.[0]?.id,
+      recurrence_start: defaultValues?.recurrence_start || defaultValues?.start,
+      recurrence_interval: defaultValues?.recurrence_interval
+        ? defaultValues.recurrence_interval / 86400000
         : undefined,
     },
     resolver: zodResolver(formSchema),
   });
+  const router = useRouter();
+
+  const { currentBusiness } = useCurrentBusinessContext();
 
   const [recurrenceEnabled, setRecurrenceEnabled] = useState(
-    Boolean(props.defaultValues?.recurrence_start),
+    Boolean(defaultValues?.recurrence_start),
   );
-  const [recurrenceErr, setRecurrenceErr] = useState("");
+  const [recurrenceCount, recurrenceInterval, recurrenceStart] = watch([
+    "recurrence_count",
+    "recurrence_interval",
+    "recurrence_start",
+  ]);
+  const hasRecurrenceError =
+    recurrenceEnabled &&
+    (!recurrenceCount || !recurrenceInterval || !recurrenceStart);
 
-  const { data: liveStreamData, isLoading: isLiveStreamDataLoading } =
-    useServiceEventLiveStream(props.defaultValues?.id);
+  const [liveStreamEnabled, setLiveStreamEnabled] = useState(
+    Boolean(defaultValues?.live_stream),
+  );
 
-  const [liveStreamEnabled, setLiveStreamEnabled] = useState(false);
-
-  useEffect(() => {
-    const subscription = watch((value) => {
-      setRecurrenceErr(
-        determineRecurrenceErr(
-          value as Partial<SaveServiceEventFormSchemaType>,
-        ),
-      );
-    });
-    return () => subscription.unsubscribe();
-  }, [watch, recurrenceEnabled]);
-
-  useEffect(() => {
-    setLiveStreamEnabled(!_.isEmpty(liveStreamData));
-  }, [liveStreamData]);
-
-  const determineRecurrenceErr = (
-    formValues: Partial<SaveServiceEventFormSchemaType>,
-  ) => {
-    // We have to check for these values when recurrence is enabled because they are not required in the form schema.
-    if (
-      recurrenceEnabled &&
-      (!formValues.recurrence_count ||
-        !formValues.recurrence_interval ||
-        !formValues.recurrence_start)
-    ) {
-      return "Recurrence count, interval, and start are required when recurrence is enabled.";
-    }
-    return "";
-  };
-
+  const { mutate: saveServiceEvent, isPending } = useSaveServiceEvent(
+    currentBusiness,
+    {
+      onSettled: () => {
+        onSubmitted?.();
+      },
+    },
+  );
   async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
-    const err = determineRecurrenceErr(formValues);
-    setRecurrenceErr(err);
-    if (err) {
-      return;
-    }
+    if (hasRecurrenceError) return;
+    const initialLiveStreamEnabled = Boolean(defaultValues?.live_stream);
+    const liveStreamStatusChanged =
+      initialLiveStreamEnabled !== liveStreamEnabled;
 
-    const initialLiveStreamEnabled = !_.isEmpty(liveStreamData);
-
-    props.onFormSuccess(
-      formValues,
-      recurrenceEnabled,
-      liveStreamEnabled,
-      initialLiveStreamEnabled !== liveStreamEnabled,
-    );
+    saveServiceEvent({
+      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if original  exists, then we are editing an existing service  (not creating a new one)
+      service_id: formValues.service_id,
+      start: formValues.start.toISOString(),
+      recurrence_start: recurrenceEnabled
+        ? formValues.recurrence_start?.toISOString()
+        : null,
+      recurrence_interval: recurrenceEnabled
+        ? formValues.recurrence_interval
+        : null,
+      recurrence_count: recurrenceEnabled ? formValues.recurrence_count : null,
+      staff_ids: formValues.staff_ids,
+      service: availableServices?.find((s) => s.id === formValues.service_id),
+      live_stream_enabled: liveStreamStatusChanged
+        ? liveStreamEnabled
+        : undefined, // This ensures that no additional call is made to update the live stream data.
+    });
   }
 
   function onFormError(errors: any) {
@@ -147,84 +142,101 @@ const SaveServiceEventForm = React.forwardRef<
   }
 
   return (
-    <form ref={ref} onSubmit={handleSubmit(onFormSuccess, onFormError)}>
-      {props.isRecurrentEvent && (
+    <form onSubmit={handleSubmit(onFormSuccess, onFormError)}>
+      {isRecurrentEvent && (
         <p className="mb-1 text-sm text-destructive">
           This is a recurring event. Updates are not allowed.
         </p>
       )}
       <InputSelect
         rhfKey="service_id"
-        options={(props?.availableServices || []).map((s) => ({
+        options={(availableServices || []).map((s) => ({
           label: s.title,
           value: s.id,
         }))}
         control={control}
         error={errors.service_id?.message}
         label="Service"
-        disabled={props.isRecurrentEvent}
+        disabled={isRecurrentEvent}
       />
-      <InputMultiSelect
-        rhfKey="staff_ids"
-        options={(props?.availableStaffs || []).map((s) => ({
-          label: `${s.first_name} ${s.last_name}`,
-          value: s.id,
-        }))}
-        control={control}
-        error={errors.staff_ids?.message}
-        label="Staffs"
-        inputProps={{ placeholder: "Who will lead the service event?" }}
-        disabled={props.isRecurrentEvent}
-      />
+
+      {_.isEmpty(availableStaffs) ? (
+        <div className="mt-3 flex flex-col gap-y-2">
+          <Label>Staff</Label>
+          <Button
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/app/business/staffs");
+            }}
+          >
+            You currently have no staff. Start by creating one.
+          </Button>
+        </div>
+      ) : (
+        <InputMultiSelect
+          rhfKey="staff_ids"
+          options={(availableStaffs || []).map((s) => ({
+            label: `${s.first_name} ${s.last_name}`,
+            value: s.id,
+          }))}
+          control={control}
+          error={errors.staff_ids?.message}
+          label="Staffs"
+          inputProps={{
+            placeholder: _.isEmpty(availableStaffs)
+              ? "No staff"
+              : "Who will lead the event?",
+          }}
+          disabled={isRecurrentEvent}
+        />
+      )}
       <InputDateTimePicker
         rhfKey="start"
         control={control}
         error={errors.start?.message}
         label="Start"
-        disabled={props.isRecurrentEvent}
+        disabled={isRecurrentEvent}
       />
-      {!isLiveStreamDataLoading && (
-        <div className="my-3">
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="enable-recurrence">Live stream</Label>
-            <Switch
-              id="enable-recurrence"
-              checked={liveStreamEnabled}
-              onCheckedChange={(checked) => setLiveStreamEnabled(checked)}
-              disabled={props.isRecurrentEvent}
-            />
-          </div>
-          {liveStreamEnabled && (
-            <p className="my-1 text-sm text-muted-foreground">
-              Details about live streaming will be available after you save the
-              event.
-            </p>
-          )}
-          {!_.isEmpty(liveStreamData) && liveStreamEnabled && (
-            <>
-              <LiveStreamReadOnlyField
-                prefix={"Start url"}
-                data={liveStreamData[0]?.start_url}
-              />
-              <LiveStreamReadOnlyField
-                prefix={"Join url"}
-                data={liveStreamData[0]?.join_url}
-              />
-              <LiveStreamReadOnlyField
-                prefix={"Password"}
-                data={liveStreamData[0]?.password}
-              />
-            </>
-          )}
+      <div className="my-3">
+        <div className="flex items-center space-x-2">
+          <Label htmlFor="enable-recurrence">Live stream</Label>
+          <Switch
+            id="enable-recurrence"
+            checked={liveStreamEnabled}
+            onCheckedChange={(checked) => setLiveStreamEnabled(checked)}
+            disabled={isRecurrentEvent}
+          />
         </div>
-      )}
+        {liveStreamEnabled && (
+          <p className="my-1 text-sm text-muted-foreground">
+            Details about live streaming will be available after you save the
+            event.
+          </p>
+        )}
+        {defaultValues?.live_stream && liveStreamEnabled && (
+          <>
+            <LiveStreamReadOnlyField
+              prefix={"Start url"}
+              data={defaultValues.live_stream.start_url}
+            />
+            <LiveStreamReadOnlyField
+              prefix={"Join url"}
+              data={defaultValues.live_stream.join_url}
+            />
+            <LiveStreamReadOnlyField
+              prefix={"Password"}
+              data={defaultValues.live_stream.password}
+            />
+          </>
+        )}
+      </div>
       <div className="my-3 flex items-center space-x-2">
         <Label htmlFor="enable-recurrence">Recurrence</Label>
         <Switch
           id="enable-recurrence"
           checked={recurrenceEnabled}
           onCheckedChange={(checked) => setRecurrenceEnabled(checked)}
-          disabled={props.isRecurrentEvent}
+          disabled={isRecurrentEvent}
         />
       </div>
       {recurrenceEnabled && (
@@ -235,23 +247,23 @@ const SaveServiceEventForm = React.forwardRef<
             error={errors.recurrence_start?.message}
             label="Recurrence start"
             className="mb-2"
-            disabled={props.isRecurrentEvent}
+            disabled={isRecurrentEvent}
           />
           <InputText
             rhfKey="recurrence_interval"
             register={register}
             registerOptions={{ valueAsNumber: true }}
-            defaultValue={props.defaultValues?.start}
+            defaultValue={defaultValues?.start}
             error={errors.recurrence_interval?.message}
             prefix={<span className="mr-3 text-muted-foreground">Every</span>}
             suffix={<span className="ml-1 text-muted-foreground">day(s)</span>}
             inputProps={{
-              placeholder: "1",
+              placeholder: "How often should it repeat?",
               type: "number",
               step: "any",
             }}
             label="Recurrence interval"
-            disabled={props.isRecurrentEvent}
+            disabled={isRecurrentEvent}
           />
           <InputText
             rhfKey="recurrence_count"
@@ -264,16 +276,28 @@ const SaveServiceEventForm = React.forwardRef<
               step: "any",
             }}
             label="Recurrence count"
-            disabled={props.isRecurrentEvent}
+            disabled={isRecurrentEvent}
           />
-          {recurrenceErr && (
-            <p className="my-2 text-sm text-destructive">{recurrenceErr}</p>
+          {hasRecurrenceError && (
+            <p className="my-2 text-sm text-destructive">
+              Recurrence count, interval, and start are required when recurrence
+              is enabled.
+            </p>
           )}
         </>
       )}
+      {!isRecurrentEvent && (
+        <Button
+          className="float-right mt-6"
+          type="submit"
+          disabled={isPending || hasRecurrenceError}
+        >
+          {isPending ? <Loader2 className="animate-spin" /> : "Save"}
+        </Button>
+      )}
     </form>
   );
-});
+}
 
 const LiveStreamReadOnlyField = ({
   prefix,
@@ -327,5 +351,3 @@ const LiveStreamReadOnlyField = ({
     />
   );
 };
-
-export default SaveServiceEventForm;

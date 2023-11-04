@@ -1,9 +1,12 @@
-import React from "react";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputText from "../ui/input/text";
 import InputGradientPicker from "../ui/input/gradient-picker";
+import { useSaveServiceGroup } from "@/src/hooks/use-save-service-group";
+import { useCurrentBusinessContext } from "@/src/contexts/current-business";
+import { Button } from "@/src/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   title: z
@@ -17,30 +20,43 @@ export type SaveServiceGroupFormSchemaType = z.infer<typeof formSchema> & {
   id?: string;
 };
 
-type SaveServiceGroupFromProps = {
+type SaveServiceGroupFormProps = {
   defaultValues?: SaveServiceGroupFormSchemaType;
-  onFormSuccess: (formValues: SaveServiceGroupFormSchemaType) => void;
+  onSubmitted: () => void;
 };
 
-const SaveServiceGroupForm = React.forwardRef<
-  HTMLFormElement,
-  SaveServiceGroupFromProps
->((props, ref) => {
+export default function SaveServiceGroupForm({
+  defaultValues,
+  onSubmitted,
+}: SaveServiceGroupFormProps) {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<SaveServiceGroupFormSchemaType>({
-    defaultValues: props.defaultValues,
+    defaultValues,
     resolver: zodResolver(formSchema),
   });
+  const { currentBusiness } = useCurrentBusinessContext();
+  const { mutate: saveServiceGroup, isPending } = useSaveServiceGroup(
+    currentBusiness.id,
+    {
+      onSettled: () => {
+        onSubmitted();
+      },
+    },
+  );
+  const handleOnFormSuccess = (formValues: SaveServiceGroupFormSchemaType) => {
+    saveServiceGroup({
+      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service group (not creating a new one)
+      ...formValues,
+      business_id: currentBusiness.id,
+    });
+  };
 
-  async function onFormSuccess(formValues: SaveServiceGroupFormSchemaType) {
-    props.onFormSuccess(formValues);
-  }
   return (
-    <form ref={ref} onSubmit={handleSubmit(onFormSuccess)}>
+    <form onSubmit={handleSubmit(handleOnFormSuccess)}>
       <InputText
         rhfKey="title"
         register={register}
@@ -56,8 +72,9 @@ const SaveServiceGroupForm = React.forwardRef<
         label="Color"
         description="This helps you visually identify your services."
       />
+      <Button className="float-right mt-6" type="submit" disabled={isPending}>
+        {isPending ? <Loader2 className="animate-spin" /> : "Save"}
+      </Button>
     </form>
   );
-});
-
-export default SaveServiceGroupForm;
+}

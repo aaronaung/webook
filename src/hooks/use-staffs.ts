@@ -14,6 +14,7 @@ export const useStaffs = (businessId: string) => {
         client: supaClientComponentClient(),
       }),
   });
+  console.log("useStaffs");
   if (error) {
     console.error(error);
     // direct to error page. TODO: create error page.
