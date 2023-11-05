@@ -174,10 +174,14 @@ export default function BusinessProfileForm({
       const results = await Promise.all([
         supaClientComponentClient()
           .storage.from(BUCKETS.publicBusinessAssets)
-          .upload(`/logos/${values.handle}`, logoFile),
+          .upload(`/logos/${values.handle}`, logoFile, {
+            upsert: true,
+          }),
         supaClientComponentClient()
           .storage.from(BUCKETS.publicBusinessAssets)
-          .upload(`/cover-photos/${values.handle}`, coverPhotoFile),
+          .upload(`/cover-photos/${values.handle}`, coverPhotoFile, {
+            upsert: true,
+          }),
         supaClientComponentClient()
           .from("business")
           .upsert({ ...values, owner_id: loggedInUser.id }),

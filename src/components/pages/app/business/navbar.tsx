@@ -19,14 +19,12 @@ import { BuildingOfficeIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function Navbar({
   businesses,
 }: {
   businesses: Tables<"business">[];
 }) {
-  const [selectedTab, setSelectedTab] = useState(navigation[0].name);
   const { currentBusiness, setCurrentBusiness } = useCurrentBusinessContext();
   const router = useRouter();
   const pathName = usePathname();
@@ -35,12 +33,7 @@ export default function Navbar({
     data: { publicUrl: logoUrl },
   } = supaClientComponentClient()
     .storage.from(BUCKETS.publicBusinessAssets)
-    .getPublicUrl(`logos/${currentBusiness?.handle}`, {
-      transform: {
-        width: 48,
-        height: 48,
-      },
-    });
+    .getPublicUrl(`logos/${currentBusiness?.handle}`);
 
   return (
     <aside className="flex overflow-x-auto pb-4 lg:block lg:h-full lg:w-64 lg:flex-none">
