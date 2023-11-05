@@ -19,5 +19,5 @@ export const useBusinessScheduleByTimeRange = (
     console.error(error);
     // direct to error page. TODO: create error page.
   }
-  return { ...props, data: data as BusinessSchedule };
+  return { ...props, data: (data || []) as BusinessSchedule };
 };

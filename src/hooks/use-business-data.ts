@@ -15,5 +15,12 @@ export const useBusinessData = (businessHandle: string) => {
     console.error(error);
     // direct to error page. TODO: create error page.
   }
-  return { ...props, data: data as BusinessData };
+  return {
+    ...props,
+    data: (data || {
+      service_groups: [],
+      services: [],
+      staffs: [],
+    }) as BusinessData,
+  };
 };
