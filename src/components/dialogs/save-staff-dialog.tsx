@@ -1,70 +1,29 @@
-import { Button } from "@/src/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import { useRef } from "react";
-import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import SaveStaffForm, {
   SaveStaffFormSchemaType,
 } from "../forms/save-staff-form";
-import { useSaveStaff } from "@/src/hooks/use-save-staff";
-import { Loader2 } from "lucide-react";
 
 export function SaveStaffDialog({
-  data,
-  toggleOpen,
+  initFormValues,
+  onClose,
   isOpen,
 }: {
-  data?: SaveStaffFormSchemaType;
-  toggleOpen: () => void;
+  initFormValues?: SaveStaffFormSchemaType;
+  onClose: () => void;
   isOpen: boolean;
 }) {
-  const formRef = useRef<HTMLFormElement>(null);
-  const { currentBusiness } = useCurrentBusinessContext();
-  const { mutateAsync: saveStaff, isPending } = useSaveStaff(
-    currentBusiness.id,
-  );
-  const handleSubmitForm = () => {
-    formRef?.current?.requestSubmit();
-  };
-
-  const handleOnFormSuccess = async (
-    formValues: SaveStaffFormSchemaType,
-    headshotFile?: File,
-  ) => {
-    await saveStaff({
-      newStaff: {
-        ...formValues,
-        id: data?.id,
-        business_id: currentBusiness.id,
-        updated_at: new Date().toISOString(),
-      },
-      headshotFile: headshotFile,
-    });
-
-    toggleOpen();
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={toggleOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{data ? "Edit" : "Add"} staff</DialogTitle>
+          <DialogTitle>{initFormValues ? "Edit" : "Add"} staff</DialogTitle>
         </DialogHeader>
-        <SaveStaffForm
-          ref={formRef}
-          defaultValues={data}
-          onFormSuccess={handleOnFormSuccess}
-        />
-        <DialogFooter>
-          <Button onClick={handleSubmitForm} disabled={isPending}>
-            {isPending ? <Loader2 className="animate-spin" /> : "Save"}
-          </Button>
-        </DialogFooter>
+        <SaveStaffForm defaultValues={initFormValues} onSubmitted={onClose} />
       </DialogContent>
     </Dialog>
   );

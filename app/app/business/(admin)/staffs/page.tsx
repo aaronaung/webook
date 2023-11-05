@@ -23,7 +23,7 @@ export default function Staffs() {
 
   const [staffDialogState, setStaffDialogState] = useState<{
     isOpen: boolean;
-    data?: SaveStaffFormSchemaType;
+    initFormValues?: SaveStaffFormSchemaType;
   }>({
     isOpen: false,
   });
@@ -34,7 +34,7 @@ export default function Staffs() {
         case RowAction.EDIT:
           setStaffDialogState({
             isOpen: !staffDialogState.isOpen,
-            data: {
+            initFormValues: {
               id: row.original.id,
               first_name: row.original.first_name,
               last_name: row.original.last_name,
@@ -62,9 +62,9 @@ export default function Staffs() {
   return (
     <>
       <SaveStaffDialog
-        data={staffDialogState.data}
+        initFormValues={staffDialogState.initFormValues}
         isOpen={staffDialogState.isOpen}
-        toggleOpen={() =>
+        onClose={() =>
           setStaffDialogState({
             ...staffDialogState,
             isOpen: !staffDialogState.isOpen,
@@ -80,7 +80,7 @@ export default function Staffs() {
             onClick={() =>
               setStaffDialogState({
                 isOpen: !staffDialogState.isOpen,
-                data: undefined,
+                initFormValues: undefined,
               })
             }
           >
@@ -97,7 +97,7 @@ export default function Staffs() {
             onClick={() =>
               setStaffDialogState({
                 isOpen: !staffDialogState.isOpen,
-                data: undefined,
+                initFormValues: undefined,
               })
             }
           >

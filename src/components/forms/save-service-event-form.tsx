@@ -21,6 +21,8 @@ import { useRouter } from "next/navigation";
 import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Loader2 } from "lucide-react";
+import { useDeleteServiceEvent } from "@/src/hooks/use-delete-service-event";
+import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -103,8 +105,10 @@ export default function SaveServiceEventForm({
   const [liveStreamEnabled, setLiveStreamEnabled] = useState(
     Boolean(defaultValues?.live_stream),
   );
+  const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
+    useState(false);
 
-  const { mutate: saveServiceEvent, isPending } = useSaveServiceEvent(
+  const { mutate: saveServiceEvent, isPending: isSaving } = useSaveServiceEvent(
     currentBusiness,
     {
       onSettled: () => {
@@ -112,6 +116,9 @@ export default function SaveServiceEventForm({
       },
     },
   );
+  const { mutateAsync: deleteServiceEvent, isPending: isDeleting } =
+    useDeleteServiceEvent(currentBusiness.handle);
+
   async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
     if (hasRecurrenceError) return;
     const initialLiveStreamEnabled = Boolean(defaultValues?.live_stream);
@@ -287,13 +294,48 @@ export default function SaveServiceEventForm({
         </>
       )}
       {!isRecurrentEvent && (
-        <Button
-          className="float-right mt-6"
-          type="submit"
-          disabled={isPending || hasRecurrenceError}
-        >
-          {isPending ? <Loader2 className="animate-spin" /> : "Save"}
-        </Button>
+        <>
+          <Button
+            className="float-right mt-6"
+            type="submit"
+            disabled={isSaving || hasRecurrenceError}
+          >
+            {isSaving ? <Loader2 className="animate-spin" /> : "Save"}
+          </Button>
+          {defaultValues?.id && (
+            <Button
+              className="float-right mr-2 mt-6"
+              type="button"
+              variant={"destructive"}
+              onClick={async (e) => {
+                e.preventDefault();
+                if (recurrenceEnabled) {
+                  setIsDeleteConfirmationDialogOpen(true);
+                } else {
+                  await deleteServiceEvent(defaultValues.id!);
+                  onSubmitted?.();
+                }
+              }}
+              disabled={isSaving || isDeleting}
+            >
+              {isDeleting ? <Loader2 className="animate-spin" /> : "Delete"}
+            </Button>
+          )}
+        </>
+      )}
+      {recurrenceEnabled && defaultValues?.id && (
+        <DeleteConfirmationDialog
+          isOpen={isDeleteConfirmationDialogOpen}
+          onClose={() => {
+            setIsDeleteConfirmationDialogOpen(false);
+          }}
+          onDelete={async () => {
+            await deleteServiceEvent(defaultValues.id!);
+            onSubmitted?.();
+            setIsDeleteConfirmationDialogOpen(false);
+          }}
+          label={"This event is recurring. Deleting it will delete all events."}
+        />
       )}
     </form>
   );
