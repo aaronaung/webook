@@ -29,7 +29,7 @@ export default function Hero({ business }: { business: Tables<"business"> }) {
           <div className="flex">
             <div className="relative flex items-center gap-x-4 rounded-full px-4 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-600 hover:ring-gray-600/40">
               <span className="whitespace-nowrap font-semibold text-indigo-300">
-                What's new
+                What&apos;s new
               </span>
               <span className="h-4 w-px bg-gray-400" aria-hidden="true" />
               <a

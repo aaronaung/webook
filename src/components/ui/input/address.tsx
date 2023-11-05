@@ -7,7 +7,6 @@ import ReactGoogleAutocomplete from "react-google-autocomplete";
 import InputDecorator from "./decorator";
 import { ControlledRhfInputProps } from ".";
 import { cn } from "@/src/utils";
-import React from "react";
 
 type LocationData = {
   zip: string;
@@ -20,46 +19,44 @@ type InputAddressProps = ControlledRhfInputProps & {
   onPlaceSelected?: (data: LocationData) => void;
 };
 
-const InputAddress = React.forwardRef<HTMLInputElement, InputAddressProps>(
-  (props, ref) => {
-    const input = ({
-      field,
-    }: {
-      field: ControllerRenderProps<FieldValues, string>;
-    }) => (
-      <InputDecorator {...props}>
-        <ReactGoogleAutocomplete
-          onPlaceSelected={(place: any) => {
-            const extracted = extractLocationData(place.address_components);
-            field.onChange(extracted.address);
-            props?.onPlaceSelected?.(extracted);
-          }}
-          options={{
-            types: ["address"],
-          }}
-          inputAutocompleteValue={field.value}
-          apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}
-          disabled={props.disabled}
-          name={props.rhfKey}
-          id={props.rhfKey}
-          className={cn(
-            "mt-1.5 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-            props.className,
-          )}
-        />
-      </InputDecorator>
-    );
-
-    return (
-      <Controller
+export default function InputAddress(props: InputAddressProps) {
+  const input = ({
+    field,
+  }: {
+    field: ControllerRenderProps<FieldValues, string>;
+  }) => (
+    <InputDecorator {...props}>
+      <ReactGoogleAutocomplete
+        onPlaceSelected={(place: any) => {
+          const extracted = extractLocationData(place.address_components);
+          field.onChange(extracted.address);
+          props?.onPlaceSelected?.(extracted);
+        }}
+        options={{
+          types: ["address"],
+        }}
+        inputAutocompleteValue={field.value}
+        apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}
+        disabled={props.disabled}
         name={props.rhfKey}
-        control={props.control}
-        rules={props.disableValidation ? { validate: () => true } : undefined}
-        render={({ field }) => input({ field })}
+        id={props.rhfKey}
+        className={cn(
+          "mt-1.5 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          props.className,
+        )}
       />
-    );
-  },
-);
+    </InputDecorator>
+  );
+
+  return (
+    <Controller
+      name={props.rhfKey}
+      control={props.control}
+      rules={props.disableValidation ? { validate: () => true } : undefined}
+      render={({ field }) => input({ field })}
+    />
+  );
+}
 
 function getAddressItem(
   addressComponents: any,
@@ -100,5 +97,3 @@ const extractLocationData = (addressComponents: any): LocationData => {
   }
   return { zip, state, city, address };
 };
-
-export default InputAddress;

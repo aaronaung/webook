@@ -2,7 +2,6 @@ import { Controller, ControllerRenderProps } from "react-hook-form";
 import InputDecorator from "./decorator";
 
 import { ControlledRhfInputProps } from ".";
-import React from "react";
 import { FancyMultiSelect } from "../multi-select";
 
 type InputMultiSelectOption = {
@@ -14,10 +13,7 @@ type InputMultiSelectProps = ControlledRhfInputProps & {
   options: InputMultiSelectOption[];
   defaultValue?: any;
 };
-const InputMultiSelect = React.forwardRef<
-  HTMLButtonElement,
-  InputMultiSelectProps
->((props, ref) => {
+export default function InputMultiSelect(props: InputMultiSelectProps) {
   const input = ({ field }: { field: ControllerRenderProps }) => (
     <InputDecorator {...props} className="mt-1.5">
       <FancyMultiSelect
@@ -40,6 +36,4 @@ const InputMultiSelect = React.forwardRef<
       render={(args) => input(args)}
     />
   );
-});
-
-export default InputMultiSelect;
+}
