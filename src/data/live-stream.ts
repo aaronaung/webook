@@ -1,4 +1,4 @@
-import { CreateLiveStreamMeetingRequest } from "@/app/api/live-stream/meeting/route";
+import { CreateLiveStreamMeetingRequest } from "../api/schemas/meeting";
 import { SupabaseOptions } from "./types";
 
 export const getLiveStreamByServiceEventId = async (

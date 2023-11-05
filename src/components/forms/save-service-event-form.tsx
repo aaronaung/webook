@@ -371,14 +371,10 @@ const LiveStreamReadOnlyField = ({
                   navigator.clipboard.writeText(data);
                 }
                 toast({
-                  title: (
-                    <div className="flex items-center">
-                      <CheckCircleIcon className="mr-2 h-5 w-5" />
-                      Copied to clipboard
-                    </div>
-                  ),
+                  title: "Copied to clipboard",
                   variant: "success",
                   duration: 2000,
+                  prefixIcon: <CheckCircleIcon className="h-5 w-5" />,
                 });
               }}
             >

@@ -1,9 +1,15 @@
 import { Tables } from "@/types/db.extension";
-import { createContext, useContext, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from "react";
 
 type CurrentBusinessContextValue = {
   currentBusiness: Tables<"business">;
-  setCurrentBusiness: (value: Tables<"business"> | undefined) => void;
+  setCurrentBusiness: Dispatch<SetStateAction<Tables<"business">>>;
 };
 
 const CurrentBusinessContext =

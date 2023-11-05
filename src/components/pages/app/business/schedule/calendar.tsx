@@ -141,9 +141,11 @@ export default function ScheduleCalendar({
         view={calView}
         onDropFromOutside={onDropFromOutside}
         events={serviceEvents}
-        eventPropGetter={(event: CalEvent) => ({
+        eventPropGetter={(event: object) => ({
           className: "isDraggable text-sm",
-          style: event.color && { background: event.color },
+          style: (event as CalEvent).color
+            ? { background: (event as CalEvent).color }
+            : {},
         })}
         onView={(view) => setCalView(view)}
         localizer={localizer}

@@ -51,7 +51,7 @@ export default function StaffsTable({ data, onRowAction }: StaffTableProp) {
         header: "",
         enableHiding: true,
       }),
-      columnHelper.accessor("image_url", {
+      columnHelper.display({
         header: "Headshot",
         cell: ({ row }) => <StaffHeadshotCell row={row} />,
       }),

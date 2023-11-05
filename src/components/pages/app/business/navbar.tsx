@@ -99,9 +99,12 @@ export default function Navbar({
                     <DropdownMenuRadioGroup
                       value={currentBusiness?.handle}
                       onValueChange={(handle) => {
-                        setCurrentBusiness(
-                          businesses.find((b) => b.handle === handle),
+                        const business = businesses.find(
+                          (b) => b.handle === handle,
                         );
+                        if (business) {
+                          setCurrentBusiness(business);
+                        }
                       }}
                     >
                       {businesses.map((business) => (

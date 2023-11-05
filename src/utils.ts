@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { supaClientComponentClient } from "./data/clients/browser";
 import crypto from "crypto";
+import { BUCKETS, STORAGE_DIR_PATHS } from "./consts/storage";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -63,6 +64,22 @@ export const getTimestampedObjUrl = (
   const url = new URL(data.publicUrl);
   url.searchParams.set("version", imgVersion.toString());
   return url.toString();
+};
+
+export const getServiceImgUrl = (serviceId: string, timestamp?: string) => {
+  return getTimestampedObjUrl(
+    BUCKETS.publicBusinessAssets,
+    `${STORAGE_DIR_PATHS.services}/${serviceId}`,
+    timestamp,
+  );
+};
+
+export const getStaffImgUrl = (staffId: string, timestamp?: string) => {
+  return getTimestampedObjUrl(
+    BUCKETS.publicBusinessAssets,
+    `${STORAGE_DIR_PATHS.staffs}/${staffId}`,
+    timestamp,
+  );
 };
 
 export const generatePassword = (

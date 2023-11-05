@@ -1,11 +1,17 @@
 import PriceTag from "@/src/components/ui/price-tag";
+import { getServiceImgUrl, getStaffImgUrl } from "@/src/utils";
 import { BusinessServiceEvent } from "@/types";
 import { format } from "date-fns";
+import _ from "lodash";
 import Image from "next/image";
 
-export default function ServiceEvent({ slot }: { slot: BusinessServiceEvent }) {
-  const startDateTime = new Date(slot.start || "");
-  const staffName = (slot.staffs || [])
+export default function ServiceEvent({
+  event,
+}: {
+  event: BusinessServiceEvent;
+}) {
+  const startDateTime = new Date(event.start || "");
+  const staffName = (event.staffs || [])
     .map((staff) => {
       return !staff.first_name && !staff.last_name
         ? staff.instagram_handle
@@ -14,15 +20,11 @@ export default function ServiceEvent({ slot }: { slot: BusinessServiceEvent }) {
     .join("&");
 
   function imageUrls() {
-    let imageUrls = [];
-    if (slot.service.image_url) {
-      imageUrls.push(slot.service.image_url);
-    } else if (slot.image_url) {
-      imageUrls.push(slot.image_url);
-    } else {
-      imageUrls = (slot.staffs || []).map((staff) => staff.image_url);
+    if (!_.isEmpty(event.staffs)) {
+      return (event.staffs || []).map((staff) => getStaffImgUrl(staff.id));
     }
-    return imageUrls;
+
+    return [getServiceImgUrl(event.service.id)];
   }
 
   return (
@@ -34,7 +36,7 @@ export default function ServiceEvent({ slot }: { slot: BusinessServiceEvent }) {
             <Image
               className="rounded-full bg-gray-50 ring-2 ring-white"
               src={
-                url || `https://ui-avatars.com/api/?name=${slot.service.title}`
+                url || `https://ui-avatars.com/api/?name=${event.service.title}`
               }
               alt={staffName || ""}
               width={46}
@@ -45,13 +47,13 @@ export default function ServiceEvent({ slot }: { slot: BusinessServiceEvent }) {
       </div>
       <div className="flex min-h-[40px] w-full items-center justify-between">
         <div>
-          <p className="font-medium text-foreground">{slot.service.title} </p>
+          <p className="font-medium text-foreground">{event.service.title} </p>
           <p className="text-foreground">{staffName}</p>
         </div>
         <div className="flex flex-col items-end justify-center gap-1">
-          <PriceTag price={slot.service.price} />
+          <PriceTag price={event.service.price} />
           <p className="text-muted-foreground">
-            <time dateTime={slot.start || ""}>
+            <time dateTime={event.start || ""}>
               {format(startDateTime, "h:mm a")}
             </time>
           </p>

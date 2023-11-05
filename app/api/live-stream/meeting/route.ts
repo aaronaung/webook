@@ -1,22 +1,10 @@
 import getZoomAccessToken from "@/src/libs/zoom/get-access-token";
 import { env } from "@/env.mjs";
 
-import z from "zod";
 import { NextRequest } from "next/server";
 import { meetingTemplate } from "./template";
 import { generatePassword } from "@/src/utils";
-
-export const CreateLiveStreamMeetingRequestSchema = z.object({
-  title: z.string(),
-  start_time: z.string(),
-  contact_email: z.string().email(),
-  contact_name: z.string(),
-  duration_in_milli: z.number().positive(),
-});
-
-export type CreateLiveStreamMeetingRequest = z.infer<
-  typeof CreateLiveStreamMeetingRequestSchema
->;
+import { CreateLiveStreamMeetingRequestSchema } from "@/src/api/schemas/meeting";
 
 export async function POST(req: NextRequest) {
   const accessToken = await getZoomAccessToken({

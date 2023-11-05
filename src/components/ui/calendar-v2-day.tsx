@@ -1,6 +1,5 @@
 import { cn } from "@/src/utils";
 import { format, isSameMonth, isToday } from "date-fns";
-import { DRAGGABLE_SERVICE_ITEM } from "../pages/business/schedule/draggable-service-item";
 import { useDrop } from "react-dnd";
 import { Tables } from "@/types/db.extension";
 
@@ -20,7 +19,7 @@ export default function CalendarV2Day({
 }: CalendarV2DayProps) {
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
-      accept: DRAGGABLE_SERVICE_ITEM,
+      accept: "",
       canDrop: () => true,
       drop: (item: Tables<"service">) => {
         onServiceDrop?.(item, day);

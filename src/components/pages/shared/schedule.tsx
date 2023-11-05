@@ -35,12 +35,12 @@ export default function Schedule({
         .find(
           (serviceGroup) => serviceGroup.id === (selectedTab || data?.[0]?.id),
         )
-        ?.service_events.filter((slot) => {
-          const startDateTime = slot.start ? new Date(slot.start) : null;
-          const repeatStartDateTime = slot.recurrence_start
-            ? new Date(slot.recurrence_start)
+        ?.service_events.filter((event) => {
+          const startDateTime = event.start ? new Date(event.start) : null;
+          const repeatStartDateTime = event.recurrence_start
+            ? new Date(event.recurrence_start)
             : null;
-          const repeatInterval = slot.recurrence_interval;
+          const repeatInterval = event.recurrence_interval;
 
           if (!startDateTime) {
             return false;
@@ -62,8 +62,8 @@ export default function Schedule({
                 repeatInterval,
             ) + 1;
           if (
-            slot.recurrence_count &&
-            repeatIntervalsToJump > slot.recurrence_count - 1
+            event.recurrence_count &&
+            repeatIntervalsToJump > event.recurrence_count - 1
           ) {
             return false;
           }
@@ -105,9 +105,9 @@ export default function Schedule({
 
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
           {selectedDayServiceEvents.length > 0 ? (
-            selectedDayServiceEvents.map((slot) => (
-              <Link key={slot.id} href={`/${handle}/${slot.id}/booking`}>
-                <ServiceEvent slot={slot} key={slot.id} />
+            selectedDayServiceEvents.map((event) => (
+              <Link key={event.id} href={`/${handle}/${event.id}/booking`}>
+                <ServiceEvent event={event} key={event.id} />
               </Link>
             ))
           ) : (

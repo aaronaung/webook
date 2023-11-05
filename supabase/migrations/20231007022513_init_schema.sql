@@ -52,7 +52,7 @@ create table "public"."service_group" (
     "updated_at" timestamp with time zone default now(),
     "title" text not null,
     "description" text,
-    "color" text,
+    "color" text not null,
     "priority" integer,
     "business_id" uuid not null
 );
@@ -198,21 +198,3 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
-
--- Create public business assets bucket.
-insert into storage.buckets
-  (id, name)
-values
-  ('public-business-assets', 'public-business-assets');
-
-create policy "Enable upload access for authenticated users"
-on storage.objects for insert to authenticated with check (
-    -- restrict bucket
-    bucket_id = 'public-business-assets'
-);
-
-create policy "Public Access"
-on storage.objects
-for select                              -- Allow read access
-to anon, authenticated                  -- Allow access to anonymous and authenticated users
-using ( bucket_id = 'my_bucket_id' );   -- Identify the bucket

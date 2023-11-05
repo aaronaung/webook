@@ -50,7 +50,7 @@ export default function InputAddress(props: InputAddressProps) {
 
   return (
     <Controller
-      name={props.rhfKey}
+      name={props.rhfKey || ""}
       control={props.control}
       rules={props.disableValidation ? { validate: () => true } : undefined}
       render={({ field }) => input({ field })}

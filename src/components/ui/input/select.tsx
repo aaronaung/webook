@@ -39,7 +39,6 @@ export default function InputSelect(props: InputSelectProps) {
         {...props}
       >
         <SelectTrigger
-          ref={ref}
           className={cn(
             "mt-1.5 w-full",
             !field.value && "text-muted-foreground",

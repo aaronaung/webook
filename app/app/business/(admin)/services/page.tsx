@@ -9,10 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import _ from "lodash";
 import { useRouter } from "next/navigation";
-import {
-  SaveServiceGroupDialog,
-  SaveServiceGroupFormSchemaType,
-} from "@/src/components/dialogs/save-service-group-dialog";
+import { SaveServiceGroupDialog } from "@/src/components/dialogs/save-service-group-dialog";
 import { useCallback, useState } from "react";
 import {
   Tabs,
@@ -41,6 +38,7 @@ import { useDeleteService } from "@/src/hooks/use-delete-service";
 import { ServiceGroupWithServices } from "@/types";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import { RowAction } from "@/src/components/tables/types";
+import { SaveServiceGroupFormSchemaType } from "@/src/components/forms/save-service-group-form";
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service groups and mobile)
 export default function Services() {

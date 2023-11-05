@@ -264,7 +264,7 @@ export interface Database {
       service_group: {
         Row: {
           business_id: string
-          color: string | null
+          color: string
           created_at: string | null
           description: string | null
           id: string
@@ -274,7 +274,7 @@ export interface Database {
         }
         Insert: {
           business_id: string
-          color?: string | null
+          color: string
           created_at?: string | null
           description?: string | null
           id?: string
@@ -284,7 +284,7 @@ export interface Database {
         }
         Update: {
           business_id?: string
-          color?: string | null
+          color?: string
           created_at?: string | null
           description?: string | null
           id?: string

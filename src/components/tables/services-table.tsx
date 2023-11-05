@@ -1,6 +1,10 @@
 import { Tables } from "@/types/db.extension";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { Row, createColumnHelper } from "@tanstack/react-table";
+import {
+  AccessorFnColumnDef,
+  Row,
+  createColumnHelper,
+} from "@tanstack/react-table";
 import { DataTable } from "../ui/data-table";
 import { useEffect, useMemo, useState } from "react";
 import { RowAction } from "./types";
@@ -119,7 +123,7 @@ export default function ServicesTable({
           id: false,
         },
       }}
-      columns={columns}
+      columns={columns as AccessorFnColumnDef<Tables<"service">>[]}
       data={data}
     />
   );
