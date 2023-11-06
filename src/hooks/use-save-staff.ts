@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { saveStaff } from "../data/staff";
 import { Tables } from "@/types/db.extension";
 import { supaClientComponentClient } from "../data/clients/browser";
-import { BUCKETS } from "../consts/storage";
+import { BUCKETS, STORAGE_DIR_PATHS } from "../consts/storage";
 import { sleep } from "../utils";
 
 export const useSaveStaff = (
@@ -23,7 +23,7 @@ export const useSaveStaff = (
         await supaClientComponentClient()
           .storage.from(BUCKETS.publicBusinessAssets)
           .upload(
-            `staff_headshots/${updatedStaff[0].id}?version=${imgVersion}`,
+            `${STORAGE_DIR_PATHS.staff_headshots}/${updatedStaff[0].id}?version=${imgVersion}`,
             variables.headshotFile,
             {
               upsert: true,

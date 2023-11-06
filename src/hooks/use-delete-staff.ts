@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteStaff } from "../data/staff";
 import { supaClientComponentClient } from "../data/clients/browser";
-import { BUCKETS } from "../consts/storage";
+import { BUCKETS, STORAGE_DIR_PATHS } from "../consts/storage";
 
 export const useDeleteStaff = (businessId?: string) => {
   const queryClient = useQueryClient();
@@ -12,7 +12,7 @@ export const useDeleteStaff = (businessId?: string) => {
       });
       return supaClientComponentClient()
         .storage.from(BUCKETS.publicBusinessAssets)
-        .remove([`staff_headshots/${staffId}`]);
+        .remove([`${STORAGE_DIR_PATHS.staff_headshots}/${staffId}`]);
     },
     meta: { errorMessage: "Failed to delete staff" },
     onSuccess: () => {

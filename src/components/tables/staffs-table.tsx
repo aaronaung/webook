@@ -4,17 +4,15 @@ import { Row, createColumnHelper } from "@tanstack/react-table";
 import { DataTable } from "../ui/data-table";
 import { useEffect, useMemo, useState } from "react";
 import { RowAction } from "./types";
-import { BUCKETS } from "@/src/consts/storage";
 import Image from "../ui/image";
-import { fetchWithRetry, getTimestampedObjUrl } from "@/src/utils";
+import { fetchWithRetry, getStaffHeadshotUrl } from "@/src/utils";
 
 const columnHelper = createColumnHelper<Tables<"staff">>();
 
 function StaffHeadshotCell({ row }: { row: Row<Tables<"staff">> }) {
   const [headshotExists, setHeadshotExists] = useState<boolean>(false);
-  const headshotUrl = getTimestampedObjUrl(
-    BUCKETS.publicBusinessAssets,
-    `staff_headshots/${row.original.id}`,
+  const headshotUrl = getStaffHeadshotUrl(
+    row.original.id,
     row.original.updated_at,
   );
 

@@ -6,11 +6,10 @@ import InputText from "../ui/input/text";
 import { UserCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "../ui/use-toast";
 
-import { BUCKETS } from "@/src/consts/storage";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import Image from "../ui/image";
-import { getTimestampedObjUrl } from "@/src/utils";
+import { getStaffHeadshotUrl } from "@/src/utils";
 import { useSaveStaff } from "@/src/hooks/use-save-staff";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Loader2 } from "lucide-react";
@@ -78,9 +77,8 @@ export default function SaveStaffForm({
     };
 
     if (defaultValues?.id) {
-      const headshotUrl = getTimestampedObjUrl(
-        BUCKETS.publicBusinessAssets,
-        `staff_headshots/${defaultValues?.id}`,
+      const headshotUrl = getStaffHeadshotUrl(
+        defaultValues?.id,
         defaultValues?.updated_at,
       );
       setAvatarBlob(headshotUrl);

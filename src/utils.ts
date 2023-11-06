@@ -74,10 +74,13 @@ export const getServiceImgUrl = (serviceId: string, timestamp?: string) => {
   );
 };
 
-export const getStaffImgUrl = (staffId: string, timestamp?: string) => {
+export const getStaffHeadshotUrl = (
+  staffId: string,
+  timestamp?: string | null,
+) => {
   return getTimestampedObjUrl(
     BUCKETS.publicBusinessAssets,
-    `${STORAGE_DIR_PATHS.staffs}/${staffId}`,
+    `${STORAGE_DIR_PATHS.staff_headshots}/${staffId}`,
     timestamp,
   );
 };

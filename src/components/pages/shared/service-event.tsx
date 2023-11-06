@@ -1,5 +1,5 @@
 import PriceTag from "@/src/components/ui/price-tag";
-import { getServiceImgUrl, getStaffImgUrl } from "@/src/utils";
+import { getServiceImgUrl, getStaffHeadshotUrl } from "@/src/utils";
 import { BusinessServiceEvent } from "@/types";
 import { format } from "date-fns";
 import _ from "lodash";
@@ -21,7 +21,7 @@ export default function ServiceEvent({
 
   function imageUrls() {
     if (!_.isEmpty(event.staffs)) {
-      return (event.staffs || []).map((staff) => getStaffImgUrl(staff.id));
+      return (event.staffs || []).map((staff) => getStaffHeadshotUrl(staff.id));
     }
 
     return [getServiceImgUrl(event.service.id)];
