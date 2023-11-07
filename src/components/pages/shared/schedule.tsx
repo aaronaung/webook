@@ -5,9 +5,9 @@ import ServiceEvent from "@/src/components/pages/shared/service-event";
 import { format, isBefore, isSameDay, startOfToday } from "date-fns";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
-import AnimatedTabs from "@/src/components/ui/animated-tabs";
 import { BusinessSchedule } from "@/types";
 import { Tables } from "@/types/db.extension";
+import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
 
 export default function Schedule({
   handle,
@@ -110,7 +110,21 @@ export default function Schedule({
         <p className="text- my-4 text-sm font-semibold">
           {format(selectedDay, "MMMM dd")}
         </p>
-        {data?.length > 1 && (
+        <Tabs
+          value={selectedTab}
+          onValueChange={(selected) => setSelectedTab(selected)}
+        >
+          <div className="flex max-w-full items-center overflow-x-scroll">
+            <TabsList className="relative overflow-visible">
+              {(data || []).map((sg) => (
+                <TabsTrigger key={sg.id} value={sg.id}>
+                  {sg.title}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+        </Tabs>
+        {/* {data?.length > 1 && (
           <AnimatedTabs
             tabs={(data || []).map((group) => ({
               id: group.id,
@@ -119,7 +133,7 @@ export default function Schedule({
             onChange={(newTab: string) => setSelectedTab(newTab)}
             value={selectedTab || data?.[0]?.id}
           />
-        )}
+        )} */}
 
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
           {selectedDayServiceEvents.length > 0 ? (
