@@ -16,6 +16,16 @@ import { useState } from "react";
 import { Tables } from "@/types/db.extension";
 import CalendarV2Day from "./calendar-v2-day";
 
+const colStartClasses = [
+  "",
+  "col-start-2",
+  "col-start-3",
+  "col-start-4",
+  "col-start-5",
+  "col-start-6",
+  "col-start-7",
+];
+
 type CalendarV2Props = {
   onServiceDrop?: (item: Tables<"service">, day: Date) => void;
   onDateSelect?: (date: Date) => void;
@@ -94,7 +104,7 @@ export default function CalendarV2({
           <div
             key={day.toString()}
             className={cn(
-              dayIdx === 0 && `col-start-${getDay(day) + 1}`,
+              dayIdx === 0 && colStartClasses[getDay(day)],
               "py-1.5",
             )}
           >

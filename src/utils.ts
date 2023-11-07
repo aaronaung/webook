@@ -80,7 +80,28 @@ export const getStaffHeadshotUrl = (
 ) => {
   return getTimestampedObjUrl(
     BUCKETS.publicBusinessAssets,
-    `${STORAGE_DIR_PATHS.staff_headshots}/${staffId}`,
+    `${STORAGE_DIR_PATHS.staffHeadshots}/${staffId}`,
+    timestamp,
+  );
+};
+
+export const getBusinessLogoUrl = (
+  businessId: string,
+  timestamp?: string | null,
+) => {
+  return getTimestampedObjUrl(
+    BUCKETS.publicBusinessAssets,
+    `${STORAGE_DIR_PATHS.businessLogos}/${businessId}`,
+    timestamp,
+  );
+};
+export const getBusinessCoverPhotoUrl = (
+  businessId: string,
+  timestamp?: string | null,
+) => {
+  return getTimestampedObjUrl(
+    BUCKETS.publicBusinessAssets,
+    `${STORAGE_DIR_PATHS.businessCoverPhotos}/${businessId}`,
     timestamp,
   );
 };

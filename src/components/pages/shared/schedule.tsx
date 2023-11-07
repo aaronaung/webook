@@ -2,7 +2,7 @@
 
 import CalendarV2 from "@/src/components/ui/calendar-v2";
 import ServiceEvent from "@/src/components/pages/shared/service-event";
-import { format, isAfter, isSameDay, startOfToday } from "date-fns";
+import { format, isBefore, isSameDay, startOfToday } from "date-fns";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import AnimatedTabs from "@/src/components/ui/animated-tabs";
@@ -36,44 +36,62 @@ export default function Schedule({
           (serviceGroup) => serviceGroup.id === (selectedTab || data?.[0]?.id),
         )
         ?.service_events.filter((event) => {
-          const startDateTime = event.start ? new Date(event.start) : null;
-          const repeatStartDateTime = event.recurrence_start
+          const startDateTime = new Date(event.start);
+          let repeatStartDateTime = event.recurrence_start
             ? new Date(event.recurrence_start)
             : null;
           const repeatInterval = event.recurrence_interval;
 
-          if (!startDateTime) {
-            return false;
-          }
           if (isSameDay(startDateTime, selectedDay)) {
             return true;
           }
-          if (
-            !repeatStartDateTime ||
-            !repeatInterval ||
-            isAfter(repeatStartDateTime, startDateTime)
-          ) {
+
+          if (!repeatStartDateTime || !repeatInterval) {
             return false;
           }
 
-          const repeatIntervalsToJump =
-            Math.floor(
-              (selectedDay.getTime() - repeatStartDateTime.getTime()) /
-                repeatInterval,
-            ) + 1;
-          if (
-            event.recurrence_count &&
-            repeatIntervalsToJump > event.recurrence_count - 1
-          ) {
+          if (isBefore(repeatStartDateTime, startDateTime)) {
+            repeatStartDateTime = startDateTime;
+          }
+
+          if (isBefore(selectedDay, repeatStartDateTime)) {
+            // selected day is before repeat start.
             return false;
           }
-          const result = isSameDay(
+
+          let repeatIntervalsToJump = Math.floor(
+            (selectedDay.getTime() - repeatStartDateTime.getTime()) /
+              repeatInterval,
+          );
+          let timeLeftBeforeNextRepeatingEvent =
+            (selectedDay.getTime() - repeatStartDateTime.getTime()) %
+            repeatInterval;
+          if (timeLeftBeforeNextRepeatingEvent > 0) {
+            // if there is time left before next repeating event, add 1 to repeatIntervalsToJump
+            repeatIntervalsToJump += 1;
+          }
+
+          if (
+            event.recurrence_count &&
+            repeatIntervalsToJump > event.recurrence_count
+          ) {
+            // repeat interval jump is greater than count
+            return false;
+          }
+
+          console.log(
+            selectedDay,
+            repeatStartDateTime,
+            repeatInterval,
+            repeatIntervalsToJump,
+          );
+
+          return isSameDay(
             selectedDay,
             new Date(
               startDateTime.getTime() + repeatInterval * repeatIntervalsToJump,
             ),
           );
-          return result;
         }) || []
     );
   }, [data, selectedTab, selectedDay]);

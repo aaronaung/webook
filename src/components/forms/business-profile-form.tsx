@@ -8,7 +8,7 @@ import InputText from "@/src/components/ui/input/text";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { toast } from "@/src/components/ui/use-toast";
 import { countries } from "@/src/consts/countries";
-import { BUCKETS } from "@/src/consts/storage";
+import { BUCKETS, STORAGE_DIR_PATHS } from "@/src/consts/storage";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { Tables } from "@/types/db.extension";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
@@ -174,14 +174,22 @@ export default function BusinessProfileForm({
       const results = await Promise.all([
         supaClientComponentClient()
           .storage.from(BUCKETS.publicBusinessAssets)
-          .upload(`/logos/${values.handle}`, logoFile, {
-            upsert: true,
-          }),
+          .upload(
+            `/${STORAGE_DIR_PATHS.businessLogos}/${values.handle}`,
+            logoFile,
+            {
+              upsert: true,
+            },
+          ),
         supaClientComponentClient()
           .storage.from(BUCKETS.publicBusinessAssets)
-          .upload(`/cover-photos/${values.handle}`, coverPhotoFile, {
-            upsert: true,
-          }),
+          .upload(
+            `/${STORAGE_DIR_PATHS.businessCoverPhotos}/${values.handle}`,
+            coverPhotoFile,
+            {
+              upsert: true,
+            },
+          ),
         supaClientComponentClient()
           .from("business")
           .upsert({ ...values, owner_id: loggedInUser.id }),

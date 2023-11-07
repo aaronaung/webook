@@ -23,7 +23,7 @@ export const useSaveStaff = (
         await supaClientComponentClient()
           .storage.from(BUCKETS.publicBusinessAssets)
           .upload(
-            `${STORAGE_DIR_PATHS.staff_headshots}/${updatedStaff[0].id}?version=${imgVersion}`,
+            `${STORAGE_DIR_PATHS.staffHeadshots}/${updatedStaff[0].id}?version=${imgVersion}`,
             variables.headshotFile,
             {
               upsert: true,

@@ -6,7 +6,7 @@ import {
   add,
   addMilliseconds,
   format,
-  isSameDay,
+  isBefore,
   millisecondsToHours,
   parse,
   startOfToday,
@@ -66,21 +66,17 @@ export default function ScheduleCalendar({
               price: se.service.price,
             };
 
+            const recurringEvents = [];
             if (
               se.recurrence_start &&
               se.recurrence_count &&
               se.recurrence_interval
             ) {
-              const calEvents = [];
               const eventStart = new Date(se.start);
-              const recurrenceStart = new Date(se.recurrence_start);
+              let recurrenceStart = new Date(se.recurrence_start);
 
-              if (isSameDay(recurrenceStart, eventStart)) {
-                calEvents.push({
-                  ...baseEvent,
-                  start: eventStart,
-                  end: addMilliseconds(recurrenceStart, se.service.duration),
-                });
+              if (isBefore(recurrenceStart, eventStart)) {
+                recurrenceStart = eventStart;
               }
 
               // Determine how many jumps we need to make to get to the first recurring event.
@@ -106,23 +102,25 @@ export default function ScheduleCalendar({
                   hours: millisecondsToHours(se.recurrence_interval),
                 })
               ) {
-                calEvents.push({
+                recurringEvents.push({
                   ...baseEvent,
                   start: i,
                   end: addMilliseconds(i, se.service.duration),
                   isRecurrentEvent: true,
                 });
               }
-              return calEvents;
             }
-            return {
-              ...baseEvent,
-              start: new Date(se?.start || ""),
-              end: addMilliseconds(
-                new Date(se?.start || ""),
-                se.service.duration,
-              ),
-            };
+            return [
+              {
+                ...baseEvent,
+                start: new Date(se?.start || ""),
+                end: addMilliseconds(
+                  new Date(se?.start || ""),
+                  se.service.duration,
+                ),
+              },
+              ...recurringEvents,
+            ];
           }),
       )
       ?.flat(2) || [];

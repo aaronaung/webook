@@ -12,7 +12,7 @@ export const useDeleteStaff = (businessId?: string) => {
       });
       return supaClientComponentClient()
         .storage.from(BUCKETS.publicBusinessAssets)
-        .remove([`${STORAGE_DIR_PATHS.staff_headshots}/${staffId}`]);
+        .remove([`${STORAGE_DIR_PATHS.staffHeadshots}/${staffId}`]);
     },
     meta: { errorMessage: "Failed to delete staff" },
     onSuccess: () => {

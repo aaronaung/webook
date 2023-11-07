@@ -4,5 +4,7 @@ export const BUCKETS = {
 
 export const STORAGE_DIR_PATHS = {
   services: "services",
-  staff_headshots: "staff_headshots",
+  staffHeadshots: "staff_headshots",
+  businessLogos: "business_logos",
+  businessCoverPhotos: "business_cover_photos",
 };
