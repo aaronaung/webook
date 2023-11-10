@@ -1,16 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supaClientComponentClient } from "../data/clients/browser";
-import { getStaffs } from "../data/staff";
+import { getQuestions } from "../data/question";
 
-export const useStaffs = (businessId: string) => {
+export const useQuestions = (businessId: string) => {
   const {
     data: result,
     error,
     ...props
   } = useQuery({
-    queryKey: ["staffs", businessId],
+    queryKey: ["questions", businessId],
     queryFn: () =>
-      getStaffs(businessId, {
+      getQuestions(businessId, {
         client: supaClientComponentClient(),
       }),
   });

@@ -7,17 +7,20 @@ import {
 import SaveServiceForm, {
   SaveServiceFormSchemaType,
 } from "../forms/save-service-form";
+import { Tables } from "@/types/db.extension";
 
 export function SaveServiceDialog({
   initFormValues,
   onClose,
   isOpen,
   serviceGroupId,
+  availableQuestions,
 }: {
   initFormValues?: SaveServiceFormSchemaType;
   onClose: () => void;
   isOpen: boolean;
   serviceGroupId?: string;
+  availableQuestions?: Tables<"question">[];
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -29,6 +32,7 @@ export function SaveServiceDialog({
           defaultValues={initFormValues}
           onSubmitted={onClose}
           serviceGroupId={serviceGroupId}
+          availableQuestions={availableQuestions}
         />
       </DialogContent>
     </Dialog>

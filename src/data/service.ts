@@ -15,7 +15,7 @@ export const getServiceGroupsWithServices = async (
 
   const { data: services, error: servicesError } = await client
     .from("service")
-    .select("*")
+    .select("*, question (*)")
     .in(
       "service_group_id",
       (serviceGroups || []).map((serviceGroup) => serviceGroup.id),
@@ -107,6 +107,27 @@ export const saveServiceEventStaff = async (
         staff_id: staffId,
       })),
     );
+  if (upsertError) throw upsertError;
+};
+
+// This will delete all service questions for the given service id, and then upsert the new ones.
+export const saveServiceQuestion = async (
+  serviceId: string,
+  questionIds: string[],
+  { client }: SupabaseOptions,
+) => {
+  const { error: deleteError } = await client
+    .from("service_question")
+    .delete()
+    .eq("service_id", serviceId);
+  if (deleteError) throw deleteError;
+
+  const { error: upsertError } = await client.from("service_question").upsert(
+    questionIds.map((questionId) => ({
+      service_id: serviceId,
+      question_id: questionId,
+    })),
+  );
   if (upsertError) throw upsertError;
 };
 

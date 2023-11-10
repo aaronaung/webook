@@ -8,7 +8,6 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import _ from "lodash";
-import { useRouter } from "next/navigation";
 import { SaveServiceGroupDialog } from "@/src/components/dialogs/save-service-group-dialog";
 import { useCallback, useState } from "react";
 import {
@@ -32,19 +31,22 @@ import { PlusIcon } from "lucide-react";
 import { SaveServiceDialog } from "@/src/components/dialogs/save-service-dialog";
 import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
 import { Row } from "@tanstack/react-table";
-import { Tables } from "@/types/db.extension";
 import { useDeleteServiceGroup } from "@/src/hooks/use-delete-service-group";
 import { useDeleteService } from "@/src/hooks/use-delete-service";
-import { ServiceGroupWithServices } from "@/types";
+import { Service, ServiceGroupWithServices } from "@/types";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import { RowAction } from "@/src/components/tables/types";
 import { SaveServiceGroupFormSchemaType } from "@/src/components/forms/save-service-group-form";
+import EmptyState from "@/src/components/pages/shared/empty-state";
+import { useQuestions } from "@/src/hooks/use-questions";
 
-// TODO: IMPORTANT (the styling doesn't work perfect for a lot of service groups and mobile)
+// TODO: IMPORTANT (the styling doesn't work perfect for a lot of service groups on mobile)
 export default function Services() {
   const { currentBusiness } = useCurrentBusinessContext();
-  const router = useRouter();
 
+  const { data: questions, isLoading: isQuestionsLoading } = useQuestions(
+    currentBusiness.id,
+  );
   const { data: serviceGroups, isLoading: isServiceGroupsLoading } =
     useServiceGroupsWithServices(currentBusiness?.id);
   const { mutate: deleteServiceGroup, isPending: isDeleteSgPending } =
@@ -74,33 +76,31 @@ export default function Services() {
     isOpen: false,
   });
 
-  const onSvcRowAction = useCallback(
-    (row: Row<Tables<"service">>, action: RowAction) => {
-      switch (action) {
-        case RowAction.EDIT:
-          setSvcDialogState({
-            isOpen: !svcDialogState.isOpen,
-            initFormValues: {
-              id: row.original.id,
-              title: row.original.title,
-              price: row.original.price ?? 0,
-              duration: row.original.duration ?? 0,
-              booking_limit: row.original.booking_limit ?? 0,
-            },
-            serviceGroupId: row.original.service_group_id ?? undefined,
-          });
-          break;
-        case RowAction.DELETE:
-          if (!isDeleteSvcPending) {
-            deleteService(row.original.id);
-          }
-          break;
-        default:
-          console.error("Unknown row action");
-      }
-    },
-    [],
-  );
+  const onSvcRowAction = useCallback((row: Row<Service>, action: RowAction) => {
+    switch (action) {
+      case RowAction.EDIT:
+        setSvcDialogState({
+          isOpen: !svcDialogState.isOpen,
+          initFormValues: {
+            id: row.original.id,
+            title: row.original.title,
+            price: row.original.price ?? 0,
+            duration: row.original.duration ?? 0,
+            booking_limit: row.original.booking_limit ?? 0,
+            question_ids: (row.original.question ?? []).map((q) => q.id),
+          },
+          serviceGroupId: row.original.service_group_id ?? undefined,
+        });
+        break;
+      case RowAction.DELETE:
+        if (!isDeleteSvcPending) {
+          deleteService(row.original.id);
+        }
+        break;
+      default:
+        console.error("Unknown row action");
+    }
+  }, []);
 
   function handleSgDelete(sg: ServiceGroupWithServices) {
     if (!_.isEmpty(sg.services)) {
@@ -115,8 +115,8 @@ export default function Services() {
     }
   }
 
-  if (isServiceGroupsLoading) {
-    return <></>;
+  if (isServiceGroupsLoading || isQuestionsLoading) {
+    return <>Loading...</>;
   }
   return (
     <div className="flex w-full justify-center">
@@ -144,6 +144,7 @@ export default function Services() {
         isOpen={svcDialogState.isOpen}
         initFormValues={svcDialogState.initFormValues}
         serviceGroupId={svcDialogState.serviceGroupId}
+        availableQuestions={questions}
         onClose={() =>
           setSvcDialogState({
             ...svcDialogState,
@@ -152,24 +153,18 @@ export default function Services() {
         }
       />
       {_.isEmpty(serviceGroups) ? (
-        <div className="flex  max-w-[400px] flex-col items-center gap-y-2 text-center">
-          <Square3Stack3DIcon className="h-12 w-12" />
-          <h3 className="">No service group found</h3>
-          <p className="text-sm text-muted-foreground">
-            Service groups help you categorize your services.
-          </p>
-          <Button
-            className="mt-2"
-            onClick={() =>
-              setSgDialogState({
-                initFormValues: undefined,
-                isOpen: !sgDialogState.isOpen,
-              })
-            }
-          >
-            Start by creating one
-          </Button>
-        </div>
+        <EmptyState
+          Icon={Square3Stack3DIcon}
+          title="No service group found"
+          description="Service groups help you categorize your services."
+          actionButtonText="Start by creating one"
+          onAction={() =>
+            setSgDialogState({
+              initFormValues: undefined,
+              isOpen: !sgDialogState.isOpen,
+            })
+          }
+        />
       ) : (
         <div className="w-full">
           <Tabs defaultValue={serviceGroups[0].id}>
@@ -231,22 +226,19 @@ export default function Services() {
             {serviceGroups.map((sg) => (
               <TabsContent key={sg.id} value={sg.id}>
                 {_.isEmpty(sg.services) ? (
-                  <div className="mt-20 flex flex-col items-center gap-y-2 text-center">
-                    <Square3Stack3DIcon className="h-12 w-12" />
-                    <h3 className="">No service found</h3>
-                    <Button
-                      className="mt-2"
-                      onClick={() =>
-                        setSvcDialogState({
-                          isOpen: !svcDialogState.isOpen,
-                          initFormValues: undefined,
-                          serviceGroupId: sg.id,
-                        })
-                      }
-                    >
-                      Start by creating one
-                    </Button>
-                  </div>
+                  <EmptyState
+                    Icon={Square3Stack3DIcon}
+                    title="No service found"
+                    description="Create services for your customers to start booking."
+                    actionButtonText="New service"
+                    onAction={() =>
+                      setSvcDialogState({
+                        isOpen: !svcDialogState.isOpen,
+                        initFormValues: undefined,
+                        serviceGroupId: sg.id,
+                      })
+                    }
+                  />
                 ) : (
                   <>
                     <div className="mt-4 max-h-[600px] overflow-scroll ">

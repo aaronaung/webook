@@ -15,7 +15,7 @@ import _ from "lodash";
 
 type InputSelectOption = {
   label: string;
-  value: string;
+  value: any;
 };
 
 type InputSelectProps = ControlledRhfInputProps & {

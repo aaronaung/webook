@@ -1,6 +1,7 @@
 "use client";
 import { SaveStaffDialog } from "@/src/components/dialogs/save-staff-dialog";
 import { SaveStaffFormSchemaType } from "@/src/components/forms/save-staff-form";
+import EmptyState from "@/src/components/pages/shared/empty-state";
 import StaffsTable from "@/src/components/tables/staffs-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
@@ -8,7 +9,7 @@ import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { useDeleteStaff } from "@/src/hooks/use-delete-staff";
 import { useStaffs } from "@/src/hooks/use-staffs";
 import { Tables } from "@/types/db.extension";
-import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
+import { UsersIcon } from "@heroicons/react/24/outline";
 import { Row } from "@tanstack/react-table";
 import _ from "lodash";
 import { PlusIcon } from "lucide-react";
@@ -72,21 +73,17 @@ export default function Staffs() {
         }
       />
       {_.isEmpty(staffs) ? (
-        <div className="mt-20 flex flex-col items-center gap-y-2 text-center">
-          <Square3Stack3DIcon className="h-12 w-12" />
-          <h3 className="">No staffs found</h3>
-          <Button
-            className="mt-2"
-            onClick={() =>
-              setStaffDialogState({
-                isOpen: !staffDialogState.isOpen,
-                initFormValues: undefined,
-              })
-            }
-          >
-            Start by creating one
-          </Button>
-        </div>
+        <EmptyState
+          Icon={UsersIcon}
+          title="No staff found"
+          actionButtonText="New staff"
+          onAction={() =>
+            setStaffDialogState({
+              isOpen: !staffDialogState.isOpen,
+              initFormValues: undefined,
+            })
+          }
+        />
       ) : (
         <>
           <div className="mt-4 max-h-[600px] overflow-scroll ">

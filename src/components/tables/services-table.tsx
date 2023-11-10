@@ -1,4 +1,3 @@
-import { Tables } from "@/types/db.extension";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import {
   AccessorFnColumnDef,
@@ -11,10 +10,11 @@ import { RowAction } from "./types";
 import Image from "../ui/image";
 import { BUCKETS } from "@/src/consts/storage";
 import { fetchWithRetry, getTimestampedObjUrl } from "@/src/utils";
+import { Service } from "@/types";
 
-const columnHelper = createColumnHelper<Tables<"service">>();
+const columnHelper = createColumnHelper<Service>();
 
-function SvcImgCell({ row }: { row: Row<Tables<"service">> }) {
+function SvcImgCell({ row }: { row: Row<Service> }) {
   const [imgExists, setImgExists] = useState<boolean>(false);
   const imgUrl = getTimestampedObjUrl(
     BUCKETS.publicBusinessAssets,
@@ -44,8 +44,8 @@ function SvcImgCell({ row }: { row: Row<Tables<"service">> }) {
 }
 
 type ServicesTableProp = {
-  data: Tables<"service">[];
-  onRowAction: (row: Row<Tables<"service">>, action: RowAction) => void;
+  data: Service[];
+  onRowAction: (row: Row<Service>, action: RowAction) => void;
 };
 
 export default function ServicesTable({
@@ -55,6 +55,10 @@ export default function ServicesTable({
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
+        header: "",
+        enableHiding: true,
+      }),
+      columnHelper.accessor("question", {
         header: "",
         enableHiding: true,
       }),
@@ -121,9 +125,10 @@ export default function ServicesTable({
       initialState={{
         columnVisibility: {
           id: false,
+          question: false,
         },
       }}
-      columns={columns as AccessorFnColumnDef<Tables<"service">>[]}
+      columns={columns as AccessorFnColumnDef<Service>[]}
       data={data}
     />
   );

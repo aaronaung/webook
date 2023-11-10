@@ -1,19 +1,31 @@
 "use client";
 
 import { CurrentBusinessProvider } from "@/src/contexts/current-business";
-import EmptyState from "@/src/components/pages/app/business/empty-state";
+import EmptyState from "@/src/components/pages/shared/empty-state";
 import Navbar from "@/src/components/pages/app/business/navbar";
 import { useLoggedInUserBusinesses } from "@/src/hooks/use-logged-in-user-businesses";
 import _ from "lodash";
+import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = useLoggedInUserBusinesses();
-
+  const router = useRouter();
   if (isLoading) {
     return <>Loading...</>;
   }
   if (_.isEmpty(data?.businesses) && !isLoading) {
-    return <EmptyState />;
+    return (
+      <EmptyState
+        Icon={BuildingOffice2Icon}
+        title="No businesses"
+        description="Create one to get started."
+        actionButtonText="New business"
+        onAction={() => {
+          router.push("/app/business/new");
+        }}
+      />
+    );
   }
 
   return (

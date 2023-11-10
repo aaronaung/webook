@@ -118,7 +118,7 @@ export default function SchedulePage() {
         availableStaffs={businessData.staffs}
       />
       <div className="mb-2 flex-shrink-0">
-        {_.isEmpty(businessData.service_groups) ? (
+        {_.isEmpty(businessData.services) ? (
           <>
             <Card className="w-full ">
               <CardHeader>

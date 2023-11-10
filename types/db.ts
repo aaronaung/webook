@@ -43,6 +43,52 @@ export interface Database {
           }
         ]
       }
+      booking_question_answer: {
+        Row: {
+          booking_id: string
+          bool_answer: boolean | null
+          created_at: string | null
+          multiselect_answer: string[] | null
+          question_id: string
+          select_answer: string | null
+          text_answer: string | null
+          type: number
+        }
+        Insert: {
+          booking_id: string
+          bool_answer?: boolean | null
+          created_at?: string | null
+          multiselect_answer?: string[] | null
+          question_id: string
+          select_answer?: string | null
+          text_answer?: string | null
+          type: number
+        }
+        Update: {
+          booking_id?: string
+          bool_answer?: boolean | null
+          created_at?: string | null
+          multiselect_answer?: string[] | null
+          question_id?: string
+          select_answer?: string | null
+          text_answer?: string | null
+          type?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_question_answer_booking_id_fkey"
+            columns: ["booking_id"]
+            referencedRelation: "booking"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_question_answer_question_id_fkey"
+            columns: ["question_id"]
+            referencedRelation: "question"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       business: {
         Row: {
           address: string | null
@@ -106,6 +152,46 @@ export interface Database {
             foreignKeyName: "business_owner_id_fkey"
             columns: ["owner_id"]
             referencedRelation: "user"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      question: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+          options: string[] | null
+          question: string
+          required: boolean | null
+          type: number
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          options?: string[] | null
+          question: string
+          required?: boolean | null
+          type: number
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          options?: string[] | null
+          question?: string
+          required?: boolean | null
+          type?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_business_id_fkey"
+            columns: ["business_id"]
+            referencedRelation: "business"
             referencedColumns: ["id"]
           }
         ]
@@ -297,6 +383,34 @@ export interface Database {
             foreignKeyName: "service_group_business_id_fkey"
             columns: ["business_id"]
             referencedRelation: "business"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      service_question: {
+        Row: {
+          question_id: string
+          service_id: string
+        }
+        Insert: {
+          question_id: string
+          service_id: string
+        }
+        Update: {
+          question_id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_question_question_id_fkey"
+            columns: ["question_id"]
+            referencedRelation: "question"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_question_service_id_fkey"
+            columns: ["service_id"]
+            referencedRelation: "service"
             referencedColumns: ["id"]
           }
         ]

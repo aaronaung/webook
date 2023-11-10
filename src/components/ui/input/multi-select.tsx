@@ -19,8 +19,11 @@ export default function InputMultiSelect(props: InputMultiSelectProps) {
       <FancyMultiSelect
         options={props.options}
         disabled={props.disabled}
-        selected={field.value}
+        selected={props.value || field.value}
         onSelectChange={(value) => {
+          if (props.onChange) {
+            props.onChange(value);
+          }
           field.onChange(value);
         }}
         placeholder={props.inputProps?.placeholder}

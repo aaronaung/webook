@@ -257,7 +257,7 @@ export default function BusinessProfileForm({
                 rhfKey="handle"
                 register={register}
                 inputProps={{
-                  placeholder: "janesmith",
+                  placeholder: "This is your unique business handle",
                 }}
                 onChange={(e) => setHandle(e.target.value)}
                 error={errors.handle?.message}
@@ -269,7 +269,7 @@ export default function BusinessProfileForm({
                 register={register}
                 label="Title"
                 inputProps={{
-                  placeholder: "Smith Car Wash",
+                  placeholder: "The title to display on your landing page",
                 }}
                 error={errors.title?.message}
               />
@@ -281,7 +281,7 @@ export default function BusinessProfileForm({
                 label="Email"
                 inputProps={{
                   autoComplete: "email",
-                  placeholder: "janesmith@gmail.com",
+                  placeholder: "Email address",
                 }}
                 error={errors.email?.message}
               />
@@ -326,7 +326,7 @@ export default function BusinessProfileForm({
                 control={control}
                 label="Address"
                 inputProps={{
-                  placeholder: "123 Main St",
+                  placeholder: "Address line",
                   autoComplete: "address",
                 }}
                 error={errors.address?.message}
@@ -338,7 +338,7 @@ export default function BusinessProfileForm({
                 register={register}
                 label="City"
                 inputProps={{
-                  placeholder: "Los Angeles",
+                  placeholder: "City",
                 }}
                 error={errors.city?.message}
               />
@@ -349,7 +349,7 @@ export default function BusinessProfileForm({
                 register={register}
                 label="State"
                 inputProps={{
-                  placeholder: "CA",
+                  placeholder: "State",
                 }}
                 error={errors.state?.message}
               />
@@ -373,7 +373,7 @@ export default function BusinessProfileForm({
                 }))}
                 label="Country"
                 inputProps={{
-                  placeholder: "United States",
+                  placeholder: "Country",
                 }}
                 error={errors.country_code?.message}
               />

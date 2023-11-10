@@ -13,8 +13,10 @@ export type BusinessServiceEvent = Tables<"service_event"> & {
 } & Tables<"service">;
 
 export type ServiceGroupWithServices = Tables<"service_group"> & {
-  services: Tables<"service">[];
+  services: Service[];
 };
+
+export type Service = Tables<"service"> & { question: Tables<"question">[] };
 
 // BusinessData contains all the data that's configured in the business without the individual schedule events.
 export type BusinessData = {

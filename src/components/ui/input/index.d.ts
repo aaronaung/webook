@@ -15,7 +15,7 @@ export type CommonRhfInputProps = {
 };
 
 export type ControlledRhfInputProps = CommonRhfInputProps & {
-  control: Control<any>;
+  control?: Control<any>;
 };
 export type RhfInputProps = CommonRhfInputProps & {
   register?: UseFormRegister<any>;
