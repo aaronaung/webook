@@ -39,7 +39,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
-        } h-full overflow-hidden`}
+        } h-full overscroll-none`}
       >
         <ReactQueryProvider>
           <ReactDnDProvider>
