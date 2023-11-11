@@ -2,39 +2,27 @@ import { Tables } from "@/types/db.extension";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Row, createColumnHelper } from "@tanstack/react-table";
 import { DataTable } from "../ui/data-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { RowAction } from "./types";
 import Image from "../ui/image";
-import { fetchWithRetry, getStaffHeadshotUrl } from "@/src/utils";
+import { getStaffHeadshotUrl } from "@/src/utils";
 
 const columnHelper = createColumnHelper<Tables<"staff">>();
 
 function StaffHeadshotCell({ row }: { row: Row<Tables<"staff">> }) {
-  const [headshotExists, setHeadshotExists] = useState<boolean>(false);
   const headshotUrl = getStaffHeadshotUrl(
     row.original.id,
     row.original.updated_at,
   );
 
-  useEffect(() => {
-    fetchWithRetry(headshotUrl, { method: "HEAD" })
-      .then(() => {
-        setHeadshotExists(true);
-      })
-      .catch(() => {
-        setHeadshotExists(false);
-      });
-  }, [headshotUrl]);
-
-  if (headshotExists) {
-    return (
-      <Image
-        className="h-12 w-12 self-center rounded-full"
-        src={`${headshotUrl}&random=${Date.now()}`} // random forces the image to reload
-      ></Image>
-    );
-  }
-  return <></>;
+  return (
+    <Image
+      retryOnError
+      hideOnRetryTimeout
+      className="h-12 w-12 self-center rounded-full object-cover"
+      src={`${headshotUrl}&random=${Date.now()}`} // random forces the image to reload
+    ></Image>
+  );
 }
 
 type StaffTableProp = {

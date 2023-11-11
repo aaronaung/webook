@@ -2,10 +2,28 @@ import useImageWithRetry from "@/src/hooks/use-image-with-retry";
 import { cn } from "@/src/utils";
 import { ImgHTMLAttributes, useRef } from "react";
 
-export default function Image(props: ImgHTMLAttributes<HTMLImageElement>) {
-  const imgRef = useRef<HTMLImageElement>(null);
-  const { hasError, isLoading, isRetrying } = useImageWithRetry(imgRef);
+type ImageProps = ImgHTMLAttributes<HTMLImageElement> & {
+  fallbackSrc?: string;
+  hideOnRetryTimeout?: boolean;
+  retryOnError?: boolean;
+};
 
+export default function Image({
+  fallbackSrc,
+  hideOnRetryTimeout,
+  retryOnError = false,
+  ...props
+}: ImageProps) {
+  const imgRef = useRef<HTMLImageElement>(null);
+  const { hasError, isLoading, isRetrying } = useImageWithRetry(
+    imgRef,
+    fallbackSrc,
+    retryOnError,
+  );
+
+  if (hideOnRetryTimeout && hasError) {
+    return <></>;
+  }
   return (
     <>
       {(isLoading || isRetrying) && (

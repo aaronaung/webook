@@ -14,10 +14,10 @@ export const navigation = [
     href: "/app/business/services",
   },
   { name: "Staffs", icon: UsersIcon, href: "/app/business/staffs" },
-  { name: "Settings", icon: Cog8ToothIcon, href: "/app/business/settings" },
   {
     name: "Questions",
     icon: QuestionMarkCircleIcon,
     href: "/app/business/questions",
   },
+  { name: "Settings", icon: Cog8ToothIcon, href: "/app/business/settings" },
 ];

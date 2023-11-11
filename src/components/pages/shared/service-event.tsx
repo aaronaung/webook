@@ -3,7 +3,7 @@ import { getServiceImgUrl, getStaffHeadshotUrl } from "@/src/utils";
 import { BusinessServiceEvent } from "@/types";
 import { format } from "date-fns";
 import _ from "lodash";
-import Image from "next/image";
+import Image from "../../ui/image";
 
 export default function ServiceEvent({
   event,
@@ -29,18 +29,17 @@ export default function ServiceEvent({
 
   return (
     <li className="group flex cursor-pointer items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100">
-      <div className="flex -space-x-1">
+      <div className="flex h-12 w-12 shrink-0 -space-x-1">
         <dt className="sr-only">Staffs</dt>
         {imageUrls().map((url, index) => (
           <dd key={`${url}-${index}`}>
             <Image
-              className="rounded-full bg-gray-50 ring-2 ring-white"
+              className="h-12 w-12 rounded-full bg-gray-50 object-cover ring-2 ring-white"
               src={
                 url || `https://ui-avatars.com/api/?name=${event.service.title}`
               }
+              fallbackSrc={`https://i.pravatar.cc/60?u=${staffName || "test"}`}
               alt={staffName || ""}
-              width={46}
-              height={46}
             />
           </dd>
         ))}

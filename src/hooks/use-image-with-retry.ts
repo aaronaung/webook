@@ -12,10 +12,11 @@ export const IMAGE_STATUS = {
 
 const useImageWithRetry = (
   imageRef: MutableRefObject<HTMLImageElement | null>,
+  fallbackSrc?: string,
+  retryOnError = false,
 ) => {
   const [imageStatus, setImageStatus] = useState(IMAGE_STATUS.LOADING);
   const retries = useRef(0);
-  const srcVerificationRetries = useRef(0);
 
   const isRetrying = imageStatus === IMAGE_STATUS.RETRYING;
   const isLoaded = imageStatus === IMAGE_STATUS.LOADED;
@@ -44,7 +45,10 @@ const useImageWithRetry = (
     }
 
     const handleError = (event: any) => {
-      if (retries.current >= MAX_RETRIES) {
+      if (retries.current >= MAX_RETRIES || !retryOnError) {
+        if (fallbackSrc) {
+          image.src = fallbackSrc;
+        }
         setImageStatus(IMAGE_STATUS.ERROR);
         return;
       }
