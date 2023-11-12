@@ -1,5 +1,5 @@
 "use client";
-import { navigation } from "@/app/app/business/navigation";
+import { navigation } from "@/app/(routes)/app/business/navigation";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import {

@@ -37,7 +37,20 @@ BEGIN
                             'booking_limit', s.booking_limit,
                             'description', s.description,
                             'duration', s.duration,
-                            'id', s.id
+                            'id', s.id,
+                            'questions', (
+                                SELECT json_agg(jsonb_build_object(
+                                    'id', q.id,
+                                    'question', q.question,
+                                    'type', q.type,
+                                    'required', q.required,
+                                    'options', q.options,
+                                    'enabled', q.enabled
+                                ))
+                                FROM public.services_questions AS sq
+                                JOIN public.questions AS q ON sq.question_id = q.id
+                                WHERE sq.service_id = s.id
+                            )
                         ),
                         'staffs', (
                             SELECT json_agg(jsonb_build_object(

@@ -14,11 +14,15 @@ export const metadata: Metadata = {
   description: "Login to your account",
 };
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: { returnPath?: string };
+}) {
   const user = await getAuthUser({ client: supaServerComponentClient() });
 
   if (user) {
-    redirect("/app/business/schedule");
+    redirect(searchParams.returnPath || "/app/business/schedule");
   }
 
   return (
@@ -35,7 +39,7 @@ export default async function LoginPage() {
           Back
         </>
       </Link>
-      <UserAuthForm />
+      <UserAuthForm returnPath={searchParams.returnPath} />
     </>
   );
 }

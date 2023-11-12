@@ -6,12 +6,12 @@ import Hero from "@/src/components/pages/business/hero";
 export default async function ServiceProvider({
   params,
 }: {
-  params: { handle: string };
+  params: { businessHandle: string };
 }) {
   const { data: business, ...props } = await supaStaticRouteClient
     .from("businesses")
     .select("*")
-    .eq("handle", params.handle)
+    .eq("handle", params.businessHandle)
     .single();
 
   if (!business) {

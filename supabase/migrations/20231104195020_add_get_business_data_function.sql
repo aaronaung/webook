@@ -10,7 +10,7 @@ DECLARE
     result jsonb;
 BEGIN
     -- Get the business ID based on the handle.
-    SELECT id INTO var_business_id FROM public.business WHERE handle = business_handle;
+    SELECT id INTO var_business_id FROM public.businesses WHERE handle = business_handle;
 
     -- Initialize the result JSON object.
     result := '{}'::jsonb;
@@ -24,7 +24,20 @@ BEGIN
                 'description', s.description,
                 'booking_limit', s.booking_limit,
                 'duration', s.duration,
-                'price', s.price
+                'price', s.price,
+                'questions', (
+                    SELECT json_agg(jsonb_build_object(
+                        'id', q.id,
+                        'question', q.question,
+                        'type', q.type,
+                        'required', q.required,
+                        'options', q.options,
+                        'enabled', q.enabled
+                    ))
+                    FROM public.services_questions AS sq
+                    JOIN public.questions AS q ON sq.question_id = q.id
+                    WHERE sq.service_id = s.id
+                )
             ),
             '{color}', ('"' || sg.color || '"')::jsonb
         )

@@ -1,7 +1,7 @@
 import DnDCalendar, { localizer } from "@/src/components/ui/dnd-calendar";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedule-by-time-range";
-import { BusinessServiceEvent } from "@/types";
+import { ServiceEvent } from "@/types";
 import {
   add,
   addMilliseconds,
@@ -18,7 +18,7 @@ import {
   EventInteractionArgs,
 } from "react-big-calendar/lib/addons/dragAndDrop";
 
-export type CalEvent = BusinessServiceEvent & {
+export type CalEvent = ServiceEvent & {
   isRecurrentEvent?: boolean;
 };
 

@@ -1,40 +1,55 @@
 "use client";
 
 import CalendarV2 from "@/src/components/ui/calendar-v2";
-import ServiceEvent from "@/src/components/pages/shared/service-event";
 import { format, isBefore, isSameDay, startOfToday } from "date-fns";
-import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
-import { BusinessSchedule } from "@/types";
-import { Tables } from "@/types/db.extension";
-import { Tabs, TabsList, TabsTrigger } from "../../ui/tabs";
+import { useMemo } from "react";
+import { BusinessSchedule, ServiceEvent } from "@/types";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "../../../../../src/components/ui/tabs";
+import ServiceEventItem from "./service-event-item";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function Schedule({
-  handle,
-  data,
-  calendarClassName,
-  serviceEventsClassName,
-}: {
-  handle: string;
+type ServiceEventCalendarProps = {
   data: BusinessSchedule;
   calendarClassName?: string;
   serviceEventsClassName?: string;
-}) {
-  const today = startOfToday();
-  const [selectedDay, setSelectedDay] = useState(today);
-  const [selectedTab, setSelectedTab] = useState(data?.[0]?.id);
+  onServiceEventClick: (serviceEvent: ServiceEvent) => void;
+};
 
-  const onServiceDrop = useCallback(
-    (service: Tables<"services">, day: Date) => {},
-    [],
+export default function ServiceEventCalendar({
+  data,
+  calendarClassName,
+  serviceEventsClassName,
+  onServiceEventClick,
+}: ServiceEventCalendarProps) {
+  const today = startOfToday();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedDay = new Date(
+    parseInt(searchParams.get("date_millis") || "") || today.getTime(),
   );
+  const selectedCategory = searchParams.get("category") || data?.[0]?.id;
+
+  const handleDaySelect = (newDate: Date) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("date_millis", newDate.getTime().toString());
+    router.push(`${window.location.pathname}?${newParams.toString()}`);
+  };
+  const handleCategorySelect = (newCategory: string) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("category", newCategory);
+    router.push(`${window.location.pathname}?${newParams.toString()}`);
+  };
 
   const selectedDayServiceEvents = useMemo(() => {
     return (
       (data || [])
         .find(
           (serviceCategory) =>
-            serviceCategory.id === (selectedTab || data?.[0]?.id),
+            serviceCategory.id === (selectedCategory || data?.[0]?.id),
         )
         ?.service_events.filter((event) => {
           const startDateTime = new Date(event.start);
@@ -80,13 +95,6 @@ export default function Schedule({
             return false;
           }
 
-          console.log(
-            selectedDay,
-            repeatStartDateTime,
-            repeatInterval,
-            repeatIntervalsToJump,
-          );
-
           return isSameDay(
             selectedDay,
             new Date(
@@ -95,15 +103,14 @@ export default function Schedule({
           );
         }) || []
     );
-  }, [data, selectedTab, selectedDay]);
+  }, [data, selectedCategory, selectedDay]);
 
   return (
     <>
       <div className={calendarClassName}>
         <CalendarV2
           defaultSelectedDay={selectedDay}
-          onDateSelect={(newDate) => setSelectedDay(newDate)}
-          onServiceDrop={onServiceDrop}
+          onDateSelect={(newDate) => handleDaySelect(newDate)}
         />
       </div>
 
@@ -112,8 +119,8 @@ export default function Schedule({
           {format(selectedDay, "MMMM dd")}
         </p>
         <Tabs
-          value={selectedTab}
-          onValueChange={(selected) => setSelectedTab(selected)}
+          value={selectedCategory}
+          onValueChange={(selected) => handleCategorySelect(selected)}
         >
           <div className="flex max-w-full items-center overflow-x-scroll">
             <TabsList className="relative overflow-visible">
@@ -125,23 +132,16 @@ export default function Schedule({
             </TabsList>
           </div>
         </Tabs>
-        {/* {data?.length > 1 && (
-          <AnimatedTabs
-            tabs={(data || []).map((group) => ({
-              id: group.id,
-              label: group.title,
-            }))}
-            onChange={(newTab: string) => setSelectedTab(newTab)}
-            value={selectedTab || data?.[0]?.id}
-          />
-        )} */}
-
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
           {selectedDayServiceEvents.length > 0 ? (
             selectedDayServiceEvents.map((event) => (
-              <Link key={event.id} href={`/${handle}/${event.id}/booking`}>
-                <ServiceEvent event={event} key={event.id} />
-              </Link>
+              <ServiceEventItem
+                event={event}
+                key={event.id}
+                onClick={() => {
+                  onServiceEventClick(event);
+                }}
+              />
             ))
           ) : (
             <p>Nothing for today.</p>

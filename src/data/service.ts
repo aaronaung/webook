@@ -118,12 +118,12 @@ export const saveServiceQuestion = async (
   { client }: SupabaseOptions,
 ) => {
   const { error: deleteError } = await client
-    .from("service_question")
+    .from("services_questions")
     .delete()
     .eq("service_id", serviceId);
   if (deleteError) throw deleteError;
 
-  const { error: upsertError } = await client.from("service_question").upsert(
+  const { error: upsertError } = await client.from("services_questions").upsert(
     questionIds.map((questionId) => ({
       service_id: serviceId,
       question_id: questionId,

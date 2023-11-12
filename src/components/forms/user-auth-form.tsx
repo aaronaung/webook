@@ -21,7 +21,11 @@ const formSchema = z.object({
 export type FormSchemaType = z.infer<typeof formSchema>;
 
 // todo - implement forgot password + remember me.
-export default function UserAuthForm() {
+export default function UserAuthForm({
+  returnPath = "app/business/schedule",
+}: {
+  returnPath?: string;
+}) {
   const [formState, setFormState] = useState<FormState>("sign-in");
   const router = useRouter();
 
@@ -48,7 +52,7 @@ export default function UserAuthForm() {
           description: error.message,
         });
       } else {
-        router.replace("/app/business/schedule");
+        router.replace(returnPath);
       }
     } catch (error) {
       console.log("error logging in", error);
@@ -68,7 +72,7 @@ export default function UserAuthForm() {
         email: formValues.email,
         password: formValues.password,
         options: {
-          emailRedirectTo: `${location.origin}/api/auth/callback`,
+          emailRedirectTo: `${location.origin}/api/auth/callback?returnPath=${returnPath}`,
         },
       });
       if (error) {
@@ -101,7 +105,9 @@ export default function UserAuthForm() {
       const { data, error } =
         await supaClientComponentClient().auth.signInWithOAuth({
           provider: "google",
-          options: { redirectTo: `${location.origin}/api/auth/callback` },
+          options: {
+            redirectTo: `${location.origin}/api/auth/callback?returnPath=${returnPath}`,
+          },
         });
       if (error) {
         toast({

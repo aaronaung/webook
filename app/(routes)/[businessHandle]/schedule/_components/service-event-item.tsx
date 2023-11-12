@@ -1,14 +1,16 @@
 import PriceTag from "@/src/components/ui/price-tag";
 import { getServiceImgUrl, getStaffHeadshotUrl } from "@/src/utils";
-import { BusinessServiceEvent } from "@/types";
+import { ServiceEvent } from "@/types";
 import { format } from "date-fns";
 import _ from "lodash";
-import Image from "../../ui/image";
+import Image from "../../../../../src/components/ui/image";
 
 export default function ServiceEvent({
   event,
+  onClick,
 }: {
-  event: BusinessServiceEvent;
+  event: ServiceEvent;
+  onClick: () => void;
 }) {
   const startDateTime = new Date(event.start || "");
   const staffName = (event.staffs || [])
@@ -28,7 +30,10 @@ export default function ServiceEvent({
   }
 
   return (
-    <li className="group flex cursor-pointer items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100">
+    <li
+      onClick={onClick}
+      className="group flex cursor-pointer items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100"
+    >
       <div className="flex h-12 w-12 shrink-0 -space-x-1">
         <dt className="sr-only">Staffs</dt>
         {imageUrls().map((url, index) => (
