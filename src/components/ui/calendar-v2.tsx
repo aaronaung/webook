@@ -27,7 +27,7 @@ const colStartClasses = [
 ];
 
 type CalendarV2Props = {
-  onServiceDrop?: (item: Tables<"service">, day: Date) => void;
+  onServiceDrop?: (item: Tables<"services">, day: Date) => void;
   onDateSelect?: (date: Date) => void;
   defaultSelectedDay?: Date;
   className?: string;

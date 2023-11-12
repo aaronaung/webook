@@ -10,11 +10,11 @@ import { useMemo } from "react";
 import { RowAction } from "./types";
 import { QUESTION_TYPES } from "@/src/consts/questions";
 
-const columnHelper = createColumnHelper<Tables<"question">>();
+const columnHelper = createColumnHelper<Tables<"questions">>();
 
 type QuestionsTableProp = {
-  data: Tables<"question">[];
-  onRowAction: (row: Row<Tables<"question">>, action: RowAction) => void;
+  data: Tables<"questions">[];
+  onRowAction: (row: Row<Tables<"questions">>, action: RowAction) => void;
 };
 
 export default function QuestionsTable({
@@ -71,7 +71,7 @@ export default function QuestionsTable({
           id: false,
         },
       }}
-      columns={columns as AccessorFnColumnDef<Tables<"question">>[]}
+      columns={columns as AccessorFnColumnDef<Tables<"questions">>[]}
       data={data}
     />
   );

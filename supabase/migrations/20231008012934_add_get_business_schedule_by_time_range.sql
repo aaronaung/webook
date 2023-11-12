@@ -11,13 +11,13 @@ SECURITY DEFINER
 AS $function$
 DECLARE
     result jsonb;
-    service_group_data RECORD;
+    service_category_data RECORD;
 BEGIN
     -- Initialize the result JSON array.
     result := '[]'::jsonb;
 
     -- Query to fetch the schedule data.
-    FOR service_group_data IN
+    FOR service_category_data IN
         SELECT  sg.id as id,
                 sg.title as title,
                 sg.priority as priority, 
@@ -47,8 +47,8 @@ BEGIN
                                 'last_name', staff.last_name,
                                 'instagram_handle', staff.instagram_handle
                             ))
-                            FROM public.service_event_staff AS sss
-                            JOIN public.staff AS staff ON sss.staff_id = staff.id
+                            FROM public.service_events_staffs AS sss
+                            JOIN public.staffs AS staff ON sss.staff_id = staff.id
                             WHERE sss.service_event_id = ss.id
                         ),
                         'live_stream', (
@@ -57,16 +57,16 @@ BEGIN
                                 'start_url', sls.start_url,
                                 'password', sls.password
                             )
-                            FROM public.service_event_live_stream AS sls
+                            FROM public.service_event_live_streams AS sls
                             WHERE sls.service_event_id = ss.id
                         )
                    ) ORDER BY ss.start
                ) AS service_events
-        FROM public.service_group AS sg
-        JOIN public.service AS s ON sg.id = s.service_group_id
-        JOIN public.service_event AS ss ON s.id = ss.service_id
+        FROM public.service_categories AS sg
+        JOIN public.services AS s ON sg.id = s.service_category_id
+        JOIN public.service_events AS ss ON s.id = ss.service_id
         WHERE sg.business_id = (
-            SELECT id FROM public.business WHERE handle = business_handle
+            SELECT id FROM public.businesses WHERE handle = business_handle
         )
         AND (
             -- Include slots within the specified timestamp range
@@ -114,8 +114,8 @@ BEGIN
         )
         GROUP BY sg.id
     LOOP
-        -- Append each service group data to the result.
-        result := result || row_to_json(service_group_data)::jsonb;
+        -- Append each service category data to the result.
+        result := result || row_to_json(service_category_data)::jsonb;
     END LOOP;
 
     -- Return the result JSON array.

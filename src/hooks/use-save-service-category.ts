@@ -1,23 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveServiceGroup } from "../data/service";
+import { saveServiceCategory } from "../data/service";
 import { Tables } from "@/types/db.extension";
 import { supaClientComponentClient } from "../data/clients/browser";
 
-export const useSaveServiceGroup = (
+export const useSaveServiceCategory = (
   businessId: string,
   { onSettled }: { onSettled?: () => void } = {},
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (newServiceGroup: Partial<Tables<"service_group">>) => {
-      return saveServiceGroup(newServiceGroup, {
+    mutationFn: (newServiceCategory: Partial<Tables<"service_categories">>) => {
+      return saveServiceCategory(newServiceCategory, {
         client: supaClientComponentClient(),
       });
     },
-    meta: { errorMessage: "Failed to save service group" },
+    meta: { errorMessage: "Failed to save service category" },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["serviceGroups", businessId],
+        queryKey: ["serviceCategories", businessId],
       });
     },
     onSettled,

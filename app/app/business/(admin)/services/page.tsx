@@ -1,14 +1,14 @@
 "use client";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
-import { useServiceGroupsWithServices } from "@/src/hooks/use-service-groups-with-services";
+import { useServiceCategoriesWithServices } from "@/src/hooks/use-service-categories-with-services";
 import {
   PencilSquareIcon,
   Square3Stack3DIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import _ from "lodash";
-import { SaveServiceGroupDialog } from "@/src/components/dialogs/save-service-group-dialog";
+import { SaveServiceCategoryDialog } from "@/src/components/dialogs/save-service-category-dialog";
 import { useCallback, useState } from "react";
 import {
   Tabs,
@@ -31,32 +31,32 @@ import { PlusIcon } from "lucide-react";
 import { SaveServiceDialog } from "@/src/components/dialogs/save-service-dialog";
 import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
 import { Row } from "@tanstack/react-table";
-import { useDeleteServiceGroup } from "@/src/hooks/use-delete-service-group";
+import { useDeleteServiceCategory } from "@/src/hooks/use-delete-service-category";
 import { useDeleteService } from "@/src/hooks/use-delete-service";
-import { Service, ServiceGroupWithServices } from "@/types";
+import { Service, ServiceCategoryWithServices } from "@/types";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import { RowAction } from "@/src/components/tables/types";
-import { SaveServiceGroupFormSchemaType } from "@/src/components/forms/save-service-group-form";
+import { SaveServiceCategoryFormSchemaType } from "@/src/components/forms/save-service-category-form";
 import EmptyState from "@/src/components/pages/shared/empty-state";
 import { useQuestions } from "@/src/hooks/use-questions";
 
-// TODO: IMPORTANT (the styling doesn't work perfect for a lot of service groups on mobile)
+// TODO: IMPORTANT (the styling doesn't work perfect for a lot of service categories on mobile)
 export default function Services() {
   const { currentBusiness } = useCurrentBusinessContext();
 
   const { data: questions, isLoading: isQuestionsLoading } = useQuestions(
     currentBusiness.id,
   );
-  const { data: serviceGroups, isLoading: isServiceGroupsLoading } =
-    useServiceGroupsWithServices(currentBusiness?.id);
-  const { mutate: deleteServiceGroup, isPending: isDeleteSgPending } =
-    useDeleteServiceGroup(currentBusiness.id);
+  const { data: serviceCategories, isLoading: isServiceCategoriesLoading } =
+    useServiceCategoriesWithServices(currentBusiness?.id);
+  const { mutate: deleteServiceCategory, isPending: isDeleteSgPending } =
+    useDeleteServiceCategory(currentBusiness.id);
   const { mutate: deleteService, isPending: isDeleteSvcPending } =
     useDeleteService(currentBusiness.id);
 
   const [sgDialogState, setSgDialogState] = useState<{
     isOpen: boolean;
-    initFormValues?: SaveServiceGroupFormSchemaType;
+    initFormValues?: SaveServiceCategoryFormSchemaType;
   }>({
     isOpen: false,
   });
@@ -64,14 +64,14 @@ export default function Services() {
   const [svcDialogState, setSvcDialogState] = useState<{
     isOpen: boolean;
     initFormValues?: SaveServiceFormSchemaType;
-    serviceGroupId?: string;
+    serviceCategoryId?: string;
   }>({
     isOpen: false,
   });
 
   const [confirmDeleteDialogState, setConfirmDeleteDialogState] = useState<{
     isOpen: boolean;
-    serviceGroupId?: string;
+    serviceCategoryId?: string;
   }>({
     isOpen: false,
   });
@@ -87,9 +87,9 @@ export default function Services() {
             price: row.original.price ?? 0,
             duration: row.original.duration ?? 0,
             booking_limit: row.original.booking_limit ?? 0,
-            question_ids: (row.original.question ?? []).map((q) => q.id),
+            question_ids: (row.original.questions ?? []).map((q) => q.id),
           },
-          serviceGroupId: row.original.service_group_id ?? undefined,
+          serviceCategoryId: row.original.service_category_id ?? undefined,
         });
         break;
       case RowAction.DELETE:
@@ -102,26 +102,26 @@ export default function Services() {
     }
   }, []);
 
-  function handleSgDelete(sg: ServiceGroupWithServices) {
+  function handleSgDelete(sg: ServiceCategoryWithServices) {
     if (!_.isEmpty(sg.services)) {
       setConfirmDeleteDialogState({
         isOpen: true,
-        serviceGroupId: sg.id,
+        serviceCategoryId: sg.id,
       });
       return;
     }
     if (!isDeleteSgPending) {
-      deleteServiceGroup(sg.id);
+      deleteServiceCategory(sg.id);
     }
   }
 
-  if (isServiceGroupsLoading || isQuestionsLoading) {
+  if (isServiceCategoriesLoading || isQuestionsLoading) {
     return <>Loading...</>;
   }
   return (
     <div className="flex w-full justify-center">
       <DeleteConfirmationDialog
-        label="Deleting service group will delete all services in it. Are you sure?"
+        label="Deleting service category will delete all services in it. Are you sure?"
         isOpen={confirmDeleteDialogState.isOpen}
         onClose={() =>
           setConfirmDeleteDialogState({
@@ -130,10 +130,10 @@ export default function Services() {
           })
         }
         onDelete={() => {
-          deleteServiceGroup(confirmDeleteDialogState.serviceGroupId!);
+          deleteServiceCategory(confirmDeleteDialogState.serviceCategoryId!);
         }}
       />
-      <SaveServiceGroupDialog
+      <SaveServiceCategoryDialog
         isOpen={sgDialogState.isOpen}
         initFormValues={sgDialogState.initFormValues}
         onClose={() =>
@@ -143,7 +143,7 @@ export default function Services() {
       <SaveServiceDialog
         isOpen={svcDialogState.isOpen}
         initFormValues={svcDialogState.initFormValues}
-        serviceGroupId={svcDialogState.serviceGroupId}
+        serviceCategoryId={svcDialogState.serviceCategoryId}
         availableQuestions={questions}
         onClose={() =>
           setSvcDialogState({
@@ -152,11 +152,10 @@ export default function Services() {
           })
         }
       />
-      {_.isEmpty(serviceGroups) ? (
+      {_.isEmpty(serviceCategories) ? (
         <EmptyState
           Icon={Square3Stack3DIcon}
-          title="No service group found"
-          description="Service groups help you categorize your services."
+          title="No service category found"
           actionButtonText="Start by creating one"
           onAction={() =>
             setSgDialogState({
@@ -167,10 +166,10 @@ export default function Services() {
         />
       ) : (
         <div className="w-full">
-          <Tabs defaultValue={serviceGroups[0].id}>
+          <Tabs defaultValue={serviceCategories[0].id}>
             <div className="flex max-w-full items-center overflow-x-scroll">
               <TabsList className="relative overflow-visible">
-                {serviceGroups.map((sg) => (
+                {serviceCategories.map((sg) => (
                   <ContextMenu key={sg.id}>
                     <ContextMenuTrigger>
                       <TabsTrigger key={sg.id} value={sg.id}>
@@ -219,11 +218,11 @@ export default function Services() {
                   })
                 }
               >
-                <PlusIcon className="mr-1 h-5 w-5" /> New group
+                <PlusIcon className="mr-1 h-5 w-5" /> New category
               </Button>
             </div>
 
-            {serviceGroups.map((sg) => (
+            {serviceCategories.map((sg) => (
               <TabsContent key={sg.id} value={sg.id}>
                 {_.isEmpty(sg.services) ? (
                   <EmptyState
@@ -235,7 +234,7 @@ export default function Services() {
                       setSvcDialogState({
                         isOpen: !svcDialogState.isOpen,
                         initFormValues: undefined,
-                        serviceGroupId: sg.id,
+                        serviceCategoryId: sg.id,
                       })
                     }
                   />
@@ -253,7 +252,7 @@ export default function Services() {
                         setSvcDialogState({
                           isOpen: !svcDialogState.isOpen,
                           initFormValues: undefined,
-                          serviceGroupId: sg.id,
+                          serviceCategoryId: sg.id,
                         })
                       }
                     >

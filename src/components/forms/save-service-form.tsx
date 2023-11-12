@@ -42,9 +42,9 @@ const formSchema = z.object({
 });
 
 type SaveServiceFormProps = {
-  serviceGroupId?: string;
+  serviceCategoryId?: string;
   defaultValues?: SaveServiceFormSchemaType;
-  availableQuestions?: Tables<"question">[];
+  availableQuestions?: Tables<"questions">[];
   onSubmitted: () => void;
 };
 
@@ -54,7 +54,7 @@ export type SaveServiceFormSchemaType = z.infer<typeof formSchema> & {
 };
 
 export default function SaveServiceForm({
-  serviceGroupId,
+  serviceCategoryId,
   defaultValues,
   availableQuestions,
   onSubmitted,
@@ -111,7 +111,7 @@ export default function SaveServiceForm({
     saveService({
       ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
       ...formValues,
-      service_group_id: serviceGroupId,
+      service_category_id: serviceCategoryId,
       question_ids: questionsChanged ? selectedQuestions : undefined, // if no questions were changed, then we don't need to send the questionIds (link table won't be updated)
     });
   };

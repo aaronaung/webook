@@ -1,4 +1,4 @@
-insert into public.user (email)
+insert into public.users (email)
 values
 (
   'offstage@gmail.com'
@@ -10,56 +10,56 @@ values
   'julian.talens@gmail.com'
 );
 
-insert into public.business (title, email, description, handle, owner_id)
+insert into public.businesses (title, email, description, handle, owner_id)
 values
 (
   'Offstage',
   'offstage@gmail.com',
   'Dance studio in the heart of OC offering classes for all ages and skill levels.',
   'offstage',
-  (select id from public.user where email = 'offstage@gmail.com')
+  (select id from public.users where email = 'offstage@gmail.com')
 ),
 (
   'Shigeto Nakano',
   'shigeto.nakano@gmail.com',
   'Dancer with years experience in openstyle choreography, and is part of a world-renowned dance crew called S-rank.',
   'shiggy',
-  (select id from public.user where email = 'shigeto.nakano@gmail.com')
+  (select id from public.users where email = 'shigeto.nakano@gmail.com')
 ),
 (
   'Julian Talens',
   'julian.talens@gmail.com',
   'A personal trainer to help you lead a healthier life.',
   'juliantalens',
-  (select id from public.user where email = 'julian.talens@gmail.com')
+  (select id from public.users where email = 'julian.talens@gmail.com')
 );
 
-insert into public.service_group (title, priority, business_id, color)
+insert into public.service_categories (title, priority, business_id, color)
 values
 (
   'Studio rental',
   1,
-  (select id from public.business where handle = 'offstage'),
+  (select id from public.businesses where handle = 'offstage'),
   '#ffa647'
 ),
 (
   'Classes',
   2,
-  (select id from public.business where handle = 'offstage'),
+  (select id from public.businesses where handle = 'offstage'),
   '#cd93ff'
 );
 
-insert into public.service (service_group_id, duration, title, booking_limit, price)
+insert into public.services (service_category_id, duration, title, booking_limit, price)
 values
 (
-  (select id from public.service_group where title = 'Studio rental'),
+  (select id from public.service_categories where title = 'Studio rental'),
   3600000, -- 1 hours in milliseconds
   'Small room rental (1-10 people hourly)',
   NULL,
   60000
 ),
 (
-  (select id from public.service_group where title = 'Studio rental'),
+  (select id from public.service_categories where title = 'Studio rental'),
   3600000, -- 1 hours in milliseconds
   'Large room rental (10+ people hourly)',
   NULL,
@@ -85,18 +85,18 @@ WITH schedule_data AS (
       ('OCTOBER 6 2023 5:00PM PDT',  'Small room rental (1-10 people hourly)')
   ) AS schedule (date, service_title)
 )
-INSERT INTO service_event (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
+INSERT INTO service_events (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
 SELECT
   date::timestamptz AS start,
   date::timestamptz AS recurrence_start,
   604800000 AS recurrence_interval, -- 7 days in milliseconds
   4 as recurrence_count,
-  (select id from service s where s.title = service_title limit 1) AS service_id
+  (select id from services s where s.title = service_title limit 1) AS service_id
 FROM 
   schedule_data
 ORDER BY start;
 
-/* Insert staffs and offstage business <> staff */
+/* Insert staffs and offstage business <> staffs */
 WITH handle_list AS (
     SELECT DISTINCT regexp_replace(substring(line from '@[^\s]+'), '@', '', 'g') AS instagram_handle
     FROM regexp_split_to_table(
@@ -105,26 +105,26 @@ WITH handle_list AS (
     ) AS line
     WHERE line ~ '@[^\s]+'
 )
-INSERT INTO staff (instagram_handle, business_id)
+INSERT INTO staffs (instagram_handle, business_id)
 SELECT
     hl.instagram_handle,
     b.id AS business_id
 FROM handle_list hl
-JOIN business b ON b.handle = 'offstage';
+JOIN businesses b ON b.handle = 'offstage';
 
-/* Insert offstage class service group <> service */
-INSERT INTO service (title, duration, service_group_id, price, booking_limit)
+/* Insert offstage class service categories <> services */
+INSERT INTO services (title, duration, service_category_id, price, booking_limit)
 SELECT DISTINCT
   regexp_replace(substring(line from '\(([^\)]+)\)'), '\(', '', 'g') AS title,
   5400000 AS duration, -- 1.5 hours in milliseconds
-  sg.id AS service_group_id,
+  sg.id AS service_category_id,
   1200 AS price,
   100 AS booking_limit
 FROM regexp_split_to_table(
     E'OCTOBER 2 2023 00 - @sexykook (K-pop)\n6:00 - @heymisslauren (Intermediate/Advanced)\n7:30 - @_jellow (Intermediate/Advanced)\n7:30 - @mari_salarda (Beginners)\n7:45 - @deesap (Starter Heels)\n9:00 - @alexus_samone (Intermediate/Advanced)\n9:00 - @deesap (Intermediate/Advanced Heels)\n9:15 - @ethanbaotran (Breaking)\n\OCTOBER 3 2023 00 - @michaelbxrt (Intermediate/Advanced)\n6:00 - @anthonyrayishere (Beginners)\n6:30 - @j4_gaspar (Starter Class)\n7:30 - @lpdavidlee (Beginners)\n7:30 - @lex_ishimoto (Contemporary Fusion)\n7:45 - @lynn.aiko (Starter Heels)\n9:00 - @ethanestandian (Intermediate/Advanced)\n9:00 - @lynn.aiko (Intermediate/Advanced Heels)\n\nWEDNESDAY, OCTOBER 4\n6:00 - @roro_kamion (Beginner Heels)\n6:00 - @aaliflower (K-pop)\n7:30 - @ivxnparedes (Intermediate/Advanced)\n7:30 - @geegtorres (Beginners)\n7:45 - @essencefloriedance (Starter Heels)\n9:00 - @joshvason (Intermediate/Advanced)\n9:15 - @jensine.yu (Starter Class)\n\nTHURSDAY, OCTOBER 5\n6:00 - @dinykim (Intermediate/Advanced)\n6:00 - @boymeetsale (K-pop)\n7:30 - @marktullen (Intermediate/Advanced)\n7:30 - @shigeto.nakano (Beginners)\n7:45 - @julesclairee (Starter Class)\n9:00 - @danyelmoulton (Intermediate/Advanced)\n9:00 - @davidslayme (Intermediate/Advanced Heels)\n9:15 - @hirari.w7 (Whacking Foundations)\n\nFRIDAY, OCTOBER 6\n6:00 - @yerson.8a (K-pop)\n6:00 - @justin_ito (Intermediate/Advanced)\n7:30 - @ethanestandian (Intermediate/Advanced)\n7:30 - @msshimmaayy (Beginners)\n7:45 - @ethanbaotran (Kid’s Breaking Class | Ages 4 to 16)\n9:00 - @jeffreycaluag (Intermediate/Advanced)\n9:00 - @justdestiny (Vogue)\n9:15 - @_asahim_ (Starter Class)\n\nSATURDAY, OCTOBER 7\n6:00 - @grantkaita_ (Intermediate/Advanced)\n6:00 - @j0rdanbautista (Beginner Jazz Funk)\n7:30 - @_claireku (Contemporary Fusion)\n7:30 - @kianatangonan (Intermediate/Advanced)\n7:45 - @jeekalua (Whacking Foundations)\n9:00 - @itsfonso (Intermediate/Advanced)\n9:00 - @jeekalua (Whacking Choreography)\n9:15 - @clancyhickson (Starter Class)',
     E'\n'
 ) AS line
-JOIN service_group sg ON sg.title = 'Classes'
+JOIN service_categories sg ON sg.title = 'Classes'
 WHERE regexp_replace(substring(line from '\(([^\)]+)\)'), '\(', '', 'g') IS NOT NULL; -- Ensure title is not null
 
 /* Insert service events based on some schedule */
@@ -184,13 +184,13 @@ WITH schedule_data AS (
       ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class')
   ) AS schedule (date, staff_handle, service_title)
 )
-INSERT INTO service_event (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
+INSERT INTO service_events (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
 SELECT
   date::timestamptz AS start,
   date::timestamptz AS recurrence_start,
   604800000 AS recurrence_interval, -- 7 days in milliseconds
   4 as recurrence_count,
-  (select id from service s where s.title = service_title limit 1) AS service_id
+  (select id from services s where s.title = service_title limit 1) AS service_id
 FROM 
   schedule_data
 ORDER BY start;
@@ -252,19 +252,19 @@ WITH schedule_data AS (
       ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class')
   ) AS schedule (date, staff_handle, service_title)
 )
-INSERT INTO service_event_staff (service_event_id, staff_id)
+INSERT INTO service_events_staffs (service_event_id, staff_id)
 SELECT
   ss.id AS service_event_id,
   st.id AS staff_id
 FROM schedule_data
-JOIN staff st ON st.instagram_handle = staff_handle
-JOIN service s ON s.title = service_title
-JOIN service_event ss ON ss.service_id = s.id
+JOIN staffs st ON st.instagram_handle = staff_handle
+JOIN services s ON s.title = service_title
+JOIN service_events ss ON ss.service_id = s.id
 WHERE ss.start = date::timestamptz AND
       ss.service_id = s.id;
 
 
-/* Insert staff names */
+/* Insert staffs names */
 WITH schedule_data AS (
   SELECT
     date,
@@ -323,8 +323,8 @@ WITH schedule_data AS (
 ('OCTOBER 7 2023 9:15PM PDT', 'clancyhickson', 'Starter Class', 'Clancy', 'Hickson')
     )  AS schedule (date, staff_handle, service_title, first_name, last_name)
 )
-UPDATE staff
+UPDATE staffs
 SET first_name = schedule_data.first_name,
     last_name = schedule_data.last_name
 FROM schedule_data
-WHERE staff.instagram_handle = schedule_data.staff_handle;
+WHERE staffs.instagram_handle = schedule_data.staff_handle;

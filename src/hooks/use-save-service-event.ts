@@ -9,17 +9,17 @@ import {
 } from "../data/live-stream";
 
 export const useSaveServiceEvent = (
-  business: Tables<"business">,
+  business: Tables<"businesses">,
   { onSettled }: { onSettled?: () => void } = {},
 ) => {
   const queryClient = useQueryClient();
   // todo: optimistic update to prevent event jumping on calendar.
   return useMutation({
     mutationFn: async (
-      newServiceEvent: Partial<Tables<"service_event">> & {
+      newServiceEvent: Partial<Tables<"service_events">> & {
         staff_ids?: string[];
         live_stream_enabled?: boolean;
-        service?: Tables<"service">;
+        service?: Tables<"services">;
       },
     ) => {
       const data = await saveServiceEvent(

@@ -7,9 +7,9 @@ import { RowAction } from "./types";
 import Image from "../ui/image";
 import { getStaffHeadshotUrl } from "@/src/utils";
 
-const columnHelper = createColumnHelper<Tables<"staff">>();
+const columnHelper = createColumnHelper<Tables<"staffs">>();
 
-function StaffHeadshotCell({ row }: { row: Row<Tables<"staff">> }) {
+function StaffHeadshotCell({ row }: { row: Row<Tables<"staffs">> }) {
   const headshotUrl = getStaffHeadshotUrl(
     row.original.id,
     row.original.updated_at,
@@ -26,8 +26,8 @@ function StaffHeadshotCell({ row }: { row: Row<Tables<"staff">> }) {
 }
 
 type StaffTableProp = {
-  data: Tables<"staff">[];
-  onRowAction: (row: Row<Tables<"staff">>, action: RowAction) => void;
+  data: Tables<"staffs">[];
+  onRowAction: (row: Row<Tables<"staffs">>, action: RowAction) => void;
 };
 
 export default function StaffsTable({ data, onRowAction }: StaffTableProp) {

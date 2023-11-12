@@ -42,7 +42,7 @@ export const getLoggedInUserBusinesses = async ({
   if (userError) throw userError;
 
   const { data: businesses, error: businessesError } = await client
-    .from("business")
+    .from("businesses")
     .select("*")
     .eq("owner_id", user?.id);
   if (businessesError) throw businessesError;

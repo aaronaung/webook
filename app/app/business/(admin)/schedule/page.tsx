@@ -28,7 +28,7 @@ import { useBusinessData } from "@/src/hooks/use-business-data";
 export default function SchedulePage() {
   const router = useRouter();
   const { currentBusiness } = useCurrentBusinessContext();
-  const draggedServiceRef = useRef<Tables<"service"> | null>(null);
+  const draggedServiceRef = useRef<Tables<"services"> | null>(null);
   const [svcEventDialogState, setSvcEventDialogState] = useState<{
     isOpen: boolean;
     initFormValues?: Partial<SaveServiceEventFormSchemaType>;
@@ -95,7 +95,7 @@ export default function SchedulePage() {
     });
   }, []);
 
-  const handleOnServiceDrag = (draggedService: Tables<"service">) => {
+  const handleOnServiceDrag = (draggedService: Tables<"services">) => {
     draggedServiceRef.current = draggedService;
   };
 

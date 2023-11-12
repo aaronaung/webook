@@ -38,6 +38,7 @@ export default function ServiceEvent({
               src={
                 url || `https://ui-avatars.com/api/?name=${event.service.title}`
               }
+              // todo: IMPORTANT - this is just temporary placeholder for demo purposes
               fallbackSrc={`https://i.pravatar.cc/60?u=${staffName || "test"}`}
               alt={staffName || ""}
             />

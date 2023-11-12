@@ -13,7 +13,7 @@ export const useDeleteService = (businessId?: string) => {
     meta: { errorMessage: "Failed to delete service" },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["serviceGroups", businessId],
+        queryKey: ["serviceCategories", businessId],
       });
     },
   });

@@ -6,7 +6,7 @@ DECLARE
     var_business_id uuid;
     services_data jsonb;
     staffs_data jsonb;
-    service_groups_data jsonb;
+    service_categories_data jsonb;
     result jsonb;
 BEGIN
     -- Get the business ID based on the handle.
@@ -15,7 +15,7 @@ BEGIN
     -- Initialize the result JSON object.
     result := '{}'::jsonb;
 
-    -- Fetch services data with color derived from service_group.
+    -- Fetch services data with color derived from service_categories.
     SELECT COALESCE(jsonb_agg(
         jsonb_set(
             jsonb_build_object(
@@ -30,8 +30,8 @@ BEGIN
         )
     ), '[]'::jsonb)
     INTO services_data
-    FROM public.service s
-    JOIN public.service_group sg ON s.service_group_id = sg.id
+    FROM public.services s
+    JOIN public.service_categories sg ON s.service_category_id = sg.id
     WHERE sg.business_id = var_business_id;
 
     -- Fetch staff data.
@@ -44,10 +44,10 @@ BEGIN
             'last_name', staff.last_name
         )), '[]'::jsonb)
     INTO staffs_data
-    FROM public.staff staff
+    FROM public.staffs staff
     WHERE staff.business_id = var_business_id;
 
-    -- Fetch service group data.
+    -- Fetch service category data.
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
             'id', sg.id,
@@ -56,14 +56,14 @@ BEGIN
             'color', sg.color,
             'priority', sg.priority
         )), '[]'::jsonb)
-    INTO service_groups_data
-    FROM public.service_group sg
+    INTO service_categories_data
+    FROM public.service_categories sg
     WHERE sg.business_id = var_business_id;
 
     -- Append the data to the result object.
     result := jsonb_set(result, '{services}', services_data);
     result := jsonb_set(result, '{staffs}', staffs_data);
-    result := jsonb_set(result, '{service_groups}', service_groups_data);
+    result := jsonb_set(result, '{service_categories}', service_categories_data);
 
     -- Return the final JSON object.
     RETURN result;

@@ -9,41 +9,7 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      booking: {
-        Row: {
-          booker_id: string | null
-          created_at: string | null
-          id: string
-          service_event_id: string
-        }
-        Insert: {
-          booker_id?: string | null
-          created_at?: string | null
-          id?: string
-          service_event_id: string
-        }
-        Update: {
-          booker_id?: string | null
-          created_at?: string | null
-          id?: string
-          service_event_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "booking_booker_id_fkey"
-            columns: ["booker_id"]
-            referencedRelation: "business"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "booking_service_event_id_fkey"
-            columns: ["service_event_id"]
-            referencedRelation: "service_event"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      booking_question_answer: {
+      booking_question_answers: {
         Row: {
           booking_id: string
           bool_answer: boolean | null
@@ -76,20 +42,54 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "booking_question_answer_booking_id_fkey"
+            foreignKeyName: "booking_question_answers_booking_id_fkey"
             columns: ["booking_id"]
-            referencedRelation: "booking"
+            referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "booking_question_answer_question_id_fkey"
+            foreignKeyName: "booking_question_answers_question_id_fkey"
             columns: ["question_id"]
-            referencedRelation: "question"
+            referencedRelation: "questions"
             referencedColumns: ["id"]
           }
         ]
       }
-      business: {
+      bookings: {
+        Row: {
+          booker_id: string | null
+          created_at: string | null
+          id: string
+          service_event_id: string
+        }
+        Insert: {
+          booker_id?: string | null
+          created_at?: string | null
+          id?: string
+          service_event_id: string
+        }
+        Update: {
+          booker_id?: string | null
+          created_at?: string | null
+          id?: string
+          service_event_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_booker_id_fkey"
+            columns: ["booker_id"]
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_service_event_id_fkey"
+            columns: ["service_event_id"]
+            referencedRelation: "service_events"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      businesses: {
         Row: {
           address: string | null
           city: string | null
@@ -149,14 +149,118 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "business_owner_id_fkey"
+            foreignKeyName: "businesses_owner_id_fkey"
             columns: ["owner_id"]
-            referencedRelation: "user"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           }
         ]
       }
-      question: {
+      chat_messages: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          room_id: string
+          sender_business_id: string | null
+          sender_user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          room_id: string
+          sender_business_id?: string | null
+          sender_user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          room_id?: string
+          sender_business_id?: string | null
+          sender_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_room_id_fkey"
+            columns: ["room_id"]
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_business_id_fkey"
+            columns: ["sender_business_id"]
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_sender_user_id_fkey"
+            columns: ["sender_user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      chat_rooms_participants: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_rooms_participants_business_id_fkey"
+            columns: ["business_id"]
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_participants_room_id_fkey"
+            columns: ["room_id"]
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_rooms_participants_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      questions: {
         Row: {
           business_id: string
           created_at: string | null
@@ -189,165 +293,14 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "question_business_id_fkey"
+            foreignKeyName: "questions_business_id_fkey"
             columns: ["business_id"]
-            referencedRelation: "business"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           }
         ]
       }
-      service: {
-        Row: {
-          booking_limit: number | null
-          created_at: string | null
-          description: string | null
-          duration: number
-          id: string
-          price: number
-          service_group_id: string | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          booking_limit?: number | null
-          created_at?: string | null
-          description?: string | null
-          duration: number
-          id?: string
-          price: number
-          service_group_id?: string | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          booking_limit?: number | null
-          created_at?: string | null
-          description?: string | null
-          duration?: number
-          id?: string
-          price?: number
-          service_group_id?: string | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_service_group_id_fkey"
-            columns: ["service_group_id"]
-            referencedRelation: "service_group"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      service_event: {
-        Row: {
-          created_at: string | null
-          id: string
-          recurrence_count: number | null
-          recurrence_interval: number | null
-          recurrence_start: string | null
-          service_id: string
-          start: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          recurrence_count?: number | null
-          recurrence_interval?: number | null
-          recurrence_start?: string | null
-          service_id: string
-          start: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          recurrence_count?: number | null
-          recurrence_interval?: number | null
-          recurrence_start?: string | null
-          service_id?: string
-          start?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_event_service_id_fkey"
-            columns: ["service_id"]
-            referencedRelation: "service"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      service_event_live_stream: {
-        Row: {
-          created_at: string
-          id: string
-          join_url: string | null
-          password: string | null
-          service_event_id: string | null
-          start: string
-          start_url: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          join_url?: string | null
-          password?: string | null
-          service_event_id?: string | null
-          start: string
-          start_url?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          join_url?: string | null
-          password?: string | null
-          service_event_id?: string | null
-          start?: string
-          start_url?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_event_live_stream_service_event_id_fkey"
-            columns: ["service_event_id"]
-            referencedRelation: "service_event"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      service_event_staff: {
-        Row: {
-          service_event_id: string
-          staff_id: string
-        }
-        Insert: {
-          service_event_id: string
-          staff_id: string
-        }
-        Update: {
-          service_event_id?: string
-          staff_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_event_staff_service_event_id_fkey"
-            columns: ["service_event_id"]
-            referencedRelation: "service_event"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "service_event_staff_staff_id_fkey"
-            columns: ["staff_id"]
-            referencedRelation: "staff"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      service_group: {
+      service_categories: {
         Row: {
           business_id: string
           color: string
@@ -380,14 +333,165 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "service_group_business_id_fkey"
+            foreignKeyName: "service_categories_business_id_fkey"
             columns: ["business_id"]
-            referencedRelation: "business"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           }
         ]
       }
-      service_question: {
+      service_event_live_streams: {
+        Row: {
+          created_at: string
+          id: string
+          join_url: string | null
+          password: string | null
+          service_event_id: string | null
+          start: string
+          start_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          join_url?: string | null
+          password?: string | null
+          service_event_id?: string | null
+          start: string
+          start_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          join_url?: string | null
+          password?: string | null
+          service_event_id?: string | null
+          start?: string
+          start_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_event_live_streams_service_event_id_fkey"
+            columns: ["service_event_id"]
+            referencedRelation: "service_events"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      service_events: {
+        Row: {
+          created_at: string | null
+          id: string
+          recurrence_count: number | null
+          recurrence_interval: number | null
+          recurrence_start: string | null
+          service_id: string
+          start: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          recurrence_count?: number | null
+          recurrence_interval?: number | null
+          recurrence_start?: string | null
+          service_id: string
+          start: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          recurrence_count?: number | null
+          recurrence_interval?: number | null
+          recurrence_start?: string | null
+          service_id?: string
+          start?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_events_service_id_fkey"
+            columns: ["service_id"]
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      service_events_staffs: {
+        Row: {
+          service_event_id: string
+          staff_id: string
+        }
+        Insert: {
+          service_event_id: string
+          staff_id: string
+        }
+        Update: {
+          service_event_id?: string
+          staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_events_staffs_service_event_id_fkey"
+            columns: ["service_event_id"]
+            referencedRelation: "service_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_events_staffs_staff_id_fkey"
+            columns: ["staff_id"]
+            referencedRelation: "staffs"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      services: {
+        Row: {
+          booking_limit: number | null
+          created_at: string | null
+          description: string | null
+          duration: number
+          id: string
+          price: number
+          service_category_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          booking_limit?: number | null
+          created_at?: string | null
+          description?: string | null
+          duration: number
+          id?: string
+          price: number
+          service_category_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          booking_limit?: number | null
+          created_at?: string | null
+          description?: string | null
+          duration?: number
+          id?: string
+          price?: number
+          service_category_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_service_category_id_fkey"
+            columns: ["service_category_id"]
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      services_questions: {
         Row: {
           question_id: string
           service_id: string
@@ -402,20 +506,20 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "service_question_question_id_fkey"
+            foreignKeyName: "services_questions_question_id_fkey"
             columns: ["question_id"]
-            referencedRelation: "question"
+            referencedRelation: "questions"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "service_question_service_id_fkey"
+            foreignKeyName: "services_questions_service_id_fkey"
             columns: ["service_id"]
-            referencedRelation: "service"
+            referencedRelation: "services"
             referencedColumns: ["id"]
           }
         ]
       }
-      staff: {
+      staffs: {
         Row: {
           business_id: string | null
           created_at: string | null
@@ -448,14 +552,14 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "staff_business_id_fkey"
+            foreignKeyName: "staffs_business_id_fkey"
             columns: ["business_id"]
-            referencedRelation: "business"
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           }
         ]
       }
-      user: {
+      users: {
         Row: {
           created_at: string | null
           email: string | null

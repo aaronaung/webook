@@ -8,7 +8,7 @@ type CalendarV2DayProps = {
   onDaySelect: (date: Date) => void;
   isSelected?: boolean;
   firstDayCurrentMonth: Date;
-  onServiceDrop?: (item: Tables<"service">, day: Date) => void;
+  onServiceDrop?: (item: Tables<"services">, day: Date) => void;
 };
 export default function CalendarV2Day({
   day,
@@ -21,7 +21,7 @@ export default function CalendarV2Day({
     () => ({
       accept: "",
       canDrop: () => true,
-      drop: (item: Tables<"service">) => {
+      drop: (item: Tables<"services">) => {
         onServiceDrop?.(item, day);
       },
       collect: (monitor) => ({

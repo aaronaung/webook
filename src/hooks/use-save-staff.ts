@@ -12,7 +12,7 @@ export const useSaveStaff = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (variables: {
-      newStaff: Partial<Tables<"staff">>;
+      newStaff: Partial<Tables<"staffs">>;
       headshotFile?: File;
     }) => {
       const updatedStaff = await saveStaff(variables.newStaff, {

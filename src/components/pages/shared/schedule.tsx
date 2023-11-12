@@ -25,7 +25,7 @@ export default function Schedule({
   const [selectedTab, setSelectedTab] = useState(data?.[0]?.id);
 
   const onServiceDrop = useCallback(
-    (service: Tables<"service">, day: Date) => {},
+    (service: Tables<"services">, day: Date) => {},
     [],
   );
 
@@ -33,7 +33,8 @@ export default function Schedule({
     return (
       (data || [])
         .find(
-          (serviceGroup) => serviceGroup.id === (selectedTab || data?.[0]?.id),
+          (serviceCategory) =>
+            serviceCategory.id === (selectedTab || data?.[0]?.id),
         )
         ?.service_events.filter((event) => {
           const startDateTime = new Date(event.start);

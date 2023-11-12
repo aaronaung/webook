@@ -49,7 +49,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "7ded2b0d-d52b-4ce9-9efb-2f18ce0d91b7",
@@ -86,7 +86,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "7dde57e4-4357-4b8d-bed2-63b4b94ab233",
@@ -123,7 +123,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "c366707e-a57c-499a-9ac9-a2b0117b0941",
@@ -160,7 +160,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "66684f22-2893-4dce-8047-90a41be9db65",
@@ -197,7 +197,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "3cb5c942-2ce3-4a55-a082-33478dc16d97",
@@ -234,7 +234,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "c8a6f811-0bb8-444d-b702-bb75eff27282",
@@ -271,7 +271,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "c0852cb5-bd8b-4480-9d93-734d91465436",
@@ -308,7 +308,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "8230a42f-f5de-4aca-9a6d-7229a0f023d2",
@@ -345,7 +345,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "ed0a71e1-1559-4339-afec-90ed98791e46",
@@ -382,7 +382,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "5baea764-5c04-43cf-a8f3-f71ceaf3aa33",
@@ -419,7 +419,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "c7aa4fe0-b3a5-4a63-9a58-db62c593aa7b",
@@ -456,7 +456,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "ef61c5b5-7901-4d75-910c-1adab606c0b3",
@@ -493,7 +493,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "fa2bbb18-3125-45ff-8f36-e6938d4685d1",
@@ -530,7 +530,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "97b7200d-cd8c-464e-aa20-34031b9ace64",
@@ -567,7 +567,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "b7b547de-b667-49fe-8ed0-4623e211bf2b",
@@ -604,7 +604,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "a6297ca9-cba7-4f4f-8494-501e31707023",
@@ -641,7 +641,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "53ee4f3c-46aa-4137-a32b-f47ab6edf919",
@@ -678,7 +678,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "dcbe2476-eb5f-4825-bc56-212459ea26c1",
@@ -715,7 +715,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "0cd90b6b-5ce0-4983-bf2d-946827787b4b",
@@ -752,7 +752,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "599eef25-1b4a-4639-ae1e-31c924bc2254",
@@ -789,7 +789,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "1703853a-a733-4d59-b38b-f02275a2cd6d",
@@ -826,7 +826,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "1caf01cd-8207-4b3f-a5db-73cdfd59d75e",
@@ -863,7 +863,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "1b8742c2-a170-42a0-9d90-6bb4e0647866",
@@ -900,7 +900,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "1de9b265-3d20-4f2c-b2c7-ad525d3ea6a5",
@@ -937,7 +937,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "8da5338d-b17f-40c8-8a0f-5cfa10e2f5a4",
@@ -974,7 +974,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "0aa5b342-e79d-4bd4-8779-793abd08641d",
@@ -1011,7 +1011,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "c425145a-5a60-4116-acc4-8d6cfb523e5c",
@@ -1048,7 +1048,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "59087dad-9316-4b6e-878b-392607829bb2",
@@ -1085,7 +1085,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "7cd3fbab-20f8-4397-b2c1-141ac874bdcf",
@@ -1122,7 +1122,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "ed12d8ac-ef7a-4bef-9d2b-dab39780bf1d",
@@ -1159,7 +1159,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "12dff341-cabd-421c-b399-1e01f0ace814",
@@ -1196,7 +1196,7 @@
                   "updated_at": "2023-10-10T00:16:42.746706+00:00",
                   "description": null,
                   "booking_limit": 100,
-                  "service_group_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
+                  "service_category_id": "d8d74dec-c52b-4eae-94b0-b4500a94d078"
               },
               "service_event": {
                   "id": "833e3a0a-0cc1-49f4-837e-835ddb1885dd",

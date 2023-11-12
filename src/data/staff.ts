@@ -6,7 +6,7 @@ export const getStaffs = async (
   { client }: SupabaseOptions,
 ) => {
   const { data: staffs, error } = await client
-    .from("staff")
+    .from("staffs")
     .select("*")
     .eq("business_id", businessId)
     .order("created_at", { ascending: true });
@@ -18,12 +18,12 @@ export const getStaffs = async (
 };
 
 export const saveStaff = async (
-  staff: Partial<Tables<"staff">>,
+  staff: Partial<Tables<"staffs">>,
   { client }: SupabaseOptions,
 ) => {
   const { data, error } = await client
-    .from("staff")
-    .upsert({ ...(staff as Tables<"staff">) })
+    .from("staffs")
+    .upsert({ ...(staff as Tables<"staffs">) })
     .select();
   if (error) throw error;
   return data;
@@ -33,6 +33,6 @@ export const deleteStaff = async (
   staffId: string,
   { client }: SupabaseOptions,
 ) => {
-  const { error } = await client.from("staff").delete().eq("id", staffId);
+  const { error } = await client.from("staffs").delete().eq("id", staffId);
   if (error) throw error;
 };

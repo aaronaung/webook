@@ -23,7 +23,7 @@ import { usePathname, useRouter } from "next/navigation";
 export default function Navbar({
   businesses,
 }: {
-  businesses: Tables<"business">[];
+  businesses: Tables<"businesses">[];
 }) {
   const { currentBusiness, setCurrentBusiness } = useCurrentBusinessContext();
   const router = useRouter();

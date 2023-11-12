@@ -21,8 +21,8 @@ export function SaveServiceEventDialog({
   onClose: () => void;
   isOpen: boolean;
   isRecurrentEvent?: boolean;
-  availableServices?: Tables<"service">[];
-  availableStaffs?: Tables<"staff">[];
+  availableServices?: Tables<"services">[];
+  availableStaffs?: Tables<"staffs">[];
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

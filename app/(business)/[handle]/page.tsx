@@ -9,7 +9,7 @@ export default async function ServiceProvider({
   params: { handle: string };
 }) {
   const { data: business, ...props } = await supaStaticRouteClient
-    .from("business")
+    .from("businesses")
     .select("*")
     .eq("handle", params.handle)
     .single();

@@ -1,67 +1,68 @@
-import { ServiceGroupWithServices } from "@/types";
+import { ServiceCategoryWithServices } from "@/types";
 import { SupabaseOptions } from "./types";
 import { Tables } from "@/types/db.extension";
 
-export const getServiceGroupsWithServices = async (
+export const getServiceCategoriesWithServices = async (
   businessId: string,
   { client }: SupabaseOptions,
-): Promise<ServiceGroupWithServices[]> => {
-  const { data: serviceGroups, error: serviceGroupsError } = await client
-    .from("service_group")
-    .select("*")
-    .eq("business_id", businessId)
-    .order("created_at", { ascending: true });
-  if (serviceGroupsError) throw serviceGroupsError;
+): Promise<ServiceCategoryWithServices[]> => {
+  const { data: serviceCategories, error: serviceCategoriesError } =
+    await client
+      .from("service_categories")
+      .select("*")
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: true });
+  if (serviceCategoriesError) throw serviceCategoriesError;
 
   const { data: services, error: servicesError } = await client
-    .from("service")
-    .select("*, question (*)")
+    .from("services")
+    .select("*, questions (*)")
     .in(
-      "service_group_id",
-      (serviceGroups || []).map((serviceGroup) => serviceGroup.id),
+      "service_category_id",
+      (serviceCategories || []).map((serviceCategory) => serviceCategory.id),
     )
     .order("created_at", { ascending: true });
   if (servicesError) throw servicesError;
 
   // We do client side sorting, since we expect the service groups and services to be in the tens only.
-  return (serviceGroups || []).map((serviceGroup) => ({
-    ...serviceGroup,
+  return (serviceCategories || []).map((serviceCategory) => ({
+    ...serviceCategory,
     services: (services || []).filter(
-      (service) => service.service_group_id === serviceGroup.id,
+      (service) => service.service_category_id === serviceCategory.id,
     ),
   }));
 };
 
-export const saveServiceGroup = async (
-  serviceGroup: Partial<Tables<"service_group">>,
+export const saveServiceCategory = async (
+  serviceCategory: Partial<Tables<"service_categories">>,
   { client }: SupabaseOptions,
 ) => {
   const { data, error } = await client
-    .from("service_group")
-    .upsert({ ...(serviceGroup as Tables<"service_group">) })
+    .from("service_categories")
+    .upsert({ ...(serviceCategory as Tables<"service_categories">) })
     .select();
   if (error) throw error;
   return data;
 };
 
-export const deleteServiceGroup = async (
-  serviceGroupId: string,
+export const deleteServiceCategory = async (
+  serviceCategoryId: string,
   { client }: SupabaseOptions,
 ) => {
   const { error } = await client
-    .from("service_group")
+    .from("service_categories")
     .delete()
-    .eq("id", serviceGroupId);
+    .eq("id", serviceCategoryId);
   if (error) throw error;
 };
 
 export const saveService = async (
-  service: Partial<Tables<"service">>,
+  service: Partial<Tables<"services">>,
   { client }: SupabaseOptions,
 ) => {
   const { data, error } = await client
-    .from("service")
-    .upsert({ ...(service as Tables<"service">) })
+    .from("services")
+    .upsert({ ...(service as Tables<"services">) })
     .select();
   if (error) throw error;
   return data;
@@ -71,17 +72,17 @@ export const deleteService = async (
   serviceId: string,
   { client }: SupabaseOptions,
 ) => {
-  const { error } = await client.from("service").delete().eq("id", serviceId);
+  const { error } = await client.from("services").delete().eq("id", serviceId);
   if (error) throw error;
 };
 
 export const saveServiceEvent = async (
-  serviceEvent: Partial<Tables<"service_event">>,
+  serviceEvent: Partial<Tables<"service_events">>,
   { client }: SupabaseOptions,
 ) => {
   const { data, error } = await client
-    .from("service_event")
-    .upsert({ ...(serviceEvent as Tables<"service_event">) })
+    .from("service_events")
+    .upsert({ ...(serviceEvent as Tables<"service_events">) })
     .select();
   if (error) throw error;
   return data;
@@ -94,13 +95,13 @@ export const saveServiceEventStaff = async (
   { client }: SupabaseOptions,
 ) => {
   const { error: deleteError } = await client
-    .from("service_event_staff")
+    .from("service_events_staffs")
     .delete()
     .eq("service_event_id", serviceId);
   if (deleteError) throw deleteError;
 
   const { error: upsertError } = await client
-    .from("service_event_staff")
+    .from("service_events_staffs")
     .upsert(
       staffIds.map((staffId) => ({
         service_event_id: serviceId,
@@ -136,7 +137,7 @@ export const deleteServiceEvent = async (
   { client }: SupabaseOptions,
 ) => {
   const { error } = await client
-    .from("service_event")
+    .from("service_events")
     .delete()
     .eq("id", serviceEventId);
   if (error) throw error;

@@ -30,7 +30,7 @@ export default function Staffs() {
   });
 
   const onStaffRowAction = useCallback(
-    (row: Row<Tables<"staff">>, action: RowAction) => {
+    (row: Row<Tables<"staffs">>, action: RowAction) => {
       switch (action) {
         case RowAction.EDIT:
           setStaffDialogState({

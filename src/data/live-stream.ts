@@ -6,7 +6,7 @@ export const getLiveStreamByServiceEventId = async (
   { client }: SupabaseOptions,
 ) => {
   const { data, error } = await client
-    .from("service_event_live_stream")
+    .from("service_event_live_streams")
     .select()
     .eq("service_event_id", id);
   if (error) throw error;
@@ -27,7 +27,7 @@ export const createLiveStreamForServiceEvent = async (
   const parsedJoinUrl = new URL(join_url);
   parsedJoinUrl.search = "";
 
-  const { error } = await client.from("service_event_live_stream").insert({
+  const { error } = await client.from("service_event_live_streams").insert({
     service_event_id: id,
     join_url: parsedJoinUrl.toString(),
     start_url,
@@ -42,7 +42,7 @@ export const deleteLiveStreamForServiceEvent = async (
   { client }: SupabaseOptions,
 ) => {
   const { error } = await client
-    .from("service_event_live_stream")
+    .from("service_event_live_streams")
     .delete()
     .eq("service_event_id", id);
   if (error) throw error;

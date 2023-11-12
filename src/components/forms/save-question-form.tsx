@@ -59,7 +59,7 @@ export default function SaveQuestionForm({
 
   const handleOnFormSuccess = (formValues: SaveQuestionFormSchemaType) => {
     saveQuestion({
-      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service group (not creating a new one)
+      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
       ...formValues,
       type: QUESTION_TYPES.indexOf(formValues.type),
       business_id: currentBusiness.id,

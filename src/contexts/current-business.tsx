@@ -8,8 +8,8 @@ import {
 } from "react";
 
 type CurrentBusinessContextValue = {
-  currentBusiness: Tables<"business">;
-  setCurrentBusiness: Dispatch<SetStateAction<Tables<"business">>>;
+  currentBusiness: Tables<"businesses">;
+  setCurrentBusiness: Dispatch<SetStateAction<Tables<"businesses">>>;
 };
 
 const CurrentBusinessContext =
@@ -25,7 +25,7 @@ function useCurrentBusinessContext() {
 }
 
 function CurrentBusinessProvider(props: {
-  initialBusinesses: Tables<"business">[];
+  initialBusinesses: Tables<"businesses">[];
   children: React.ReactNode;
 }) {
   const [currentBusiness, setCurrentBusiness] = useState(

@@ -9,7 +9,7 @@ export const useSaveQuestion = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (newQuestion: Partial<Tables<"question">>) => {
+    mutationFn: (newQuestion: Partial<Tables<"questions">>) => {
       return saveQuestion(newQuestion, {
         client: supaClientComponentClient(),
       });

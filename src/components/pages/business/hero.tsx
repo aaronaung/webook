@@ -4,7 +4,7 @@ import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Hero({ business }: { business: Tables<"business"> }) {
+export default function Hero({ business }: { business: Tables<"businesses"> }) {
   return (
     <div className="relative isolate overflow-hidden pt-14">
       <Image

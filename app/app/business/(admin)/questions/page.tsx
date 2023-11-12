@@ -29,7 +29,7 @@ export default function Questions() {
   });
 
   const onRowAction = useCallback(
-    (row: Row<Tables<"question">>, action: RowAction) => {
+    (row: Row<Tables<"questions">>, action: RowAction) => {
       switch (action) {
         case RowAction.EDIT:
           setQDialogState({

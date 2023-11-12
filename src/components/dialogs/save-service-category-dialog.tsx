@@ -4,16 +4,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/src/components/ui/dialog";
-import SaveServiceGroupForm, {
-  SaveServiceGroupFormSchemaType,
-} from "../forms/save-service-group-form";
+import SaveServiceCategoryForm, {
+  SaveServiceCategoryFormSchemaType,
+} from "../forms/save-service-category-form";
 
-export function SaveServiceGroupDialog({
+export function SaveServiceCategoryDialog({
   initFormValues,
   onClose,
   isOpen,
 }: {
-  initFormValues?: SaveServiceGroupFormSchemaType;
+  initFormValues?: SaveServiceCategoryFormSchemaType;
   onClose: () => void;
   isOpen: boolean;
 }) {
@@ -22,7 +22,7 @@ export function SaveServiceGroupDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {initFormValues ? "Edit" : "Add"} service group
+            {initFormValues ? "Edit" : "Add"} service category
           </DialogTitle>
         </DialogHeader>
         {/**
@@ -30,7 +30,7 @@ export function SaveServiceGroupDialog({
          * Upon dialog open, this forces a re-render of the component which sets the default values.
          * RHF only sets the default values on the first render of the component.
          */}
-        <SaveServiceGroupForm
+        <SaveServiceCategoryForm
           defaultValues={initFormValues}
           onSubmitted={onClose}
         />

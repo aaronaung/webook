@@ -52,12 +52,12 @@ const formSchema = z.object({
 
 export type SaveServiceEventFormSchemaType = z.infer<typeof formSchema> & {
   id?: string;
-  live_stream?: Tables<"service_event_live_stream">;
+  live_stream?: Tables<"service_event_live_streams">;
 };
 
 type SaveServiceEventFormProps = {
-  availableServices?: Tables<"service">[];
-  availableStaffs?: Tables<"staff">[];
+  availableServices?: Tables<"services">[];
+  availableStaffs?: Tables<"staffs">[];
   defaultValues?: Partial<SaveServiceEventFormSchemaType>;
   isRecurrentEvent?: boolean;
   onSubmitted?: () => void;

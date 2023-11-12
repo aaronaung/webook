@@ -58,7 +58,7 @@ export default function ServicesTable({
         header: "",
         enableHiding: true,
       }),
-      columnHelper.accessor("question", {
+      columnHelper.accessor("questions", {
         header: "",
         enableHiding: true,
       }),
@@ -125,7 +125,7 @@ export default function ServicesTable({
       initialState={{
         columnVisibility: {
           id: false,
-          question: false,
+          questions: false,
         },
       }}
       columns={columns as AccessorFnColumnDef<Service>[]}

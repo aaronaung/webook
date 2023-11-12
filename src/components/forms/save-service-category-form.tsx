@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputText from "../ui/input/text";
 import InputGradientPicker from "../ui/input/gradient-picker";
-import { useSaveServiceGroup } from "@/src/hooks/use-save-service-group";
+import { useSaveServiceCategory } from "@/src/hooks/use-save-service-category";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -16,30 +16,30 @@ const formSchema = z.object({
   color: z.string().min(1, { message: "Color is required." }),
 });
 
-export type SaveServiceGroupFormSchemaType = z.infer<typeof formSchema> & {
+export type SaveServiceCategoryFormSchemaType = z.infer<typeof formSchema> & {
   id?: string;
 };
 
-type SaveServiceGroupFormProps = {
-  defaultValues?: SaveServiceGroupFormSchemaType;
+type SaveServiceCategoryFormProps = {
+  defaultValues?: SaveServiceCategoryFormSchemaType;
   onSubmitted: () => void;
 };
 
-export default function SaveServiceGroupForm({
+export default function SaveServiceCategoryForm({
   defaultValues,
   onSubmitted,
-}: SaveServiceGroupFormProps) {
+}: SaveServiceCategoryFormProps) {
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<SaveServiceGroupFormSchemaType>({
+  } = useForm<SaveServiceCategoryFormSchemaType>({
     defaultValues,
     resolver: zodResolver(formSchema),
   });
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveServiceGroup, isPending } = useSaveServiceGroup(
+  const { mutate: saveServiceCategory, isPending } = useSaveServiceCategory(
     currentBusiness.id,
     {
       onSettled: () => {
@@ -47,9 +47,11 @@ export default function SaveServiceGroupForm({
       },
     },
   );
-  const handleOnFormSuccess = (formValues: SaveServiceGroupFormSchemaType) => {
-    saveServiceGroup({
-      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service group (not creating a new one)
+  const handleOnFormSuccess = (
+    formValues: SaveServiceCategoryFormSchemaType,
+  ) => {
+    saveServiceCategory({
+      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
       ...formValues,
       business_id: currentBusiness.id,
     });

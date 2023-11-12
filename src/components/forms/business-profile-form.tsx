@@ -57,7 +57,7 @@ export default function BusinessProfileForm({
   loggedInUser,
 }: {
   onBack?: () => void;
-  business?: Tables<"business">;
+  business?: Tables<"businesses">;
   loggedInUser: User;
 }) {
   const {
@@ -130,7 +130,7 @@ export default function BusinessProfileForm({
   async function checkIfHandleExists(handle: string) {
     try {
       const { count } = await supaClientComponentClient()
-        .from("business")
+        .from("businesses")
         .select("*", { count: "exact", head: true })
         .eq("handle", handle);
 
@@ -191,7 +191,7 @@ export default function BusinessProfileForm({
             },
           ),
         supaClientComponentClient()
-          .from("business")
+          .from("businesses")
           .upsert({ ...values, owner_id: loggedInUser.id }),
       ]);
 

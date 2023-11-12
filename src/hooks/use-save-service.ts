@@ -11,7 +11,7 @@ export const useSaveService = (
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (
-      newService: Partial<Tables<"service">> & { question_ids?: string[] },
+      newService: Partial<Tables<"services">> & { question_ids?: string[] },
     ) => {
       const updatedSvc = await saveService(_.omit(newService, "question_ids"), {
         client: supaClientComponentClient(),
@@ -26,7 +26,7 @@ export const useSaveService = (
     meta: { errorMessage: "Failed to save service" },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["serviceGroups", businessId],
+        queryKey: ["serviceCategories", businessId],
       });
     },
     onSettled,

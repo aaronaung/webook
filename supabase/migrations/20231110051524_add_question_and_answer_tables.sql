@@ -1,4 +1,4 @@
-create table "public"."booking_question_answer" (
+create table "public"."booking_question_answers" (
     "booking_id" uuid not null,
     "created_at" timestamp with time zone default now(),
     "bool_answer" boolean,
@@ -10,9 +10,9 @@ create table "public"."booking_question_answer" (
 );
 
 
-alter table "public"."booking_question_answer" enable row level security;
+alter table "public"."booking_question_answers" enable row level security;
 
-create table "public"."question" (
+create table "public"."questions" (
     "created_at" timestamp with time zone default now(),
     "question" text not null,
     "type" smallint not null,
@@ -24,50 +24,50 @@ create table "public"."question" (
 );
 
 
-alter table "public"."question" enable row level security;
+alter table "public"."questions" enable row level security;
 
-create table "public"."service_question" (
+create table "public"."services_questions" (
     "service_id" uuid not null,
     "question_id" uuid not null
 );
 
 
-alter table "public"."service_question" enable row level security;
+alter table "public"."services_questions" enable row level security;
 
-CREATE UNIQUE INDEX booking_question_answer_pkey ON public.booking_question_answer USING btree (booking_id, question_id);
+CREATE UNIQUE INDEX booking_question_answers_pkey ON public.booking_question_answers USING btree (booking_id, question_id);
 
-CREATE UNIQUE INDEX question_pkey ON public.question USING btree (id);
+CREATE UNIQUE INDEX questions_pkey ON public.questions USING btree (id);
 
-CREATE UNIQUE INDEX service_question_pkey ON public.service_question USING btree (service_id, question_id);
+CREATE UNIQUE INDEX services_questions_pkey ON public.services_questions USING btree (service_id, question_id);
 
-alter table "public"."booking_question_answer" add constraint "booking_question_answer_pkey" PRIMARY KEY using index "booking_question_answer_pkey";
+alter table "public"."booking_question_answers" add constraint "booking_question_answers_pkey" PRIMARY KEY using index "booking_question_answers_pkey";
 
-alter table "public"."question" add constraint "question_pkey" PRIMARY KEY using index "question_pkey";
+alter table "public"."questions" add constraint "questions_pkey" PRIMARY KEY using index "questions_pkey";
 
-alter table "public"."service_question" add constraint "service_question_pkey" PRIMARY KEY using index "service_question_pkey";
+alter table "public"."services_questions" add constraint "services_questions_pkey" PRIMARY KEY using index "services_questions_pkey";
 
-alter table "public"."booking_question_answer" add constraint "booking_question_answer_booking_id_fkey" FOREIGN KEY (booking_id) REFERENCES booking(id) not valid;
+alter table "public"."booking_question_answers" add constraint "booking_question_answers_booking_id_fkey" FOREIGN KEY (booking_id) REFERENCES bookings(id) not valid;
 
-alter table "public"."booking_question_answer" validate constraint "booking_question_answer_booking_id_fkey";
+alter table "public"."booking_question_answers" validate constraint "booking_question_answers_booking_id_fkey";
 
-alter table "public"."booking_question_answer" add constraint "booking_question_answer_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id) not valid;
+alter table "public"."booking_question_answers" add constraint "booking_question_answers_question_id_fkey" FOREIGN KEY (question_id) REFERENCES questions(id) not valid;
 
-alter table "public"."booking_question_answer" validate constraint "booking_question_answer_question_id_fkey";
+alter table "public"."booking_question_answers" validate constraint "booking_question_answers_question_id_fkey";
 
-alter table "public"."question" add constraint "question_business_id_fkey" FOREIGN KEY (business_id) REFERENCES business(id) ON DELETE CASCADE not valid;
+alter table "public"."questions" add constraint "questions_business_id_fkey" FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE not valid;
 
-alter table "public"."question" validate constraint "question_business_id_fkey";
+alter table "public"."questions" validate constraint "questions_business_id_fkey";
 
-alter table "public"."service_question" add constraint "service_question_question_id_fkey" FOREIGN KEY (question_id) REFERENCES question(id) ON DELETE CASCADE not valid;
+alter table "public"."services_questions" add constraint "services_questions_question_id_fkey" FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE not valid;
 
-alter table "public"."service_question" validate constraint "service_question_question_id_fkey";
+alter table "public"."services_questions" validate constraint "services_questions_question_id_fkey";
 
-alter table "public"."service_question" add constraint "service_question_service_id_fkey" FOREIGN KEY (service_id) REFERENCES service(id) ON DELETE CASCADE not valid;
+alter table "public"."services_questions" add constraint "services_questions_service_id_fkey" FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE not valid;
 
-alter table "public"."service_question" validate constraint "service_question_service_id_fkey";
+alter table "public"."services_questions" validate constraint "services_questions_service_id_fkey";
 
 create policy "Enable all for authenticated"
-on "public"."booking_question_answer"
+on "public"."booking_question_answers"
 as permissive
 for all
 to authenticated
@@ -76,7 +76,7 @@ with check (true);
 
 
 create policy "Enable all for authenticated"
-on "public"."question"
+on "public"."questions"
 as permissive
 for all
 to authenticated
@@ -85,7 +85,7 @@ with check (true);
 
 
 create policy "Enable all for authenticated"
-on "public"."service_question"
+on "public"."services_questions"
 as permissive
 for all
 to authenticated

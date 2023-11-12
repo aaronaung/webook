@@ -13,14 +13,14 @@ export function SaveServiceDialog({
   initFormValues,
   onClose,
   isOpen,
-  serviceGroupId,
+  serviceCategoryId,
   availableQuestions,
 }: {
   initFormValues?: SaveServiceFormSchemaType;
   onClose: () => void;
   isOpen: boolean;
-  serviceGroupId?: string;
-  availableQuestions?: Tables<"question">[];
+  serviceCategoryId?: string;
+  availableQuestions?: Tables<"questions">[];
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -31,7 +31,7 @@ export function SaveServiceDialog({
         <SaveServiceForm
           defaultValues={initFormValues}
           onSubmitted={onClose}
-          serviceGroupId={serviceGroupId}
+          serviceCategoryId={serviceCategoryId}
           availableQuestions={availableQuestions}
         />
       </DialogContent>

@@ -12,7 +12,11 @@ const navigation = [
   { name: "Company", href: "#" },
 ];
 
-export default function Navbar({ business }: { business: Tables<"business"> }) {
+export default function Navbar({
+  business,
+}: {
+  business: Tables<"businesses">;
+}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   return (
     <header className="absolute inset-x-0 top-0 z-50">

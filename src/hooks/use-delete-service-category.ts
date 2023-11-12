@@ -1,19 +1,19 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supaClientComponentClient } from "../data/clients/browser";
-import { deleteServiceGroup } from "../data/service";
+import { deleteServiceCategory } from "../data/service";
 
-export const useDeleteServiceGroup = (businessId?: string) => {
+export const useDeleteServiceCategory = (businessId?: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (serviceGroupId: string) => {
-      return deleteServiceGroup(serviceGroupId, {
+    mutationFn: (serviceCategoryId: string) => {
+      return deleteServiceCategory(serviceCategoryId, {
         client: supaClientComponentClient(),
       });
     },
-    meta: { errorMessage: "Failed to delete service group" },
+    meta: { errorMessage: "Failed to delete service category" },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["serviceGroups", businessId],
+        queryKey: ["serviceCategories", businessId],
       });
     },
   });

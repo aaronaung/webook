@@ -18,7 +18,7 @@ export const useBusinessData = (businessHandle: string) => {
   return {
     ...props,
     data: (data || {
-      service_groups: [],
+      service_categories: [],
       services: [],
       staffs: [],
     }) as BusinessData,
