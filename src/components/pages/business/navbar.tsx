@@ -4,6 +4,10 @@ import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Tables } from "@/types/db.extension";
+import { User } from "@supabase/supabase-js";
+import { Button } from "../../ui/button";
+import { useRouter } from "next/navigation";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -14,10 +18,23 @@ const navigation = [
 
 export default function Navbar({
   business,
+  user,
 }: {
   business: Tables<"businesses">;
+  user?: User;
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = () => {
+    router.replace(
+      `/login?returnPath=${encodeURIComponent(`/${business.handle}`)}`,
+    );
+  };
+  const handleLogout = async () => {
+    await supaClientComponentClient().auth.signOut();
+    router.replace(`/${business.handle}`);
+  };
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <nav
@@ -101,12 +118,27 @@ export default function Navbar({
                 ))}
               </div>
               <div className="py-6">
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
-                >
-                  Log in
-                </a>
+                {user && (
+                  <p className="mb-2 text-sm text-muted-foreground">
+                    {user.email}
+                  </p>
+                )}
+                {!user && (
+                  <Button
+                    onClick={handleLogin}
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                  >
+                    Log in
+                  </Button>
+                )}
+                {user && (
+                  <Button
+                    onClick={handleLogout}
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                  >
+                    Log out
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import { useState } from "react";
 import ServiceEventCalendar from "./_components/calendar-view";
 import ServiceEventQuestions from "./_components/questions-view";
 import ServiceEventBooking from "./_components/booking-view";
+import { ServiceEvent } from "@/types";
 
 type ViewModes = "questions" | "calendar" | "booking";
 
@@ -29,7 +30,8 @@ export default function SchedulePage({
   );
 
   const [viewMode, setViewMode] = useState<ViewModes>("calendar");
-  const [selectedServiceEvent, setSelectedServiceEvent] = useState<any>(null);
+  const [selectedServiceEvent, setSelectedServiceEvent] =
+    useState<ServiceEvent>();
 
   if (isLoading) {
     // todo - add a loading state.
@@ -38,9 +40,9 @@ export default function SchedulePage({
 
   return (
     <div className="py-6">
-      <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
-        <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-          {viewMode === "calendar" && (
+      {viewMode === "calendar" && (
+        <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
+          <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
             <ServiceEventCalendar
               data={data}
               serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
@@ -54,25 +56,25 @@ export default function SchedulePage({
                 }
               }}
             />
-          )}
-          {selectedServiceEvent && viewMode === "questions" && (
-            <ServiceEventQuestions
-              event={selectedServiceEvent}
-              onBack={() => {
-                setViewMode("calendar");
-              }}
-            />
-          )}
-          {selectedServiceEvent && viewMode === "booking" && (
-            <ServiceEventBooking
-              event={selectedServiceEvent}
-              onBack={() => {
-                setViewMode("calendar");
-              }}
-            />
-          )}
+          </div>
         </div>
-      </div>
+      )}
+      {selectedServiceEvent && viewMode === "questions" && (
+        <ServiceEventQuestions
+          event={selectedServiceEvent}
+          onBack={() => {
+            setViewMode("calendar");
+          }}
+        />
+      )}
+      {selectedServiceEvent && viewMode === "booking" && (
+        <ServiceEventBooking
+          event={selectedServiceEvent}
+          onBack={() => {
+            setViewMode("calendar");
+          }}
+        />
+      )}
     </div>
   );
 }

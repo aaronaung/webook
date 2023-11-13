@@ -13,7 +13,9 @@ create table "public"."chat_messages" (
     "content" text,
     "room_id" uuid not null,
     "sender_user_id" uuid,
-    "sender_business_id" uuid
+    "sender_business_id" uuid,
+    -- if booking id is present then it is a booking message
+    "booking_id" uuid
 );
 
 

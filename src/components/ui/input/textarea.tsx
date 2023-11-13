@@ -4,7 +4,7 @@ import { cn } from "@/src/utils";
 import React from "react";
 
 type InputTextAreaProps = RhfInputProps & {
-  textareaProps: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+  textareaProps?: React.TextareaHTMLAttributes<HTMLTextAreaElement>;
   suffix?: React.ReactNode;
   prefix?: React.ReactNode;
 };
@@ -20,13 +20,14 @@ export default function InputTextArea(props: InputTextAreaProps) {
       >
         {props.prefix}
         <textarea
-          {...props.textareaProps}
+          {...(props.textareaProps || {})}
           {...(props.register && props.rhfKey
             ? props.register(props.rhfKey, {
                 ...props.registerOptions,
                 ...(props.disableValidation ? { validate: () => true } : {}),
               })
             : {})}
+          {...(props.onChange ? { onChange: props.onChange } : {})}
           name={props.rhfKey}
           id={props.rhfKey}
           className="w-full border-0 bg-transparent p-0 pr-3 text-sm focus:ring-0"

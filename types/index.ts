@@ -12,7 +12,7 @@ export type BusinessData = {
 
 export type Service = Tables<"services"> & {
   questions: Tables<"questions">[];
-  color: string;
+  color?: string;
 };
 
 export type ServiceCategory = Tables<"service_categories"> & {

@@ -6,7 +6,6 @@ import EmptyState from "@/src/components/pages/shared/empty-state";
 import QuestionsTable from "@/src/components/tables/questions-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
-import { QUESTION_TYPES } from "@/src/consts/questions";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { useDeleteQuestion } from "@/src/hooks/use-delete-question";
 import { useQuestions } from "@/src/hooks/use-questions";
@@ -37,7 +36,7 @@ export default function Questions() {
             initFormValues: {
               id: row.original.id,
               question: row.original.question,
-              type: QUESTION_TYPES[row.original.type],
+              type: String(row.original.type), // rhf doesn't like numbers - we can't use valueAsNumber with Controllers today.
               required: row.original.required ?? false,
             },
           });

@@ -7,7 +7,7 @@ import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import { Loader2 } from "lucide-react";
 import InputSelect from "../ui/input/select";
-import { QUESTION_TYPES } from "@/src/consts/questions";
+import { QUESTION_TYPE_LABELS } from "@/src/consts/questions";
 import InputSwitch from "../ui/input/switch";
 
 const formSchema = z.object({
@@ -33,13 +33,12 @@ export default function SaveQuestionForm({
     register,
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm<SaveQuestionFormSchemaType>({
     defaultValues: {
       type:
         defaultValues?.type === undefined
-          ? QUESTION_TYPES[0]
+          ? String(0) // default to text
           : defaultValues.type,
       required:
         defaultValues?.required === undefined ? false : defaultValues.required,
@@ -61,7 +60,7 @@ export default function SaveQuestionForm({
     saveQuestion({
       ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
       ...formValues,
-      type: QUESTION_TYPES.indexOf(formValues.type),
+      type: Number(formValues.type),
       business_id: currentBusiness.id,
     });
   };
@@ -79,9 +78,9 @@ export default function SaveQuestionForm({
       />
       <InputSelect
         rhfKey="type"
-        options={QUESTION_TYPES.map((type) => ({
-          label: type,
-          value: type,
+        options={Object.keys(QUESTION_TYPE_LABELS).map((key) => ({
+          label: QUESTION_TYPE_LABELS[Number(key)], // all object keys are string so we have to cast to number.
+          value: key,
         }))}
         control={control}
         error={errors.type?.message}

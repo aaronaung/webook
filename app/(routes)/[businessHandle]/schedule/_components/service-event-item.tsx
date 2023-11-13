@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import _ from "lodash";
 import Image from "../../../../../src/components/ui/image";
 
-export default function ServiceEvent({
+export default function ServiceEventItem({
   event,
   onClick,
 }: {

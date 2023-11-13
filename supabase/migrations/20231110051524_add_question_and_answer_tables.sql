@@ -6,7 +6,7 @@ create table "public"."booking_question_answers" (
     "select_answer" text,
     "multiselect_answer" text[],
     "question_id" uuid not null,
-    "type" smallint not null
+    "type" text not null
 );
 
 
@@ -15,7 +15,7 @@ alter table "public"."booking_question_answers" enable row level security;
 create table "public"."questions" (
     "created_at" timestamp with time zone default now(),
     "question" text not null,
-    "type" smallint not null,
+    "type" text not null,
     "required" boolean default false,
     "enabled" boolean default false,
     "options" text[],

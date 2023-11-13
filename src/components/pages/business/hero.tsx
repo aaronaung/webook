@@ -1,10 +1,17 @@
 import { getBusinessLogoUrl } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Hero({ business }: { business: Tables<"businesses"> }) {
+export default function Hero({
+  business,
+  user,
+}: {
+  business: Tables<"businesses">;
+  user?: User;
+}) {
   return (
     <div className="relative isolate overflow-hidden pt-14">
       <Image

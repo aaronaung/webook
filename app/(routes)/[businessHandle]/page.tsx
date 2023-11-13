@@ -2,6 +2,7 @@ import Navbar from "@/src/components/pages/business/navbar";
 import { redirect } from "next/navigation";
 import { supaStaticRouteClient } from "@/src/data/clients/server";
 import Hero from "@/src/components/pages/business/hero";
+import { getAuthUser } from "@/src/data/user";
 
 export default async function ServiceProvider({
   params,
@@ -19,10 +20,12 @@ export default async function ServiceProvider({
     redirect("/");
   }
 
+  const user = await getAuthUser({ client: supaStaticRouteClient });
+
   return (
     <>
       <Navbar business={business} />
-      <Hero business={business} />
+      <Hero business={business} user={user ?? undefined} />
     </>
   );
 }
