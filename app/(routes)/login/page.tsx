@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { returnPath?: string };
+  searchParams: { returnPath?: string; backPath?: string };
 }) {
   const user = await getAuthUser({ client: supaServerComponentClient() });
 
@@ -28,7 +28,7 @@ export default async function LoginPage({
   return (
     <>
       <Link
-        href="/"
+        href={searchParams.backPath || "/"}
         className={cn(
           buttonVariants({ variant: "ghost" }),
           "absolute left-4 top-4 md:left-4 md:top-8",

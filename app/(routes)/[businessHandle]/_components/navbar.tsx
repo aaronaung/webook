@@ -27,13 +27,13 @@ export default function Navbar({
   const router = useRouter();
 
   const handleLogin = () => {
-    router.replace(
-      `/login?returnPath=${encodeURIComponent(`/${business.handle}`)}`,
-    );
+    const returnPath = encodeURIComponent(`/${business.handle}`);
+    router.replace(`/login?returnPath=${returnPath}&backPath=${returnPath}`);
+    router.refresh();
   };
   const handleLogout = async () => {
     await supaClientComponentClient().auth.signOut();
-    router.replace(`/${business.handle}`);
+    router.refresh();
   };
 
   return (
@@ -87,7 +87,7 @@ export default function Navbar({
               <Button
                 size="sm"
                 onClick={() => router.push("/app/business/schedule")}
-                className=" rounded-lg"
+                className="rounded-lg"
               >
                 Dashboard
               </Button>

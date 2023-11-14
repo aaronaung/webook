@@ -23,7 +23,7 @@ export default function Navbar({ user }: { user?: User }) {
 
   const handleLogout = async () => {
     await supaClientComponentClient().auth.signOut();
-    router.replace(`/`);
+    router.refresh();
   };
 
   return (

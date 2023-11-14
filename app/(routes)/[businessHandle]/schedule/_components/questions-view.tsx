@@ -93,7 +93,7 @@ export default function ServiceEventQuestions({
   };
 
   return (
-    <>
+    <div>
       <HeaderWithAction
         title="Almost there"
         leftActionBtn={
@@ -103,7 +103,7 @@ export default function ServiceEventQuestions({
         }
       />
       <div className="relative">
-        <div className="flex flex-col gap-5 p-4">
+        <div className="flex flex-col gap-5 p-6 lg:p-10">
           <p className="text-sm text-muted-foreground">
             Please answer the following questions before booking &quot;
             {event.service.title}&quot;.
@@ -116,7 +116,7 @@ export default function ServiceEventQuestions({
         </div>
         <div className="fixed bottom-0 w-full border-t-2  bg-secondary">
           <Button
-            className="float-right m-2"
+            className="float-right m-4"
             onClick={handleContinue}
             disabled={(event.service.questions || [])
               .map((q) => isRequiredQuestionAnswered(q))
@@ -126,6 +126,6 @@ export default function ServiceEventQuestions({
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

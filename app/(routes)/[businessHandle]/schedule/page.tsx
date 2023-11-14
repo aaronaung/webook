@@ -4,9 +4,12 @@ import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedul
 import { add, format, parse, startOfToday } from "date-fns";
 import { useState } from "react";
 import ServiceEventCalendar from "./_components/calendar-view";
+import { ServiceEvent } from "@/types";
+import { useRouter } from "next/navigation";
+import { useAuthUser } from "@/src/hooks/use-auth-user";
 import ServiceEventQuestions from "./_components/questions-view";
 import ServiceEventBooking from "./_components/booking-view";
-import { ServiceEvent } from "@/types";
+import { toast } from "@/src/components/ui/use-toast";
 
 type ViewModes = "questions" | "calendar" | "booking";
 
@@ -15,6 +18,9 @@ export default function SchedulePage({
 }: {
   params: { businessHandle: string };
 }) {
+  const { data: user, isLoading: userIsLoading } = useAuthUser();
+
+  const router = useRouter();
   const today = startOfToday();
   const firstDayCurrentMonth = parse(
     format(today, "MMM-yyyy"),
@@ -33,7 +39,7 @@ export default function SchedulePage({
   const [selectedServiceEvent, setSelectedServiceEvent] =
     useState<ServiceEvent>();
 
-  if (isLoading) {
+  if (isLoading || userIsLoading) {
     // todo - add a loading state.
     return <></>;
   }
@@ -48,6 +54,21 @@ export default function SchedulePage({
               serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
               calendarClassName="lg:pr-14"
               onServiceEventClick={(event) => {
+                if (!user) {
+                  const returnPath = encodeURIComponent(
+                    `/${params.businessHandle}/schedule${window.location.search}`,
+                  );
+                  toast({
+                    title: "Please login to continue.",
+                    description:
+                      "You need to be logged in to continue with booking.",
+                    variant: "default",
+                  });
+                  router.replace(
+                    `/login?returnPath=${returnPath}&backPath=${returnPath}`,
+                  );
+                  return;
+                }
                 setSelectedServiceEvent(event);
                 if (event.service.questions) {
                   setViewMode("questions");
