@@ -86,22 +86,22 @@ export const getStaffHeadshotUrl = (
 };
 
 export const getBusinessLogoUrl = (
-  businessId: string,
+  handle: string,
   timestamp?: string | null,
 ) => {
   return getTimestampedObjUrl(
     BUCKETS.publicBusinessAssets,
-    `${STORAGE_DIR_PATHS.businessLogos}/${businessId}`,
+    `${STORAGE_DIR_PATHS.businessLogos}/${handle}`,
     timestamp,
   );
 };
 export const getBusinessCoverPhotoUrl = (
-  businessId: string,
+  handle: string,
   timestamp?: string | null,
 ) => {
   return getTimestampedObjUrl(
     BUCKETS.publicBusinessAssets,
-    `${STORAGE_DIR_PATHS.businessCoverPhotos}/${businessId}`,
+    `${STORAGE_DIR_PATHS.businessCoverPhotos}/${handle}`,
     timestamp,
   );
 };

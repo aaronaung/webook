@@ -1,4 +1,4 @@
-import { getBusinessLogoUrl } from "@/src/utils";
+import { getBusinessCoverPhotoUrl } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import Image from "next/image";
@@ -8,7 +8,7 @@ export default function Hero({ business }: { business: Tables<"businesses"> }) {
   return (
     <div className="relative isolate overflow-hidden pt-14">
       <Image
-        src={getBusinessLogoUrl(business.id, business.updated_at)}
+        src={getBusinessCoverPhotoUrl(business.handle, business.updated_at)}
         alt=""
         className="absolute inset-0 -z-10 h-full w-full object-cover"
         fill
