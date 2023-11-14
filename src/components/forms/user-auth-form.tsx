@@ -165,6 +165,7 @@ export default function UserAuthForm({
                   register={register}
                   inputProps={{
                     autoComplete: "email",
+                    size: "large",
                   }}
                   error={errors.email?.message}
                 />

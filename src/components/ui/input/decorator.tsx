@@ -18,7 +18,7 @@ export default function InputDecorator({
       )}
       <div
         className={cn(
-          "mt-1.5",
+          "mt-1.5 text-lg",
           error && "rounded-md ring-1 ring-destructive ring-offset-background",
         )}
       >

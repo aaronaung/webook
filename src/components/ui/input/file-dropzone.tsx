@@ -31,7 +31,7 @@ export default function FileDropzone({
         ) : (
           defaultIcon
         )}
-        <div className="mt-4 flex text-sm leading-6 text-muted-foreground">
+        <div className="text-md mt-4 flex leading-6 text-muted-foreground">
           <input {...getInputProps()} />
           {isDragActive ? (
             <p>Drop the files here ...</p>
