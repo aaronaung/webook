@@ -65,10 +65,7 @@ export default function Navbar({ user }: { user?: User }) {
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {!user && (
-            <Button
-              onClick={handleLogin}
-              className="text-sm font-semibold leading-6 text-white"
-            >
+            <Button onClick={handleLogin} className="rounded-lg">
               Log in
             </Button>
           )}
@@ -77,7 +74,7 @@ export default function Navbar({ user }: { user?: User }) {
               <Button
                 size="sm"
                 onClick={() => router.push("/app/business/schedule")}
-                className=" rounded-lg"
+                className="rounded-lg"
               >
                 Dashboard
               </Button>
@@ -133,6 +130,11 @@ export default function Navbar({ user }: { user?: User }) {
                 ))}
               </div>
               <div className="py-6">
+                {!user && (
+                  <Button onClick={handleLogin} className="rounded-lg">
+                    Log in
+                  </Button>
+                )}
                 {user && (
                   <div className="flex gap-2">
                     <Button

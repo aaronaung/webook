@@ -75,10 +75,7 @@ export default function Navbar({
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {!user && (
-            <Button
-              onClick={handleLogin}
-              className="text-sm font-semibold leading-6 text-white"
-            >
+            <Button onClick={handleLogin} className="rounded-lg">
               Log in
             </Button>
           )}
@@ -143,6 +140,11 @@ export default function Navbar({
                 ))}
               </div>
               <div className="py-6">
+                {!user && (
+                  <Button onClick={handleLogin} className="rounded-lg">
+                    Log in
+                  </Button>
+                )}
                 {user && (
                   <div className="flex gap-2">
                     <Button
