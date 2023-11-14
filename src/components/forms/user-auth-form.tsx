@@ -149,9 +149,9 @@ export default function UserAuthForm({
         </h2>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-[480px]">
         <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-          <form className="space-y-6" onSubmit={handleSubmit(handleFormSubmit)}>
+          <form className="space-y-4" onSubmit={handleSubmit(handleFormSubmit)}>
             <div>
               <label
                 htmlFor="email"
@@ -159,13 +159,12 @@ export default function UserAuthForm({
               >
                 Email address
               </label>
-              <div className="mt-2">
+              <div className="mt-1">
                 <InputText
                   rhfKey="email"
                   register={register}
                   inputProps={{
                     autoComplete: "email",
-                    size: "large",
                   }}
                   error={errors.email?.message}
                 />
@@ -179,7 +178,7 @@ export default function UserAuthForm({
               >
                 Password
               </label>
-              <div className="mt-2">
+              <div className="mt-1">
                 <InputShowHide
                   rhfKey="password"
                   register={register}
@@ -191,7 +190,7 @@ export default function UserAuthForm({
               </div>
             </div>
 
-            {formState === "sign-in" && (
+            {formState === "sign-in" && false && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <input
@@ -231,7 +230,7 @@ export default function UserAuthForm({
           </form>
 
           <div>
-            <div className="relative mt-10">
+            <div className="relative mt-6">
               <div
                 className="absolute inset-0 flex items-center"
                 aria-hidden="true"
@@ -266,7 +265,7 @@ export default function UserAuthForm({
         </div>
 
         {formState === "sign-in" && (
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <p className="mt-6 text-center text-sm text-gray-500">
             Not a member?{" "}
             <a
               onClick={() => setFormState("sign-up")}
@@ -277,7 +276,7 @@ export default function UserAuthForm({
           </p>
         )}
         {formState === "sign-up" && (
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <p className="mt-6 text-center text-sm text-gray-500">
             Already have an account?{" "}
             <a
               onClick={() => setFormState("sign-in")}
