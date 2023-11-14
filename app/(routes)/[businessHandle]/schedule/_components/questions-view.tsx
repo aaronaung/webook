@@ -31,6 +31,14 @@ export default function ServiceEventQuestions({
         return;
       }
     }
+
+    /**
+     * booking_id <- create a pending booking.
+     * save answers to db.
+     * create a chat room between the business and the logged in user as participants.
+     * create a chat message in the chat room with the answers to the questions with the booking_id.
+     * redirect user to the chat room.
+     * */
   };
 
   const renderQuestion = (q: Tables<"questions">) => {

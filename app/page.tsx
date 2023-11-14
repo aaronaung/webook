@@ -1,10 +1,14 @@
-import Hero from "@/src/components/pages/hero";
-import Navbar from "@/src/components/pages/navbar";
+import { getAuthUser } from "@/src/data/user";
+import Hero from "./_components/hero";
+import Navbar from "./_components/navbar";
+import { supaServerComponentClient } from "@/src/data/clients/server";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getAuthUser({ client: supaServerComponentClient() });
+
   return (
     <>
-      <Navbar />
+      <Navbar user={user ?? undefined} />
       <Hero />
     </>
   );

@@ -55,8 +55,3 @@ export const getServicesByQuestionId = async (
   }
   return data;
 };
-
-export const getQuestionsByServiceId = async (
-  serviceId: string,
-  { client }: SupabaseOptions,
-) => {};

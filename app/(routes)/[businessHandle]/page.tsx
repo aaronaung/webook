@@ -1,7 +1,10 @@
-import Navbar from "@/src/components/pages/business/navbar";
+import Navbar from "./_components/navbar";
 import { redirect } from "next/navigation";
-import { supaStaticRouteClient } from "@/src/data/clients/server";
-import Hero from "@/src/components/pages/business/hero";
+import {
+  supaServerComponentClient,
+  supaStaticRouteClient,
+} from "@/src/data/clients/server";
+import Hero from "./_components/hero";
 import { getAuthUser } from "@/src/data/user";
 
 export default async function ServiceProvider({
@@ -20,12 +23,12 @@ export default async function ServiceProvider({
     redirect("/");
   }
 
-  const user = await getAuthUser({ client: supaStaticRouteClient });
+  const user = await getAuthUser({ client: supaServerComponentClient() });
 
   return (
     <>
-      <Navbar business={business} />
-      <Hero business={business} user={user ?? undefined} />
+      <Navbar business={business} user={user ?? undefined} />
+      <Hero business={business} />
     </>
   );
 }
