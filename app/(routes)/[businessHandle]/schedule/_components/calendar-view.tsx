@@ -36,12 +36,12 @@ export default function ServiceEventCalendar({
   const handleDaySelect = (newDate: Date) => {
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set("date_millis", newDate.getTime().toString());
-    router.push(`${window.location.pathname}?${newParams.toString()}`);
+    router.replace(`${window.location.pathname}?${newParams.toString()}`);
   };
   const handleCategorySelect = (newCategory: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set("category", newCategory);
-    router.push(`${window.location.pathname}?${newParams.toString()}`);
+    router.replace(`${window.location.pathname}?${newParams.toString()}`);
   };
 
   const selectedDayServiceEvents = useMemo(() => {

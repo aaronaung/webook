@@ -102,12 +102,6 @@ export default function SaveServiceForm({
       }
     }
 
-    console.log(
-      "QUESTIONS CHANGED",
-      selectedQuestions,
-      defaultValues?.question_ids,
-      questionsChanged,
-    );
     saveService({
       ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
       ...formValues,

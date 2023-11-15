@@ -7,8 +7,9 @@ import QuestionsTable from "@/src/components/tables/questions-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { useDeleteQuestion } from "@/src/hooks/use-delete-question";
+import { deleteQuestion } from "@/src/data/question";
 import { useQuestions } from "@/src/hooks/use-questions";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { Row } from "@tanstack/react-table";
@@ -18,8 +19,12 @@ export default function Questions() {
   const { currentBusiness } = useCurrentBusinessContext();
   const { data: questions, isLoading } = useQuestions(currentBusiness.id);
 
-  const { mutate: deleteQuestion, isPending: isDeleteQPending } =
-    useDeleteQuestion(currentBusiness.id);
+  const { mutate: _deleteQuestion, isPending: deleting } = useSupaMutation(
+    deleteQuestion,
+    {
+      invalidate: [["questions", currentBusiness.id]],
+    },
+  );
   const [qDialogState, setQDialogState] = useState<{
     isOpen: boolean;
     initFormValues?: SaveQuestionFormSchemaType;
@@ -42,8 +47,8 @@ export default function Questions() {
           });
           break;
         case RowAction.DELETE:
-          if (!isDeleteQPending) {
-            deleteQuestion(row.original.id);
+          if (!deleting) {
+            _deleteQuestion(row.original.id);
           }
           break;
         default:

@@ -5,7 +5,7 @@ import { supaClientComponentClient } from "../data/clients/browser";
 
 export const useBusinessData = (businessHandle: string) => {
   const { data, error, ...props } = useQuery({
-    queryKey: ["businessData", businessHandle],
+    queryKey: ["get_business_data", businessHandle],
     queryFn: () =>
       getBusinessData(businessHandle, {
         client: supaClientComponentClient(),

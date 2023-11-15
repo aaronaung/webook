@@ -21,8 +21,9 @@ import { useRouter } from "next/navigation";
 import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Loader2 } from "lucide-react";
-import { useDeleteServiceEvent } from "@/src/hooks/use-delete-service-event";
 import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { deleteServiceEvent } from "@/src/data/service";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -116,8 +117,10 @@ export default function SaveServiceEventForm({
       },
     },
   );
-  const { mutateAsync: deleteServiceEvent, isPending: isDeleting } =
-    useDeleteServiceEvent(currentBusiness.handle);
+  const { mutateAsync: _deleteServiceEvent, isPending: isDeleting } =
+    useSupaMutation(deleteServiceEvent, {
+      invalidate: [["business_schedule", currentBusiness.handle]],
+    });
 
   async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
     if (hasRecurrenceError) return;

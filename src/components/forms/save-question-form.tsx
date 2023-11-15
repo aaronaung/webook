@@ -2,13 +2,14 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputText from "../ui/input/text";
-import { useSaveQuestion } from "@/src/hooks/use-save-question";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import { Loader2 } from "lucide-react";
 import InputSelect from "../ui/input/select";
 import { QUESTION_TYPE_LABELS } from "@/src/consts/questions";
 import InputSwitch from "../ui/input/switch";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { saveQuestion } from "@/src/data/question";
 
 const formSchema = z.object({
   question: z.string().min(1, { message: "Question is required." }),
@@ -47,17 +48,15 @@ export default function SaveQuestionForm({
     resolver: zodResolver(formSchema),
   });
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveQuestion, isPending } = useSaveQuestion(
-    currentBusiness.id,
-    {
-      onSettled: () => {
-        onSubmitted();
-      },
+  const { mutate: _saveQuestion, isPending } = useSupaMutation(saveQuestion, {
+    invalidate: [["questions", currentBusiness.id]],
+    onSettled: () => {
+      onSubmitted();
     },
-  );
+  });
 
   const handleOnFormSuccess = (formValues: SaveQuestionFormSchemaType) => {
-    saveQuestion({
+    _saveQuestion({
       ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
       ...formValues,
       type: Number(formValues.type),

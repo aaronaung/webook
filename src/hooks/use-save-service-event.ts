@@ -67,10 +67,10 @@ export const useSaveServiceEvent = (
     meta: { errorMessage: "Failed to save service event" },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: [business.handle], // todo (important): for now, we refetch the entire business schedule.
+        queryKey: ["get_business_schedule_in_range", business.handle], // todo (important): for now, we refetch the entire business schedule.
       });
       queryClient.invalidateQueries({
-        queryKey: ["serviceEventLiveStream", data[0].service_id], // todo (important): for now, we refetch the entire business schedule.
+        queryKey: ["service_event_live_streams", data[0].id], // todo (important): for now, we refetch the entire business schedule.
       });
     },
     onSettled,

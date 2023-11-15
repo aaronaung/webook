@@ -8,7 +8,7 @@ export const useServiceCategoriesWithServices = (businessId: string) => {
     error,
     ...props
   } = useQuery({
-    queryKey: ["serviceCategories", businessId],
+    queryKey: ["service_categories", businessId],
     queryFn: () =>
       getServiceCategoriesWithServices(businessId, {
         client: supaClientComponentClient(),

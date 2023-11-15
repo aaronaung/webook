@@ -26,7 +26,7 @@ export const useSaveService = (
     meta: { errorMessage: "Failed to save service" },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["serviceCategories", businessId],
+        queryKey: ["service_categories", businessId],
       });
     },
     onSettled,

@@ -31,14 +31,14 @@ import { PlusIcon } from "lucide-react";
 import { SaveServiceDialog } from "@/src/components/dialogs/save-service-dialog";
 import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
 import { Row } from "@tanstack/react-table";
-import { useDeleteServiceCategory } from "@/src/hooks/use-delete-service-category";
-import { useDeleteService } from "@/src/hooks/use-delete-service";
 import { Service, ServiceCategoryWithServices } from "@/types";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import { RowAction } from "@/src/components/tables/types";
 import { SaveServiceCategoryFormSchemaType } from "@/src/components/forms/save-service-category-form";
 import EmptyState from "@/src/components/pages/shared/empty-state";
 import { useQuestions } from "@/src/hooks/use-questions";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { deleteService, deleteServiceCategory } from "@/src/data/service";
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service categories on mobile)
 export default function Services() {
@@ -49,10 +49,16 @@ export default function Services() {
   );
   const { data: serviceCategories, isLoading: isServiceCategoriesLoading } =
     useServiceCategoriesWithServices(currentBusiness?.id);
-  const { mutate: deleteServiceCategory, isPending: isDeleteSgPending } =
-    useDeleteServiceCategory(currentBusiness.id);
-  const { mutate: deleteService, isPending: isDeleteSvcPending } =
-    useDeleteService(currentBusiness.id);
+
+  const { mutate: _deleteServiceCategory, isPending: isDeleteSgPending } =
+    useSupaMutation(deleteServiceCategory, {
+      invalidate: [["service_categories", currentBusiness.id]],
+    });
+
+  const { mutate: _deleteService, isPending: isDeleteSvcPending } =
+    useSupaMutation(deleteService, {
+      invalidate: [["service_categories", currentBusiness.id]],
+    });
 
   const [sgDialogState, setSgDialogState] = useState<{
     isOpen: boolean;
@@ -94,7 +100,7 @@ export default function Services() {
         break;
       case RowAction.DELETE:
         if (!isDeleteSvcPending) {
-          deleteService(row.original.id);
+          _deleteService(row.original.id);
         }
         break;
       default:
@@ -111,7 +117,7 @@ export default function Services() {
       return;
     }
     if (!isDeleteSgPending) {
-      deleteServiceCategory(sg.id);
+      _deleteServiceCategory(sg.id);
     }
   }
 
@@ -130,7 +136,7 @@ export default function Services() {
           })
         }
         onDelete={() => {
-          deleteServiceCategory(confirmDeleteDialogState.serviceCategoryId!);
+          _deleteServiceCategory(confirmDeleteDialogState.serviceCategoryId!);
         }}
       />
       <SaveServiceCategoryDialog

@@ -9,7 +9,7 @@ export const useBusinessScheduleByTimeRange = (
   end: Date,
 ) => {
   const { data, error, ...props } = useQuery({
-    queryKey: [businessHandle, start, end],
+    queryKey: ["get_business_schedule_in_range", businessHandle, start, end],
     queryFn: () =>
       getBusinessScheduleByTimeRange(businessHandle, start, end, {
         client: supaClientComponentClient(),

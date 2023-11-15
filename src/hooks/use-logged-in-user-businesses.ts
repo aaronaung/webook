@@ -4,7 +4,7 @@ import { supaClientComponentClient } from "../data/clients/browser";
 
 export const useLoggedInUserBusinesses = () => {
   const { data, error, ...props } = useQuery({
-    queryKey: ["loggedInUserBusinesses"],
+    queryKey: ["get_logged_in_user_businesses"],
     queryFn: () =>
       getLoggedInUserBusinesses({
         client: supaClientComponentClient(),

@@ -3,10 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputText from "../ui/input/text";
 import InputGradientPicker from "../ui/input/gradient-picker";
-import { useSaveServiceCategory } from "@/src/hooks/use-save-service-category";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { saveServiceCategory } from "@/src/data/service";
 
 const formSchema = z.object({
   title: z
@@ -39,18 +40,19 @@ export default function SaveServiceCategoryForm({
     resolver: zodResolver(formSchema),
   });
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveServiceCategory, isPending } = useSaveServiceCategory(
-    currentBusiness.id,
+  const { mutate: _saveServiceCategory, isPending } = useSupaMutation(
+    saveServiceCategory,
     {
       onSettled: () => {
         onSubmitted();
       },
+      invalidate: [["service_categories", currentBusiness.id]],
     },
   );
   const handleOnFormSuccess = (
     formValues: SaveServiceCategoryFormSchemaType,
   ) => {
-    saveServiceCategory({
+    _saveServiceCategory({
       ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
       ...formValues,
       business_id: currentBusiness.id,

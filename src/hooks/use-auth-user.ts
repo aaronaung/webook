@@ -4,7 +4,7 @@ import { getAuthUser } from "../data/user";
 
 export const useAuthUser = () => {
   const { data, error, ...props } = useQuery({
-    queryKey: ["authUser"],
+    queryKey: ["auth_user"],
     queryFn: () => getAuthUser({ client: supaClientComponentClient() }),
   });
   if (error) {
