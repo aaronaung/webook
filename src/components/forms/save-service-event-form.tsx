@@ -18,12 +18,11 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { toast } from "../ui/use-toast";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Loader2 } from "lucide-react";
 import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
-import { deleteServiceEvent } from "@/src/data/service";
+import { deleteServiceEvent, saveServiceEvent } from "@/src/data/service";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -109,9 +108,11 @@ export default function SaveServiceEventForm({
   const [isDeleteConfirmationDialogOpen, setIsDeleteConfirmationDialogOpen] =
     useState(false);
 
-  const { mutate: saveServiceEvent, isPending: isSaving } = useSaveServiceEvent(
-    currentBusiness,
+  const { mutate: _saveServiceEvent, isPending: isSaving } = useSupaMutation(
+    saveServiceEvent,
     {
+      // todo: potential optimization here: this is inefficient, we refetch the entire schedule.
+      invalidate: [["getBusinessScheduleByTimeRange", currentBusiness.handle]],
       onSettled: () => {
         onSubmitted?.();
       },
@@ -119,31 +120,46 @@ export default function SaveServiceEventForm({
   );
   const { mutateAsync: _deleteServiceEvent, isPending: isDeleting } =
     useSupaMutation(deleteServiceEvent, {
-      invalidate: [["business_schedule", currentBusiness.handle]],
+      invalidate: [["getBusinessScheduleByTimeRange", currentBusiness.handle]],
     });
 
   async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
     if (hasRecurrenceError) return;
+
+    const service = availableServices?.find(
+      (s) => s.id === formValues.service_id,
+    );
     const initialLiveStreamEnabled = Boolean(defaultValues?.live_stream);
     const liveStreamStatusChanged =
       initialLiveStreamEnabled !== liveStreamEnabled;
 
-    saveServiceEvent({
-      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if original  exists, then we are editing an existing service  (not creating a new one)
-      service_id: formValues.service_id,
-      start: formValues.start.toISOString(),
-      recurrence_start: recurrenceEnabled
-        ? formValues.recurrence_start?.toISOString()
-        : null,
-      recurrence_interval: recurrenceEnabled
-        ? formValues.recurrence_interval
-        : null,
-      recurrence_count: recurrenceEnabled ? formValues.recurrence_count : null,
-      staff_ids: formValues.staff_ids,
-      service: availableServices?.find((s) => s.id === formValues.service_id),
-      live_stream_enabled: liveStreamStatusChanged
-        ? liveStreamEnabled
-        : undefined, // This ensures that no additional call is made to update the live stream data.
+    _saveServiceEvent({
+      serviceEvent: {
+        ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if original  exists, then we are editing an existing service  (not creating a new one)
+        service_id: formValues.service_id,
+        start: formValues.start.toISOString(),
+        recurrence_start: recurrenceEnabled
+          ? formValues.recurrence_start?.toISOString()
+          : null,
+        recurrence_interval: recurrenceEnabled
+          ? formValues.recurrence_interval
+          : null,
+        recurrence_count: recurrenceEnabled
+          ? formValues.recurrence_count
+          : null,
+      },
+      staffIds: formValues.staff_ids,
+      createLiveStreamRequest:
+        liveStreamStatusChanged && liveStreamEnabled && service
+          ? {
+              title: service.title,
+              contact_email: currentBusiness.email,
+              contact_name: currentBusiness.title,
+              duration_in_milli: service.duration,
+              start_time: formValues.start.toISOString(),
+            }
+          : undefined,
+      deleteLiveStream: liveStreamStatusChanged && !liveStreamEnabled,
     });
   }
 
@@ -315,7 +331,7 @@ export default function SaveServiceEventForm({
                 if (recurrenceEnabled) {
                   setIsDeleteConfirmationDialogOpen(true);
                 } else {
-                  await deleteServiceEvent(defaultValues.id!);
+                  await _deleteServiceEvent(defaultValues.id!);
                   onSubmitted?.();
                 }
               }}
@@ -333,7 +349,7 @@ export default function SaveServiceEventForm({
             setIsDeleteConfirmationDialogOpen(false);
           }}
           onDelete={async () => {
-            await deleteServiceEvent(defaultValues.id!);
+            await _deleteServiceEvent(defaultValues.id!);
             onSubmitted?.();
             setIsDeleteConfirmationDialogOpen(false);
           }}
@@ -359,7 +375,7 @@ const LiveStreamReadOnlyField = ({
         readOnly: true,
       }}
       prefix={
-        <span className="mr-2 whitespace-nowrap text-muted-foreground">
+        <span className="mr-2 whitespace-nowrap text-sm text-muted-foreground">
           {prefix}:
         </span>
       }

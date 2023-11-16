@@ -46,7 +46,7 @@ export default function SaveServiceCategoryForm({
       onSettled: () => {
         onSubmitted();
       },
-      invalidate: [["service_categories", currentBusiness.id]],
+      invalidate: [["getServiceCategoriesWithServices", currentBusiness.id]],
     },
   );
   const handleOnFormSuccess = (

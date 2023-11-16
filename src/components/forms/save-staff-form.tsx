@@ -10,9 +10,10 @@ import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import Image from "../ui/image";
 import { getStaffHeadshotUrl } from "@/src/utils";
-import { useSaveStaff } from "@/src/hooks/use-save-staff";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Loader2 } from "lucide-react";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { saveStaff } from "@/src/data/staff";
 
 const formSchema = z.object({
   first_name: z
@@ -100,15 +101,16 @@ export default function SaveStaffForm({
   }, []);
 
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveStaff, isPending } = useSaveStaff(currentBusiness.id, {
+  const { mutate: _saveStaff, isPending } = useSupaMutation(saveStaff, {
+    invalidate: [["getStaffs", currentBusiness.id]],
     onSettled: () => {
       onSubmitted?.();
     },
   });
 
   const onFormSuccess = async (formValues: SaveStaffFormSchemaType) => {
-    saveStaff({
-      newStaff: {
+    _saveStaff({
+      staff: {
         ...(defaultValues?.id ? { id: defaultValues.id } : {}),
         ...formValues,
         business_id: currentBusiness.id,

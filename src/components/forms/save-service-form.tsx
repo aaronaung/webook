@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import InputText from "../ui/input/text";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { useSaveService } from "@/src/hooks/use-save-service";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import InputMultiSelect from "../ui/input/multi-select";
@@ -11,6 +10,8 @@ import { Tables } from "@/types/db.extension";
 import { Label } from "../ui/label";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { saveService } from "@/src/data/service";
 
 const formSchema = z.object({
   title: z
@@ -77,14 +78,12 @@ export default function SaveServiceForm({
 
   const router = useRouter();
   const { currentBusiness } = useCurrentBusinessContext();
-  const { mutate: saveService, isPending } = useSaveService(
-    currentBusiness.id,
-    {
-      onSettled: () => {
-        onSubmitted();
-      },
+  const { mutate: _saveService, isPending } = useSupaMutation(saveService, {
+    invalidate: [["service_categories", currentBusiness.id]],
+    onSettled: () => {
+      onSubmitted();
     },
-  );
+  });
   const [selectedQuestions, setSelectedQuestions] = useState(
     defaultValues?.question_ids ?? [],
   );
@@ -102,11 +101,13 @@ export default function SaveServiceForm({
       }
     }
 
-    saveService({
-      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
-      ...formValues,
-      service_category_id: serviceCategoryId,
-      question_ids: questionsChanged ? selectedQuestions : undefined, // if no questions were changed, then we don't need to send the questionIds (link table won't be updated)
+    _saveService({
+      service: {
+        ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
+        ...formValues,
+        service_category_id: serviceCategoryId,
+      },
+      questionIds: questionsChanged ? selectedQuestions : undefined, // if no questions were changed, then we don't need to send the questionIds (link table won't be updated)
     });
   };
 

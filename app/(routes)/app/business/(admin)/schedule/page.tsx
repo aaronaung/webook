@@ -18,12 +18,12 @@ import {
 } from "react-big-calendar/lib/addons/dragAndDrop";
 import { SaveServiceEventFormSchemaType } from "@/src/components/forms/save-service-event-form";
 import { SaveServiceEventDialog } from "@/src/components/dialogs/save-service-event-dialog";
-import { useSaveServiceEvent } from "@/src/hooks/use-save-service-event";
-import ScheduleCalendar, {
-  CalEvent,
-} from "@/src/components/pages/app/business/schedule/calendar";
+import ScheduleCalendar, { CalEvent } from "./_components/calendar";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { useBusinessData } from "@/src/hooks/use-business-data";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
+import { getBusinessData } from "@/src/data/business";
+import { saveServiceEvent } from "@/src/data/service";
+import { toast } from "@/src/components/ui/use-toast";
 
 export default function SchedulePage() {
   const router = useRouter();
@@ -37,9 +37,15 @@ export default function SchedulePage() {
     isOpen: false,
   });
 
-  const { data: businessData, isLoading: isBusinessDataLoading } =
-    useBusinessData(currentBusiness.handle);
-  const { mutate: saveServiceEvent } = useSaveServiceEvent(currentBusiness);
+  const { data: businessData, isLoading: isBusinessDataLoading } = useSupaQuery(
+    getBusinessData,
+    currentBusiness.handle,
+    { queryKey: ["getBusinessData", currentBusiness.handle] },
+  );
+  const { mutate: _saveServiceEvent } = useSupaMutation(saveServiceEvent, {
+    // todo: potential optimization here: this is inefficient, we refetch the entire schedule.
+    invalidate: [["getBusinessScheduleByTimeRange", currentBusiness.handle]],
+  });
 
   const openUpdateServiceEventDialog = (event: CalEvent, start: Date) => {
     setSvcEventDialogState({
@@ -62,11 +68,20 @@ export default function SchedulePage() {
 
   // When the user moves an existing event, we open the dialog to edit it.
   const onEventDrop = useCallback((args: EventInteractionArgs<CalEvent>) => {
-    saveServiceEvent({
-      id: args.event.id,
-      start: (args.start as Date).toISOString(),
-      service_id: args.event.service.id,
-      service: args.event.service,
+    if (args.event.isRecurrentEvent) {
+      toast({
+        description: "Recurring events cannot be moved.",
+        duration: 4000,
+        variant: "destructive",
+      });
+      return;
+    }
+    _saveServiceEvent({
+      serviceEvent: {
+        id: args.event.id,
+        start: (args.start as Date).toISOString(),
+        service_id: args.event.service.id,
+      },
     });
   }, []);
 
@@ -114,11 +129,11 @@ export default function SchedulePage() {
             isOpen: !svcEventDialogState.isOpen,
           })
         }
-        availableServices={businessData.services}
-        availableStaffs={businessData.staffs}
+        availableServices={businessData?.services || []}
+        availableStaffs={businessData?.staffs || []}
       />
       <div className="mb-2 flex-shrink-0">
-        {_.isEmpty(businessData.services) ? (
+        {_.isEmpty(businessData?.services) ? (
           <>
             <Card className="w-full ">
               <CardHeader>
@@ -142,7 +157,7 @@ export default function SchedulePage() {
               event.
             </p>
             <div className="mb-3 flex max-w-full flex-wrap gap-1 text-sm">
-              {businessData.services.map((svc) => (
+              {(businessData?.services || []).map((svc) => (
                 <Badge
                   draggable={true}
                   className="cursor-pointer"

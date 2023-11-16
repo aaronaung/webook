@@ -2,14 +2,13 @@
 
 import { SaveQuestionDialog } from "@/src/components/dialogs/save-question-dialog";
 import { SaveQuestionFormSchemaType } from "@/src/components/forms/save-question-form";
-import EmptyState from "@/src/components/pages/shared/empty-state";
+import EmptyState from "@/src/components/shared/empty-state";
 import QuestionsTable from "@/src/components/tables/questions-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { deleteQuestion } from "@/src/data/question";
-import { useQuestions } from "@/src/hooks/use-questions";
-import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { deleteQuestion, getQuestions } from "@/src/data/question";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { Row } from "@tanstack/react-table";
@@ -17,12 +16,16 @@ import { useCallback, useState } from "react";
 
 export default function Questions() {
   const { currentBusiness } = useCurrentBusinessContext();
-  const { data: questions, isLoading } = useQuestions(currentBusiness.id);
+  const { data: questions, isLoading } = useSupaQuery(
+    getQuestions,
+    currentBusiness.id,
+    { queryKey: ["getQuestions", currentBusiness.id] },
+  );
 
   const { mutate: _deleteQuestion, isPending: deleting } = useSupaMutation(
     deleteQuestion,
     {
-      invalidate: [["questions", currentBusiness.id]],
+      invalidate: [["getQuestions", currentBusiness.id]],
     },
   );
   const [qDialogState, setQDialogState] = useState<{
@@ -72,7 +75,7 @@ export default function Questions() {
         </a>{" "}
         to start adding questions to your services.
       </p>
-      {questions.length === 0 ? (
+      {(questions || []).length === 0 ? (
         <EmptyState
           title="No questions"
           description="Create one to get started."
@@ -86,7 +89,7 @@ export default function Questions() {
         />
       ) : (
         <div>
-          <QuestionsTable data={questions} onRowAction={onRowAction} />
+          <QuestionsTable data={questions || []} onRowAction={onRowAction} />
           <Button
             className="float-right mt-2"
             onClick={() => {

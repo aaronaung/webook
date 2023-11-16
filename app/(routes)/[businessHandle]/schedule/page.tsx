@@ -1,15 +1,16 @@
 "use client";
 
-import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedule-by-time-range";
 import { add, format, parse, startOfToday } from "date-fns";
 import { useState } from "react";
 import ServiceEventCalendar from "./_components/calendar-view";
 import { ServiceEvent } from "@/types";
 import { useRouter } from "next/navigation";
-import { useAuthUser } from "@/src/hooks/use-auth-user";
 import ServiceEventQuestions from "./_components/questions-view";
 import ServiceEventBooking from "./_components/booking-view";
 import { toast } from "@/src/components/ui/use-toast";
+import { useSupaQuery } from "@/src/hooks/use-supabase";
+import { getBusinessScheduleByTimeRange } from "@/src/data/business";
+import { getAuthUser } from "@/src/data/user";
 
 type ViewModes = "questions" | "calendar" | "booking";
 
@@ -18,7 +19,7 @@ export default function SchedulePage({
 }: {
   params: { businessHandle: string };
 }) {
-  const { data: user, isLoading: userIsLoading } = useAuthUser();
+  const { data: user, isLoading: userIsLoading } = useSupaQuery(getAuthUser);
 
   const router = useRouter();
   const today = startOfToday();
@@ -29,10 +30,16 @@ export default function SchedulePage({
   );
 
   // @todo (important) - right now we only fetch 6 month window of data, and we don't have a dynamic way of fetching more data as the user moves around the calendar.
-  const { data, isLoading } = useBusinessScheduleByTimeRange(
-    params.businessHandle,
-    add(firstDayCurrentMonth, { months: -3 }),
-    add(firstDayCurrentMonth, { months: 3 }),
+  const { data, isLoading } = useSupaQuery(
+    getBusinessScheduleByTimeRange,
+    {
+      businessHandle: params.businessHandle,
+      start: add(firstDayCurrentMonth, { months: -3 }),
+      end: add(firstDayCurrentMonth, { months: 3 }),
+    },
+    {
+      queryKey: ["getBusinessScheduleByTimeRange", params.businessHandle],
+    },
   );
 
   const [viewMode, setViewMode] = useState<ViewModes>("calendar");
@@ -50,7 +57,7 @@ export default function SchedulePage({
         <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
           <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
             <ServiceEventCalendar
-              data={data}
+              data={data || []}
               serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
               calendarClassName="lg:pr-14"
               onServiceEventClick={(event) => {

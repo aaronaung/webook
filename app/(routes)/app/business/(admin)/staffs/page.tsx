@@ -1,26 +1,33 @@
 "use client";
 import { SaveStaffDialog } from "@/src/components/dialogs/save-staff-dialog";
 import { SaveStaffFormSchemaType } from "@/src/components/forms/save-staff-form";
-import EmptyState from "@/src/components/pages/shared/empty-state";
+import EmptyState from "@/src/components/shared/empty-state";
 import StaffsTable from "@/src/components/tables/staffs-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { useDeleteStaff } from "@/src/hooks/use-delete-staff";
-import { useStaffs } from "@/src/hooks/use-staffs";
+import { deleteStaff, getStaffs } from "@/src/data/staff";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { UsersIcon } from "@heroicons/react/24/outline";
 import { Row } from "@tanstack/react-table";
 import _ from "lodash";
 import { PlusIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
 export default function Staffs() {
   const { currentBusiness } = useCurrentBusinessContext();
-  const { data, isLoading } = useStaffs(currentBusiness?.id);
-  const staffs = useMemo(() => data, [data]);
-  const { mutate: deleteStaff, isPending: isDeleteStaffPending } =
-    useDeleteStaff(currentBusiness?.id);
+  const { data: staffs, isLoading } = useSupaQuery(
+    getStaffs,
+    currentBusiness?.id,
+    {
+      queryKey: ["getStaffs", currentBusiness?.id],
+    },
+  );
+  const { mutate: _deleteStaff, isPending: isDeleteStaffPending } =
+    useSupaMutation(deleteStaff, {
+      invalidate: [["getStaffs", currentBusiness?.id]],
+    });
 
   const [staffDialogState, setStaffDialogState] = useState<{
     isOpen: boolean;
@@ -47,7 +54,7 @@ export default function Staffs() {
           break;
         case RowAction.DELETE:
           if (!isDeleteStaffPending) {
-            deleteStaff(row.original.id);
+            _deleteStaff(row.original.id);
           }
           break;
         default:

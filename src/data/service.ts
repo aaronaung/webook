@@ -2,6 +2,11 @@ import { ServiceCategoryWithServices } from "@/types";
 import { SupabaseOptions } from "./types";
 import { Tables } from "@/types/db.extension";
 import { throwIfError } from "./util";
+import { CreateLiveStreamMeetingRequest } from "../api/schemas/meeting";
+import {
+  createLiveStreamForServiceEvent,
+  deleteLiveStreamForServiceEvent,
+} from "./live-stream";
 
 export const getServiceCategoriesWithServices = async (
   businessId: string,
@@ -42,8 +47,7 @@ export const saveServiceCategory = async (
   return throwIfError(
     client
       .from("service_categories")
-      .upsert({ ...(serviceCategory as Tables<"service_categories">) })
-      .select(),
+      .upsert({ ...(serviceCategory as Tables<"service_categories">) }),
   );
 };
 
@@ -57,15 +61,22 @@ export const deleteServiceCategory = async (
 };
 
 export const saveService = async (
-  service: Partial<Tables<"services">>,
+  {
+    service,
+    questionIds,
+  }: { service: Partial<Tables<"services">>; questionIds?: string[] },
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  const saved = await throwIfError(
     client
       .from("services")
       .upsert({ ...(service as Tables<"services">) })
-      .select(),
+      .select("id"),
   );
+  if (questionIds) {
+    await saveServiceQuestion(saved[0].id, questionIds, { client });
+  }
+  return saved;
 };
 
 export const deleteService = async (
@@ -75,19 +86,47 @@ export const deleteService = async (
   return throwIfError(client.from("services").delete().eq("id", serviceId));
 };
 
+/** If createLiveStreamRequest is not passed, we delete the live stream meeting for the event. */
 export const saveServiceEvent = async (
-  serviceEvent: Partial<Tables<"service_events">>,
+  {
+    serviceEvent,
+    staffIds,
+    createLiveStreamRequest,
+    deleteLiveStream,
+  }: {
+    serviceEvent: Partial<Tables<"service_events">>;
+    staffIds?: string[];
+    createLiveStreamRequest?: CreateLiveStreamMeetingRequest;
+    deleteLiveStream?: boolean;
+  },
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  const saved = await throwIfError(
     client
       .from("service_events")
       .upsert({ ...(serviceEvent as Tables<"service_events">) })
-      .select(),
+      .select("id"),
   );
+
+  if (staffIds) {
+    await saveServiceEventStaff(saved[0].id, staffIds, { client });
+  }
+  if (createLiveStreamRequest) {
+    await createLiveStreamForServiceEvent(
+      saved[0].id,
+      createLiveStreamRequest,
+      {
+        client,
+      },
+    );
+  }
+  if (deleteLiveStream) {
+    await deleteLiveStreamForServiceEvent(saved[0].id, { client });
+  }
+  return saved;
 };
 
-// This will delete all service event staff for the given service event id, and then upsert the new ones.
+// todo: This will delete all service event staff for the given service event id, and then upsert the new ones.
 export const saveServiceEventStaff = async (
   serviceId: string,
   staffIds: string[],

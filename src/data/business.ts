@@ -1,13 +1,16 @@
+import { BusinessData, BusinessSchedule } from "@/types";
 import { SupabaseOptions } from "./types";
-import { throwIfError } from "./util";
+import { throwIfPgFuncErr } from "./util";
 
 export const getBusinessScheduleByTimeRange = async (
-  businessHandle: string,
-  start: Date,
-  end: Date,
+  {
+    businessHandle,
+    start,
+    end,
+  }: { businessHandle: string; start: Date; end: Date },
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwIfPgFuncErr<BusinessSchedule>(
     client.rpc("get_business_schedule_in_range", {
       business_handle: businessHandle,
       start_time: start.toISOString(),
@@ -20,7 +23,7 @@ export const getBusinessData = async (
   businessHandle: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwIfPgFuncErr<BusinessData>(
     client.rpc("get_business_data", {
       business_handle: businessHandle,
     }),

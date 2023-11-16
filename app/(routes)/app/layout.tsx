@@ -1,6 +1,6 @@
 import { navigation, userNavigation } from "./navigation";
 import { Suspense } from "react";
-import Navbar from "@/src/components/pages/app/navbar";
+import Navbar from "./_components/navbar";
 import { getAuthUser } from "@/src/data/user";
 import { supaServerComponentClient } from "@/src/data/clients/server";
 import { redirect } from "next/navigation";

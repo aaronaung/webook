@@ -1,15 +1,16 @@
 "use client";
 
 import { CurrentBusinessProvider } from "@/src/contexts/current-business";
-import EmptyState from "@/src/components/pages/shared/empty-state";
-import Navbar from "@/src/components/pages/app/business/navbar";
-import { useLoggedInUserBusinesses } from "@/src/hooks/use-logged-in-user-businesses";
+import EmptyState from "@/src/components/shared/empty-state";
+import Navbar from "./_components/navbar";
 import _ from "lodash";
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
+import { useSupaQuery } from "@/src/hooks/use-supabase";
+import { getLoggedInUserBusinesses } from "@/src/data/business";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { data, isLoading } = useLoggedInUserBusinesses();
+  const { data, isLoading } = useSupaQuery(getLoggedInUserBusinesses);
   const router = useRouter();
   if (isLoading) {
     return <>Loading...</>;

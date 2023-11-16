@@ -1,6 +1,8 @@
 import { Tables } from "@/types/db.extension";
 import { SupabaseOptions } from "./types";
 import { throwIfError } from "./util";
+import { BUCKETS, STORAGE_DIR_PATHS } from "../consts/storage";
+import { sleep } from "../utils";
 
 export const getStaffs = async (
   businessId: string,
@@ -16,20 +18,40 @@ export const getStaffs = async (
 };
 
 export const saveStaff = async (
-  staff: Partial<Tables<"staffs">>,
+  {
+    staff,
+    headshotFile,
+  }: { staff: Partial<Tables<"staffs">>; headshotFile?: File },
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  const saved = await throwIfError(
     client
       .from("staffs")
       .upsert({ ...(staff as Tables<"staffs">) })
       .select(),
   );
+  if (headshotFile) {
+    const imgVersion = new Date(saved[0].updated_at!).getTime();
+    await client.storage
+      .from(BUCKETS.publicBusinessAssets)
+      .upload(
+        `${STORAGE_DIR_PATHS.staffHeadshots}/${saved[0].id}?version=${imgVersion}`,
+        headshotFile,
+        {
+          upsert: true,
+        },
+      );
+    await sleep(1000); // introduce artificial delay to let the image upload settle.
+  }
+  return saved;
 };
 
 export const deleteStaff = async (
   staffId: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(client.from("staffs").delete().eq("id", staffId));
+  await throwIfError(client.from("staffs").delete().eq("id", staffId));
+  return client.storage
+    .from(BUCKETS.publicBusinessAssets)
+    .remove([`${STORAGE_DIR_PATHS.staffHeadshots}/${staffId}`]);
 };

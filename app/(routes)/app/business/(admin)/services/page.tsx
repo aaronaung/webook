@@ -1,7 +1,6 @@
 "use client";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
-import { useServiceCategoriesWithServices } from "@/src/hooks/use-service-categories-with-services";
 import {
   PencilSquareIcon,
   Square3Stack3DIcon,
@@ -35,29 +34,40 @@ import { Service, ServiceCategoryWithServices } from "@/types";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import { RowAction } from "@/src/components/tables/types";
 import { SaveServiceCategoryFormSchemaType } from "@/src/components/forms/save-service-category-form";
-import EmptyState from "@/src/components/pages/shared/empty-state";
-import { useQuestions } from "@/src/hooks/use-questions";
-import { useSupaMutation } from "@/src/hooks/use-supabase";
-import { deleteService, deleteServiceCategory } from "@/src/data/service";
+import EmptyState from "@/src/components/shared/empty-state";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
+import {
+  deleteService,
+  deleteServiceCategory,
+  getServiceCategoriesWithServices,
+} from "@/src/data/service";
+import { getQuestions } from "@/src/data/question";
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service categories on mobile)
 export default function Services() {
   const { currentBusiness } = useCurrentBusinessContext();
 
-  const { data: questions, isLoading: isQuestionsLoading } = useQuestions(
+  const { data: questions, isLoading: isQuestionsLoading } = useSupaQuery(
+    getQuestions,
     currentBusiness.id,
+    {
+      queryKey: ["getQuestions", currentBusiness.id],
+    },
   );
+
   const { data: serviceCategories, isLoading: isServiceCategoriesLoading } =
-    useServiceCategoriesWithServices(currentBusiness?.id);
+    useSupaQuery(getServiceCategoriesWithServices, currentBusiness?.id, {
+      queryKey: ["getServiceCategoriesWithServices", currentBusiness.id],
+    });
 
   const { mutate: _deleteServiceCategory, isPending: isDeleteSgPending } =
     useSupaMutation(deleteServiceCategory, {
-      invalidate: [["service_categories", currentBusiness.id]],
+      invalidate: [["getServiceCategoriesWithServices", currentBusiness.id]],
     });
 
   const { mutate: _deleteService, isPending: isDeleteSvcPending } =
     useSupaMutation(deleteService, {
-      invalidate: [["service_categories", currentBusiness.id]],
+      invalidate: [["getServiceCategoriesWithServices", currentBusiness.id]],
     });
 
   const [sgDialogState, setSgDialogState] = useState<{
@@ -172,10 +182,10 @@ export default function Services() {
         />
       ) : (
         <div className="w-full">
-          <Tabs defaultValue={serviceCategories[0].id}>
+          <Tabs defaultValue={serviceCategories?.[0].id}>
             <div className="flex max-w-full items-center overflow-x-scroll">
               <TabsList className="relative overflow-visible">
-                {serviceCategories.map((sg) => (
+                {(serviceCategories || []).map((sg) => (
                   <ContextMenu key={sg.id}>
                     <ContextMenuTrigger>
                       <TabsTrigger key={sg.id} value={sg.id}>
@@ -228,7 +238,7 @@ export default function Services() {
               </Button>
             </div>
 
-            {serviceCategories.map((sg) => (
+            {(serviceCategories || []).map((sg) => (
               <TabsContent key={sg.id} value={sg.id}>
                 {_.isEmpty(sg.services) ? (
                   <EmptyState

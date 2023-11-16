@@ -1,4 +1,4 @@
-import HeaderWithAction from "@/src/components/pages/shared/header-with-action";
+import HeaderWithAction from "@/src/components/shared/header-with-action";
 import { Button } from "@/src/components/ui/button";
 import { ServiceEvent } from "@/types";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";

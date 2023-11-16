@@ -49,7 +49,7 @@ export default function SaveQuestionForm({
   });
   const { currentBusiness } = useCurrentBusinessContext();
   const { mutate: _saveQuestion, isPending } = useSupaMutation(saveQuestion, {
-    invalidate: [["questions", currentBusiness.id]],
+    invalidate: [["getQuestions", currentBusiness.id]],
     onSettled: () => {
       onSubmitted();
     },

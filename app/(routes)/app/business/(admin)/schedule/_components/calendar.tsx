@@ -1,6 +1,7 @@
 import DnDCalendar, { localizer } from "@/src/components/ui/dnd-calendar";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { useBusinessScheduleByTimeRange } from "@/src/hooks/use-business-schedule-by-time-range";
+import { getBusinessScheduleByTimeRange } from "@/src/data/business";
+import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { ServiceEvent } from "@/types";
 import {
   add,
@@ -47,12 +48,17 @@ export default function ScheduleCalendar({
   const { currentBusiness } = useCurrentBusinessContext();
 
   // @todo (important) - right now we only fetch 6 month window of data, and we don't have a dynamic way of fetching more data as the user moves around the calendar.
-  const { data, isLoading: isBusinessScheduleDataLoading } =
-    useBusinessScheduleByTimeRange(
-      currentBusiness?.handle,
-      add(firstDayCurrentMonth, { months: -3 }),
-      add(firstDayCurrentMonth, { months: 3 }),
-    );
+  const { data, isLoading: isBusinessScheduleDataLoading } = useSupaQuery(
+    getBusinessScheduleByTimeRange,
+    {
+      businessHandle: currentBusiness.handle,
+      start: add(firstDayCurrentMonth, { months: -3 }),
+      end: add(firstDayCurrentMonth, { months: 3 }),
+    },
+    {
+      queryKey: ["getBusinessScheduleByTimeRange", currentBusiness.handle],
+    },
+  );
 
   const serviceEvents =
     (data || [])
@@ -131,6 +137,11 @@ export default function ScheduleCalendar({
     },
     [],
   );
+
+  if (isBusinessScheduleDataLoading) {
+    // todo - add a loading state.
+    return <>Loading...</>;
+  }
 
   return (
     <div className="overflow-scroll text-sm">
