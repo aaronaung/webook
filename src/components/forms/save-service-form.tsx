@@ -79,7 +79,7 @@ export default function SaveServiceForm({
   const router = useRouter();
   const { currentBusiness } = useCurrentBusinessContext();
   const { mutate: _saveService, isPending } = useSupaMutation(saveService, {
-    invalidate: [["service_categories", currentBusiness.id]],
+    invalidate: [["getServiceCategoriesWithServices", currentBusiness.id]],
     onSettled: () => {
       onSubmitted();
     },
@@ -127,7 +127,7 @@ export default function SaveServiceForm({
         registerOptions={{ valueAsNumber: true }}
         error={errors.price?.message}
         inputProps={{ placeholder: "Price", type: "number", step: "any" }}
-        prefix={<span className="mr-1 text-muted-foreground">$</span>}
+        prefix={<span className="mr-1 text-sm text-muted-foreground">$</span>}
         label="Price"
       />
       <InputText
@@ -136,7 +136,9 @@ export default function SaveServiceForm({
         registerOptions={{ valueAsNumber: true }}
         error={errors.duration?.message}
         inputProps={{ placeholder: "Duration", type: "number", step: "any" }}
-        suffix={<span className="mr-1 text-muted-foreground">mins</span>}
+        suffix={
+          <span className="mr-1 text-sm text-muted-foreground">mins</span>
+        }
         label="Duration"
       />
       <InputText

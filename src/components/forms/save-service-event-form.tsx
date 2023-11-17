@@ -281,8 +281,12 @@ export default function SaveServiceEventForm({
             registerOptions={{ valueAsNumber: true }}
             defaultValue={defaultValues?.start}
             error={errors.recurrence_interval?.message}
-            prefix={<span className="mr-3 text-muted-foreground">Every</span>}
-            suffix={<span className="ml-1 text-muted-foreground">day(s)</span>}
+            prefix={
+              <span className="mr-3 text-sm text-muted-foreground">Every</span>
+            }
+            suffix={
+              <span className="ml-1 text-sm text-muted-foreground">day(s)</span>
+            }
             inputProps={{
               placeholder: "How often should it repeat?",
               type: "number",

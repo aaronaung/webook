@@ -26,7 +26,9 @@ export const getServiceCategoriesWithServices = async (
       .select("*, questions (*)")
       .in(
         "service_category_id",
-        (serviceCategories || []).map((serviceCategory) => serviceCategory.id),
+        (serviceCategories || []).map(
+          (serviceCategory: Tables<"service_categories">) => serviceCategory.id,
+        ),
       )
       .order("created_at", { ascending: true }),
   );
