@@ -11,14 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { BUCKETS } from "@/src/consts/storage";
-import { supaClientComponentClient } from "@/src/data/clients/browser";
-import { cn } from "@/src/utils";
+import { cn, getBusinessLogoUrl } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { BuildingOfficeIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "@/src/components/ui/image";
 
 export default function Navbar({
   businesses,
@@ -28,12 +27,6 @@ export default function Navbar({
   const { currentBusiness, setCurrentBusiness } = useCurrentBusinessContext();
   const router = useRouter();
   const pathName = usePathname();
-
-  const {
-    data: { publicUrl: logoUrl },
-  } = supaClientComponentClient()
-    .storage.from(BUCKETS.publicBusinessAssets)
-    .getPublicUrl(`logos/${currentBusiness?.handle}`);
 
   return (
     <aside className="flex overflow-x-auto pb-4 lg:block lg:h-full lg:w-64 lg:flex-none">
@@ -74,11 +67,9 @@ export default function Navbar({
                   <DropdownMenuTrigger asChild>
                     <div className="flex cursor-pointer items-center gap-x-2 rounded-md py-2 pl-2 pr-3 font-medium hover:bg-secondary hover:text-primary ">
                       <Image
-                        src={logoUrl}
+                        src={getBusinessLogoUrl(currentBusiness.handle)}
                         alt="Logo"
-                        className="h-8 w-8 rounded-full"
-                        width={8}
-                        height={8}
+                        className="h-10 w-10 rounded-full object-cover"
                       />
                       <p className="ml-1 overflow-hidden text-ellipsis text-sm">
                         {currentBusiness?.title}

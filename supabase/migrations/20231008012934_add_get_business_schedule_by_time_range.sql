@@ -22,6 +22,7 @@ BEGIN
                 sg.title as title,
                 sg.priority as priority, 
                 sg.description as description,
+                sg.business_id as business_id,
                 json_agg(
                     jsonb_build_object(
                         'id', ss.id,

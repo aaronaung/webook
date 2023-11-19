@@ -33,7 +33,7 @@ const formSchema = z.object({
     .positive({
       message: "Duration must be a positive number.",
     })
-    .transform((val) => val * 6000),
+    .transform((val) => val * 60000),
   booking_limit: z
     .number({ invalid_type_error: "Booking limit cannot be empty." })
     .step(1, "Booking limit must be a whole number.")
@@ -70,7 +70,7 @@ export default function SaveServiceForm({
       ...defaultValues,
       price: defaultValues?.price ? defaultValues.price / 100 : undefined,
       duration: defaultValues?.duration
-        ? defaultValues.duration / 6000
+        ? defaultValues.duration / 60000
         : undefined,
     },
     resolver: zodResolver(formSchema),
@@ -162,7 +162,7 @@ export default function SaveServiceForm({
               router.push("/app/business/questions");
             }}
           >
-            You currently have no questions. Start by creating one.
+            No question found. Start by creating one.
           </Button>
         </div>
       ) : (

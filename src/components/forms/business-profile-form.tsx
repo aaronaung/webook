@@ -17,8 +17,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useDebounce } from "usehooks-ts";
-import { User } from "@supabase/supabase-js";
+import { PostgrestError, User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { FileRejection } from "react-dropzone";
+import { UNIQUE_CONSTRAINT_VIOLATION } from "@/src/consts/postgres_errors";
 
 const formSchema = z.object({
   handle: z
@@ -49,7 +51,7 @@ const formSchema = z.object({
 
 type FormSchemaType = z.infer<typeof formSchema>;
 
-const FILE_SIZE_LIMIT = 1000000; // 1MB in bytes
+const FILE_SIZE_LIMIT = 5000000; // 5MB in bytes
 
 export default function BusinessProfileForm({
   onBack,
@@ -81,6 +83,7 @@ export default function BusinessProfileForm({
   const [handle, setHandle] = useState<string>("");
   const [handleExists, setHandleExists] = useState<boolean>(false);
   const debouncedHandleValue = useDebounce<string>(handle, 1000);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (debouncedHandleValue) {
@@ -102,17 +105,25 @@ export default function BusinessProfileForm({
       setHandleExists(false);
     }
   }, [debouncedHandleValue]);
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles[0].size > FILE_SIZE_LIMIT) {
-      toast({
-        variant: "destructive",
-        title: "File too large",
-        description: "Please upload a file smaller than 1MB.",
-      });
-      return;
-    }
-    setCoverPhotoFile(acceptedFiles[0]);
-  }, []);
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
+      if (rejectedFiles.length > 0) {
+        for (const rejection of rejectedFiles) {
+          if (rejection.errors[0].code === "file-too-large") {
+            toast({
+              variant: "destructive",
+              title: "File too large",
+              description: "Please upload a file smaller than 5MB.",
+            });
+            return;
+          }
+        }
+      }
+      setCoverPhotoFile(acceptedFiles[0]);
+    },
+    [],
+  );
 
   const onLogoFileChange = useCallback((e: any) => {
     const file = e.target.files[0];
@@ -120,7 +131,7 @@ export default function BusinessProfileForm({
       toast({
         variant: "destructive",
         title: "File too large",
-        description: "Please upload a file smaller than 1MB.",
+        description: "Please upload a file smaller than 5MB.",
       });
       return;
     }
@@ -152,6 +163,7 @@ export default function BusinessProfileForm({
       return;
     }
     try {
+      setIsSaving(true);
       if (handleExists) {
         setError(
           "handle",
@@ -200,15 +212,26 @@ export default function BusinessProfileForm({
           throw result.error;
         }
       }
+      setIsSaving(false);
       // todo - celebrate with a toast.
       router.replace("/app/business/schedule");
     } catch (err) {
       console.log(err);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-      });
+      if ((err as PostgrestError).code === UNIQUE_CONSTRAINT_VIOLATION) {
+        toast({
+          variant: "destructive",
+          title: "Handle already exists",
+          description: "Please choose a different handle.",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Something went wrong. Please try again.",
+        });
+      }
+    } finally {
+      setIsSaving(false);
     }
   }
 
@@ -430,6 +453,11 @@ export default function BusinessProfileForm({
 
               <FileDropzone
                 onDrop={onDrop}
+                options={{
+                  accept: { "image/*": [] },
+                  multiple: false,
+                  maxSize: FILE_SIZE_LIMIT,
+                }}
                 defaultIcon={
                   <PhotoIcon
                     className="mx-auto h-12 w-12 text-muted-foreground"
@@ -456,7 +484,9 @@ export default function BusinessProfileForm({
         >
           Cancel
         </Button>
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={isSaving}>
+          Save
+        </Button>
       </div>
     </form>
   );

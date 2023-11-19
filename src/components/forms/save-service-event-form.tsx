@@ -7,11 +7,11 @@ import InputDateTimePicker from "../ui/input/date-time-picker";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import InputText from "../ui/input/text";
-import InputSelect from "../ui/input/select";
 import InputMultiSelect from "../ui/input/multi-select";
 import {
   CheckCircleIcon,
   ClipboardDocumentIcon,
+  Square3Stack3DIcon,
 } from "@heroicons/react/24/outline";
 import _ from "lodash";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -23,6 +23,9 @@ import { Loader2 } from "lucide-react";
 import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { deleteServiceEvent, saveServiceEvent } from "@/src/data/service";
+import { addMilliseconds } from "date-fns";
+import InputSelect from "../ui/input/select";
+import EmptyState from "../shared/empty-state";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -93,11 +96,20 @@ export default function SaveServiceEventForm({
   const [recurrenceEnabled, setRecurrenceEnabled] = useState(
     Boolean(defaultValues?.recurrence_start),
   );
-  const [recurrenceCount, recurrenceInterval, recurrenceStart] = watch([
+  const [
+    serviceId,
+    start,
+    recurrenceCount,
+    recurrenceInterval,
+    recurrenceStart,
+  ] = watch([
+    "service_id",
+    "start",
     "recurrence_count",
     "recurrence_interval",
     "recurrence_start",
   ]);
+  const selectedService = availableServices?.find((s) => s.id === serviceId);
   const hasRecurrenceError =
     recurrenceEnabled &&
     (!recurrenceCount || !recurrenceInterval || !recurrenceStart);
@@ -125,10 +137,6 @@ export default function SaveServiceEventForm({
 
   async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
     if (hasRecurrenceError) return;
-
-    const service = availableServices?.find(
-      (s) => s.id === formValues.service_id,
-    );
     const initialLiveStreamEnabled = Boolean(defaultValues?.live_stream);
     const liveStreamStatusChanged =
       initialLiveStreamEnabled !== liveStreamEnabled;
@@ -150,12 +158,12 @@ export default function SaveServiceEventForm({
       },
       staffIds: formValues.staff_ids,
       createLiveStreamRequest:
-        liveStreamStatusChanged && liveStreamEnabled && service
+        liveStreamStatusChanged && liveStreamEnabled && selectedService
           ? {
-              title: service.title,
+              title: selectedService.title,
               contact_email: currentBusiness.email,
               contact_name: currentBusiness.title,
-              duration_in_milli: service.duration,
+              duration_in_milli: selectedService.duration,
               start_time: formValues.start.toISOString(),
             }
           : undefined,
@@ -167,6 +175,18 @@ export default function SaveServiceEventForm({
     console.log(errors);
   }
 
+  if (_.isEmpty(availableServices)) {
+    return (
+      <EmptyState
+        Icon={Square3Stack3DIcon}
+        title="No service found"
+        description="To create a service event, you must first create a service you provide."
+        actionButtonText="Start by creating one"
+        onAction={() => router.push("/app/business/services")}
+      />
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit(onFormSuccess, onFormError)}>
       {isRecurrentEvent && (
@@ -174,6 +194,7 @@ export default function SaveServiceEventForm({
           This is a recurring event. Updates are not allowed.
         </p>
       )}
+
       <InputSelect
         rhfKey="service_id"
         options={(availableServices || []).map((s) => ({
@@ -195,7 +216,7 @@ export default function SaveServiceEventForm({
               router.push("/app/business/staffs");
             }}
           >
-            You currently have no staff. Start by creating one.
+            No staff found. Start by creating one.
           </Button>
         </div>
       ) : (
@@ -222,6 +243,13 @@ export default function SaveServiceEventForm({
         error={errors.start?.message}
         label="Start"
         disabled={isRecurrentEvent}
+      />
+      <InputDateTimePicker
+        control={control}
+        value={addMilliseconds(start, selectedService?.duration || 0)}
+        error={errors.start?.message}
+        label="End (calculated using service duration)"
+        disabled
       />
       <div className="my-3">
         <div className="flex items-center space-x-2">

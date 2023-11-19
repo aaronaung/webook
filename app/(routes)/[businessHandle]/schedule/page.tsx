@@ -89,7 +89,9 @@ export default function SchedulePage({
       )}
       {selectedServiceEvent && viewMode === "questions" && (
         <ServiceEventQuestions
+          user={user ?? undefined}
           businessHandle={params.businessHandle}
+          businessId={data?.[0].business_id}
           event={selectedServiceEvent}
           onBack={() => {
             setViewMode("calendar");

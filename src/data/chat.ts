@@ -20,17 +20,20 @@ export const saveChatRoomParticipants = async (
   {
     chatRoomId,
     participants,
+    businessId,
   }: {
     chatRoomId: string;
     participants: string[];
+    businessId: string;
   },
   { client }: SupabaseOptions,
 ) => {
   return throwIfError(
-    client.from("chat_room_participants").insert(
+    client.from("chat_rooms_participants").upsert(
       participants.map((participant) => ({
-        chat_room_id: chatRoomId,
+        room_id: chatRoomId,
         user_id: participant,
+        business_id: businessId,
       })),
     ),
   );

@@ -115,6 +115,8 @@ CREATE UNIQUE INDEX bookings_pkey ON public.bookings USING btree (id);
 
 CREATE UNIQUE INDEX businesses_pkey ON public.businesses USING btree (id);
 
+CREATE UNIQUE INDEX businesses_handle_unique ON public.businesses USING btree (handle);
+
 CREATE UNIQUE INDEX service_categories_pkey ON public.service_categories USING btree (id);
 
 CREATE UNIQUE INDEX services_pkey ON public.services USING btree (id);
@@ -143,7 +145,7 @@ alter table "public"."staffs" add constraint "staffs_pkey" PRIMARY KEY using ind
 
 alter table "public"."users" add constraint "users_pkey" PRIMARY KEY using index "users_pkey";
 
-alter table "public"."bookings" add constraint "bookings_booker_id_fkey" FOREIGN KEY (booker_id) REFERENCES businesses(id) not valid;
+alter table "public"."bookings" add constraint "bookings_booker_id_fkey" FOREIGN KEY (booker_id) REFERENCES "users"(id) ON DELETE CASCADE not valid;
 
 alter table "public"."bookings" validate constraint "bookings_booker_id_fkey";
 
@@ -200,3 +202,23 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- Create public business assets bucket.
+insert into storage.buckets
+  (id, name)
+values
+  ('public-business-assets', 'public-business-assets');
+
+CREATE POLICY "Enable select to authenticated" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'public-business-assets');
+
+CREATE POLICY "Enable insert to authenticated" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'public-business-assets');
+
+CREATE POLICY "Enable update to authenticated" ON storage.objects FOR UPDATE TO authenticated WITH CHECK (bucket_id = 'public-business-assets');
+
+CREATE POLICY "Enable delete to authenticated" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'public-business-assets');
+
+create policy "Read access to public-business-assets bucket to anon users"
+on storage.objects
+for select                              -- Allow read access
+to anon                  -- Allow access to anonymous users
+using ( bucket_id = 'public-business-access' );   -- Identify the bucket

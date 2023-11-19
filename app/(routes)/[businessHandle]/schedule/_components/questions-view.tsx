@@ -3,6 +3,7 @@ import { Button } from "@/src/components/ui/button";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { Label } from "@/src/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
+import { toast } from "@/src/components/ui/use-toast";
 import { BOOKING_STATUS_PENDING } from "@/src/consts/booking";
 import {
   QUESTION_TYPE_BOOLEAN,
@@ -15,26 +16,29 @@ import {
   saveChatRoomParticipants,
 } from "@/src/data/chat";
 import { saveQuestionAnswers } from "@/src/data/question";
-import { getAuthUser } from "@/src/data/user";
-import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { ServiceEvent } from "@/types";
 import { Tables } from "@/types/db.extension";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type ServiceEventQuestionsProps = {
+  user?: User;
   event: ServiceEvent;
   businessHandle: string;
+  businessId?: string;
   onBack: () => void;
 };
 export default function ServiceEventQuestions({
+  user,
   event,
   businessHandle,
+  businessId,
   onBack,
 }: ServiceEventQuestionsProps) {
   const router = useRouter();
-  const { data: user } = useSupaQuery(getAuthUser);
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
   const isRequiredQuestionAnswered = (q: Tables<"questions">) =>
@@ -64,7 +68,12 @@ export default function ServiceEventQuestions({
   };
 
   const handleContinue = async () => {
-    if (!user) {
+    if (!user || !businessId) {
+      toast({
+        title: "Something went wrong",
+        description: "It's us, not you. Please reload and try again.",
+        variant: "destructive",
+      });
       return;
     }
     for (const q of event.service.questions) {
@@ -95,6 +104,7 @@ export default function ServiceEventQuestions({
     await _saveChatRoomParticipants({
       chatRoomId: chatRoom.id,
       participants: [user.id],
+      businessId,
     });
     await _saveChatMessage({
       booking_id: booking.id,

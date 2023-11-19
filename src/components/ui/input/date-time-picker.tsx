@@ -7,18 +7,21 @@ import { cn } from "@/src/utils";
 type InputDateTimePickerProps = ControlledRhfInputProps;
 
 export default function InputDateTimePicker(props: InputDateTimePickerProps) {
-  const input = ({ field }: { field: ControllerRenderProps }) => (
-    <InputDecorator {...props} className="mt-1.5">
-      <DateTimePicker
-        className={cn("w-full", props.className)}
-        value={{ date: field.value, hasTime: true }}
-        onChange={({ date }) => {
-          field.onChange(date);
-        }}
-        isDisabled={props.disabled}
-      />
-    </InputDecorator>
-  );
+  const input = ({ field }: { field: ControllerRenderProps }) => {
+    const handleDateChange = ({ date }: { date: Date }) => {
+      field.onChange(date);
+    };
+    return (
+      <InputDecorator {...props} className="mt-1.5">
+        <DateTimePicker
+          className={cn("w-full", props.className)}
+          isDisabled={props.disabled}
+          value={{ date: props.value || field.value, hasTime: true }}
+          onChange={props.onChange || handleDateChange}
+        />
+      </InputDecorator>
+    );
+  };
 
   return (
     <Controller

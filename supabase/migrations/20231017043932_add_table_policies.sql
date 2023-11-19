@@ -60,5 +60,14 @@ to authenticated
 using (true)
 with check (true);
 
+create policy "Enable all for authenticated users only"
+on "public"."bookings"
+as permissive
+for all
+to authenticated
+using (true)
+with check (true);
+
+
 
 

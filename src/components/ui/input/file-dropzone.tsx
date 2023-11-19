@@ -1,19 +1,22 @@
 import { ReactNode } from "react";
-import { useDropzone } from "react-dropzone";
+import { DropzoneOptions, FileRejection, useDropzone } from "react-dropzone";
 
 export default function FileDropzone({
   onDrop,
   defaultIcon,
+  options,
 }: {
-  onDrop: (files: File[]) => void;
+  onDrop: (files: File[], rejectedFiles: FileRejection[]) => void;
   defaultIcon?: ReactNode;
+  options?: DropzoneOptions;
 }) {
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
     useDropzone({
       onDrop,
-      accept: { "image/*": [] },
-      multiple: false,
-      maxSize: 1000000,
+      onDropAccepted: () => {
+        console.log("hello onDropAccepted");
+      },
+      ...options,
     });
 
   return (
