@@ -1,9 +1,7 @@
-import { Database, Json } from "@/types/db";
-import { PostgrestTransformBuilder } from "@supabase/postgrest-js";
+import { Json } from "@/types/db";
+import { PostgrestBuilder } from "@supabase/postgrest-js";
 
-export async function throwIfError<Result>(
-  fn: PostgrestTransformBuilder<Database["public"], any, Result>,
-) {
+export async function throwIfError<Result>(fn: PostgrestBuilder<Result>) {
   const { data, error } = await fn;
   if (error) {
     throw error;
@@ -13,7 +11,7 @@ export async function throwIfError<Result>(
 
 // Note: this is a hacky way to get around the fact that the type of the result of a pg function is not known.
 export async function throwIfPgFuncErr<Result>(
-  fn: PostgrestTransformBuilder<Database["public"], any, Result | Json>,
+  fn: PostgrestBuilder<Result | Json>,
 ) {
   const { data, error } = await fn;
   if (error) {

@@ -41,3 +41,14 @@ export const getServicesByQuestionId = async (
       .eq("question_id", questionId),
   );
 };
+
+export const saveQuestionAnswers = async (
+  questionAnswers: Partial<Tables<"question_answers">>[],
+  { client }: SupabaseOptions,
+) => {
+  return throwIfError(
+    client
+      .from("question_answers")
+      .upsert(questionAnswers as Tables<"question_answers">[]),
+  );
+};

@@ -3,35 +3,107 @@ import { Button } from "@/src/components/ui/button";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { Label } from "@/src/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
+import { BOOKING_STATUS_PENDING } from "@/src/consts/booking";
 import {
   QUESTION_TYPE_BOOLEAN,
   QUESTION_TYPE_TEXT,
 } from "@/src/consts/questions";
+import { saveBooking } from "@/src/data/booking";
+import {
+  saveChatMessage,
+  saveChatRoom,
+  saveChatRoomParticipants,
+} from "@/src/data/chat";
+import { saveQuestionAnswers } from "@/src/data/question";
+import { getAuthUser } from "@/src/data/user";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { ServiceEvent } from "@/types";
 import { Tables } from "@/types/db.extension";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type ServiceEventQuestionsProps = {
   event: ServiceEvent;
+  businessHandle: string;
   onBack: () => void;
 };
 export default function ServiceEventQuestions({
   event,
+  businessHandle,
   onBack,
 }: ServiceEventQuestionsProps) {
+  const router = useRouter();
+  const { data: user } = useSupaQuery(getAuthUser);
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
   const isRequiredQuestionAnswered = (q: Tables<"questions">) =>
     q.required && answers[q.id] !== undefined && answers[q.id] !== "";
 
-  const handleContinue = () => {
+  const { mutateAsync: _saveBooking } = useSupaMutation(saveBooking);
+  const { mutateAsync: _saveQandA } = useSupaMutation(saveQuestionAnswers);
+  const { mutateAsync: _saveChatRoom } = useSupaMutation(saveChatRoom);
+  const { mutateAsync: _saveChatMessage } = useSupaMutation(saveChatMessage);
+  const { mutateAsync: _saveChatRoomParticipants } = useSupaMutation(
+    saveChatRoomParticipants,
+  );
+
+  const prettifyAnswers = () => {
+    let prettifiedAnswers = "";
+    for (const [qId, ans] of Object.entries(answers)) {
+      const q = event.service.questions.find((q) => q.id === qId);
+      if (q) {
+        if (q.type === QUESTION_TYPE_BOOLEAN) {
+          prettifiedAnswers += `${q.question}:\n ${ans ? "Yes" : "No"}\n`;
+        } else {
+          prettifiedAnswers += `${q.question}:\n ${ans}\n`;
+        }
+      }
+    }
+    return prettifiedAnswers;
+  };
+
+  const handleContinue = async () => {
+    if (!user) {
+      return;
+    }
     for (const q of event.service.questions) {
       if (!isRequiredQuestionAnswered(q)) {
         return;
       }
     }
 
+    // todo - consider wrapping all of this in a postgres function for atomicity.
+    const booking = await _saveBooking({
+      booker_id: user?.id,
+      service_event_id: event.id,
+      status: BOOKING_STATUS_PENDING,
+    });
+
+    const questionAnswers: Partial<Tables<"question_answers">>[] =
+      event.service.questions.map((q) => ({
+        booking_id: booking.id,
+        question_id: q.id,
+        bool_answer: q.type === QUESTION_TYPE_BOOLEAN ? answers[q.id] : null,
+        text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
+      }));
+    await _saveQandA(questionAnswers);
+
+    const chatRoom = await _saveChatRoom({
+      name: `${businessHandle} <> ${user?.email}`,
+    });
+    await _saveChatRoomParticipants({
+      chatRoomId: chatRoom.id,
+      participants: [user.id],
+    });
+    await _saveChatMessage({
+      booking_id: booking.id,
+      room_id: chatRoom.id,
+      sender_user_id: user.id,
+      content: prettifyAnswers(),
+    });
+
+    router.replace(`/${businessHandle}/chat/${chatRoom.id}`);
     /**
      * booking_id <- create a pending booking.
      * save answers to db.

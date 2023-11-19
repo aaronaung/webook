@@ -38,7 +38,8 @@ export const getServiceCategoriesWithServices = async (
     (serviceCategory: Tables<"service_categories">) => ({
       ...serviceCategory,
       services: (services || []).filter(
-        (service) => service.service_category_id === serviceCategory.id,
+        (service: Tables<"services">) =>
+          service.service_category_id === serviceCategory.id,
       ),
     }),
   );

@@ -9,52 +9,6 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      booking_question_answers: {
-        Row: {
-          booking_id: string
-          bool_answer: boolean | null
-          created_at: string | null
-          multiselect_answer: string[] | null
-          question_id: string
-          select_answer: string | null
-          text_answer: string | null
-          type: string
-        }
-        Insert: {
-          booking_id: string
-          bool_answer?: boolean | null
-          created_at?: string | null
-          multiselect_answer?: string[] | null
-          question_id: string
-          select_answer?: string | null
-          text_answer?: string | null
-          type: string
-        }
-        Update: {
-          booking_id?: string
-          bool_answer?: boolean | null
-          created_at?: string | null
-          multiselect_answer?: string[] | null
-          question_id?: string
-          select_answer?: string | null
-          text_answer?: string | null
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "booking_question_answers_booking_id_fkey"
-            columns: ["booking_id"]
-            referencedRelation: "bookings"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "booking_question_answers_question_id_fkey"
-            columns: ["question_id"]
-            referencedRelation: "questions"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       bookings: {
         Row: {
           booker_id: string | null
@@ -265,6 +219,49 @@ export interface Database {
             foreignKeyName: "chat_rooms_participants_user_id_fkey"
             columns: ["user_id"]
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      question_answers: {
+        Row: {
+          booking_id: string
+          bool_answer: boolean | null
+          created_at: string | null
+          multiselect_answer: string[] | null
+          question_id: string
+          select_answer: string | null
+          text_answer: string | null
+        }
+        Insert: {
+          booking_id: string
+          bool_answer?: boolean | null
+          created_at?: string | null
+          multiselect_answer?: string[] | null
+          question_id: string
+          select_answer?: string | null
+          text_answer?: string | null
+        }
+        Update: {
+          booking_id?: string
+          bool_answer?: boolean | null
+          created_at?: string | null
+          multiselect_answer?: string[] | null
+          question_id?: string
+          select_answer?: string | null
+          text_answer?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "question_answers_booking_id_fkey"
+            columns: ["booking_id"]
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "question_answers_question_id_fkey"
+            columns: ["question_id"]
+            referencedRelation: "questions"
             referencedColumns: ["id"]
           }
         ]
@@ -567,6 +564,21 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
+      }
+      test_tenant: {
+        Row: {
+          details: string | null
+          id: number
+        }
+        Insert: {
+          details?: string | null
+          id?: number
+        }
+        Update: {
+          details?: string | null
+          id?: number
+        }
+        Relationships: []
       }
       users: {
         Row: {

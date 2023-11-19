@@ -10,7 +10,9 @@ export const saveBooking = async (
     client
       .from("bookings")
       .upsert({ ...(booking as Tables<"bookings">) })
-      .select(),
+      .select("id")
+      .limit(1)
+      .single(),
   );
 };
 
@@ -25,6 +27,7 @@ export const getBookings = async (
   businessId: string,
   { client }: SupabaseOptions,
 ) => {
+  const data = client.from("bookings").select().eq("business_id", businessId);
   return throwIfError(
     client.from("bookings").select().eq("business_id", businessId),
   );
