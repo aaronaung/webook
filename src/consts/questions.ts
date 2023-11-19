@@ -1,6 +1,6 @@
-export const QUESTION_TYPE_TEXT = 0;
-export const QUESTION_TYPE_BOOLEAN = 1;
-export const QUESTION_TYPE_LABELS: { [k: number]: string } = {
+export const QUESTION_TYPE_TEXT = "TEXT";
+export const QUESTION_TYPE_BOOLEAN = "BOOLEAN";
+export const QUESTION_TYPE_LABELS: { [k: string]: string } = {
   [QUESTION_TYPE_TEXT]: "Text",
-  [QUESTION_TYPE_BOOLEAN]: "Boolean",
+  [QUESTION_TYPE_BOOLEAN]: "Yes/No",
 };

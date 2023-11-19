@@ -6,7 +6,10 @@ import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import { Loader2 } from "lucide-react";
 import InputSelect from "../ui/input/select";
-import { QUESTION_TYPE_LABELS } from "@/src/consts/questions";
+import {
+  QUESTION_TYPE_LABELS,
+  QUESTION_TYPE_TEXT,
+} from "@/src/consts/questions";
 import InputSwitch from "../ui/input/switch";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { saveQuestion } from "@/src/data/question";
@@ -39,7 +42,7 @@ export default function SaveQuestionForm({
     defaultValues: {
       type:
         defaultValues?.type === undefined
-          ? String(0) // default to text
+          ? QUESTION_TYPE_TEXT
           : defaultValues.type,
       required:
         defaultValues?.required === undefined ? false : defaultValues.required,
@@ -59,7 +62,7 @@ export default function SaveQuestionForm({
     _saveQuestion({
       ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
       ...formValues,
-      type: Number(formValues.type),
+      type: formValues.type,
       business_id: currentBusiness.id,
     });
   };
@@ -78,7 +81,7 @@ export default function SaveQuestionForm({
       <InputSelect
         rhfKey="type"
         options={Object.keys(QUESTION_TYPE_LABELS).map((key) => ({
-          label: QUESTION_TYPE_LABELS[Number(key)], // all object keys are string so we have to cast to number.
+          label: QUESTION_TYPE_LABELS[key], // all object keys are string so we have to cast to number.
           value: key,
         }))}
         control={control}

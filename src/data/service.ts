@@ -34,12 +34,14 @@ export const getServiceCategoriesWithServices = async (
   );
 
   // We do client side sorting, since we expect the service groups and services to be in the tens only.
-  return (serviceCategories || []).map((serviceCategory) => ({
-    ...serviceCategory,
-    services: (services || []).filter(
-      (service) => service.service_category_id === serviceCategory.id,
-    ),
-  }));
+  return (serviceCategories || []).map(
+    (serviceCategory: Tables<"service_categories">) => ({
+      ...serviceCategory,
+      services: (services || []).filter(
+        (service) => service.service_category_id === serviceCategory.id,
+      ),
+    }),
+  );
 };
 
 export const saveServiceCategory = async (

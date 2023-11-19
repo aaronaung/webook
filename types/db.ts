@@ -18,7 +18,7 @@ export interface Database {
           question_id: string
           select_answer: string | null
           text_answer: string | null
-          type: number
+          type: string
         }
         Insert: {
           booking_id: string
@@ -28,7 +28,7 @@ export interface Database {
           question_id: string
           select_answer?: string | null
           text_answer?: string | null
-          type: number
+          type: string
         }
         Update: {
           booking_id?: string
@@ -38,7 +38,7 @@ export interface Database {
           question_id?: string
           select_answer?: string | null
           text_answer?: string | null
-          type?: number
+          type?: string
         }
         Relationships: [
           {
@@ -61,18 +61,24 @@ export interface Database {
           created_at: string | null
           id: string
           service_event_id: string
+          status: string
+          updated_at: string | null
         }
         Insert: {
           booker_id?: string | null
           created_at?: string | null
           id?: string
           service_event_id: string
+          status?: string
+          updated_at?: string | null
         }
         Update: {
           booker_id?: string | null
           created_at?: string | null
           id?: string
           service_event_id?: string
+          status?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -158,6 +164,7 @@ export interface Database {
       }
       chat_messages: {
         Row: {
+          booking_id: string | null
           content: string | null
           created_at: string | null
           id: string
@@ -166,6 +173,7 @@ export interface Database {
           sender_user_id: string | null
         }
         Insert: {
+          booking_id?: string | null
           content?: string | null
           created_at?: string | null
           id?: string
@@ -174,6 +182,7 @@ export interface Database {
           sender_user_id?: string | null
         }
         Update: {
+          booking_id?: string | null
           content?: string | null
           created_at?: string | null
           id?: string
@@ -269,7 +278,7 @@ export interface Database {
           options: string[] | null
           question: string
           required: boolean | null
-          type: number
+          type: string
         }
         Insert: {
           business_id: string
@@ -279,7 +288,7 @@ export interface Database {
           options?: string[] | null
           question: string
           required?: boolean | null
-          type: number
+          type: string
         }
         Update: {
           business_id?: string
@@ -289,7 +298,7 @@ export interface Database {
           options?: string[] | null
           question?: string
           required?: boolean | null
-          type?: number
+          type?: string
         }
         Relationships: [
           {

@@ -44,7 +44,7 @@ export default function Questions() {
             initFormValues: {
               id: row.original.id,
               question: row.original.question,
-              type: String(row.original.type), // rhf doesn't like numbers - we can't use valueAsNumber with Controllers today.
+              type: row.original.type,
               required: row.original.required ?? false,
             },
           });
