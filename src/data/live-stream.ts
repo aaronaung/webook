@@ -1,12 +1,12 @@
 import { CreateLiveStreamMeetingRequest } from "../api/schemas/meeting";
 import { SupabaseOptions } from "./types";
-import { throwIfError } from "./util";
+import { throwOrData } from "./util";
 
 export const getLiveStreamByServiceEventId = async (
   id: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client
       .from("service_event_live_streams")
       .select()
@@ -28,7 +28,7 @@ export const createLiveStreamForServiceEvent = async (
   const parsedJoinUrl = new URL(join_url);
   parsedJoinUrl.search = "";
 
-  return throwIfError(
+  return throwOrData(
     client.from("service_event_live_streams").insert({
       service_event_id: id,
       join_url: parsedJoinUrl.toString(),
@@ -43,7 +43,7 @@ export const deleteLiveStreamForServiceEvent = async (
   id: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client
       .from("service_event_live_streams")
       .delete()

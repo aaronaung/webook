@@ -1,12 +1,12 @@
 import { Tables } from "@/types/db.extension";
 import { SupabaseOptions } from "./types";
-import { throwIfError } from "./util";
+import { throwOrData } from "./util";
 
 export const saveBooking = async (
   booking: Partial<Tables<"bookings">>,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client
       .from("bookings")
       .upsert({ ...(booking as Tables<"bookings">) })
@@ -20,7 +20,7 @@ export const deleteBooking = async (
   bookingId: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(client.from("bookings").delete().eq("id", bookingId));
+  return throwOrData(client.from("bookings").delete().eq("id", bookingId));
 };
 
 export const getBookings = async (
@@ -28,7 +28,7 @@ export const getBookings = async (
   { client }: SupabaseOptions,
 ) => {
   const data = client.from("bookings").select().eq("business_id", businessId);
-  return throwIfError(
+  return throwOrData(
     client.from("bookings").select().eq("business_id", businessId),
   );
 };

@@ -1,7 +1,7 @@
 import { ServiceCategoryWithServices } from "@/types";
 import { SupabaseOptions } from "./types";
 import { Tables } from "@/types/db.extension";
-import { throwIfError } from "./util";
+import { throwOrData } from "./util";
 import { CreateLiveStreamMeetingRequest } from "../api/schemas/meeting";
 import {
   createLiveStreamForServiceEvent,
@@ -12,7 +12,7 @@ export const getServiceCategoriesWithServices = async (
   businessId: string,
   { client }: SupabaseOptions,
 ): Promise<ServiceCategoryWithServices[]> => {
-  const serviceCategories = await throwIfError(
+  const serviceCategories = await throwOrData(
     client
       .from("service_categories")
       .select("*")
@@ -20,7 +20,7 @@ export const getServiceCategoriesWithServices = async (
       .order("created_at", { ascending: true }),
   );
 
-  const services = await throwIfError(
+  const services = await throwOrData(
     client
       .from("services")
       .select("*, questions (*)")
@@ -49,7 +49,7 @@ export const saveServiceCategory = async (
   serviceCategory: Partial<Tables<"service_categories">>,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client
       .from("service_categories")
       .upsert({ ...(serviceCategory as Tables<"service_categories">) }),
@@ -60,7 +60,7 @@ export const deleteServiceCategory = async (
   serviceCategoryId: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client.from("service_categories").delete().eq("id", serviceCategoryId),
   );
 };
@@ -72,7 +72,7 @@ export const saveService = async (
   }: { service: Partial<Tables<"services">>; questionIds?: string[] },
   { client }: SupabaseOptions,
 ) => {
-  const saved = await throwIfError(
+  const saved = await throwOrData(
     client
       .from("services")
       .upsert({ ...(service as Tables<"services">) })
@@ -88,7 +88,7 @@ export const deleteService = async (
   serviceId: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(client.from("services").delete().eq("id", serviceId));
+  return throwOrData(client.from("services").delete().eq("id", serviceId));
 };
 
 /** If createLiveStreamRequest is not passed, we delete the live stream meeting for the event. */
@@ -106,7 +106,7 @@ export const saveServiceEvent = async (
   },
   { client }: SupabaseOptions,
 ) => {
-  const saved = await throwIfError(
+  const saved = await throwOrData(
     client
       .from("service_events")
       .upsert({ ...(serviceEvent as Tables<"service_events">) })
@@ -137,14 +137,14 @@ export const saveServiceEventStaff = async (
   staffIds: string[],
   { client }: SupabaseOptions,
 ) => {
-  await throwIfError(
+  await throwOrData(
     client
       .from("service_events_staffs")
       .delete()
       .eq("service_event_id", serviceId),
   );
 
-  return throwIfError(
+  return throwOrData(
     client.from("service_events_staffs").upsert(
       staffIds.map((staffId) => ({
         service_event_id: serviceId,
@@ -160,11 +160,11 @@ export const saveServiceQuestion = async (
   questionIds: string[],
   { client }: SupabaseOptions,
 ) => {
-  await throwIfError(
+  await throwOrData(
     client.from("services_questions").delete().eq("service_id", serviceId),
   );
 
-  return throwIfError(
+  return throwOrData(
     client.from("services_questions").upsert(
       questionIds.map((questionId) => ({
         service_id: serviceId,
@@ -178,7 +178,7 @@ export const deleteServiceEvent = async (
   serviceEventId: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client.from("service_events").delete().eq("id", serviceEventId),
   );
 };

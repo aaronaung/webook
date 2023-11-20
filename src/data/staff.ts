@@ -1,6 +1,6 @@
 import { Tables } from "@/types/db.extension";
 import { SupabaseOptions } from "./types";
-import { throwIfError } from "./util";
+import { throwOrData } from "./util";
 import { BUCKETS, STORAGE_DIR_PATHS } from "../consts/storage";
 import { sleep } from "../utils";
 
@@ -8,7 +8,7 @@ export const getStaffs = async (
   businessId: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwIfError(
+  return throwOrData(
     client
       .from("staffs")
       .select("*")
@@ -24,7 +24,7 @@ export const saveStaff = async (
   }: { staff: Partial<Tables<"staffs">>; headshotFile?: File },
   { client }: SupabaseOptions,
 ) => {
-  const saved = await throwIfError(
+  const saved = await throwOrData(
     client
       .from("staffs")
       .upsert({ ...(staff as Tables<"staffs">) })
@@ -50,7 +50,7 @@ export const deleteStaff = async (
   staffId: string,
   { client }: SupabaseOptions,
 ) => {
-  await throwIfError(client.from("staffs").delete().eq("id", staffId));
+  await throwOrData(client.from("staffs").delete().eq("id", staffId));
   return client.storage
     .from(BUCKETS.publicBusinessAssets)
     .remove([`${STORAGE_DIR_PATHS.staffHeadshots}/${staffId}`]);

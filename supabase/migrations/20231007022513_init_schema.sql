@@ -207,7 +207,8 @@ create trigger on_auth_user_created
 insert into storage.buckets
   (id, name)
 values
-  ('public-business-assets', 'public-business-assets');
+  ('public-business-assets', 'public-business-assets')
+on conflict (id) do nothing;
 
 CREATE POLICY "Enable select to authenticated" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'public-business-assets');
 
