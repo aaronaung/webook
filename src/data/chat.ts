@@ -1,6 +1,7 @@
 import { Tables } from "@/types/db.extension";
 import { SupabaseOptions } from "./types";
 import { throwOrData } from "./util";
+import { User } from "@supabase/supabase-js";
 
 export const saveChatRoom = async (
   chatRoom: Partial<Tables<"chat_rooms">>,
@@ -16,41 +17,45 @@ export const saveChatRoom = async (
   );
 };
 
-// type CreateBusinessUserChatRoomParams = {
-//   name?: string;
-//   business: Partial<Tables<"businesses">>;
-//   user: Partial<User>;
-// };
-// export const createBusinessUserChatRoom = async (
-//   { name, business, user }: CreateBusinessUserChatRoomParams,
-//   { client }: SupabaseOptions,
-// ) => {
-//   if (!business.id || !user.id) {
-//     return;
-//   }
-//   const chatRoomParticipants = await throwOrData(
-//     client
-//       .from("chat_rooms_participants")
-//       .select("*", { head: true, count: "exact" })
-//       .eq("user_id", user.id!)
-//       .eq("business_id", business.id!),
-//   );
-//   if (count < 1) {
-//     const chatRoom = await saveChatRoom(
-//       { name: name || `${business.handle} <> ${user.email}` },
-//       { client },
-//     );
-//     await saveChatRoomParticipants(
-//       {
-//         chatRoomId: chatRoom.id,
-//         participants: [user.id],
-//         businessId: business.id,
-//       },
-//       { client },
-//     );
-//     return chatRoom;
-//   }
-// };
+type CreateBusinessUserChatRoomParams = {
+  name?: string;
+  business: Partial<Tables<"businesses">>;
+  user: Partial<User>;
+};
+export const createBusinessUserChatRoom = async (
+  { name, business, user }: CreateBusinessUserChatRoomParams,
+  { client }: SupabaseOptions,
+) => {
+  if (!business.id || !user.id) {
+    return;
+  }
+  const userAndBusinessChatroom = await throwOrData(
+    client
+      .from("chat_rooms_participants")
+      .select("room_id")
+      .eq("user_id", user.id!)
+      .eq("business_id", business.id!)
+      .limit(1)
+      .maybeSingle(),
+  );
+  console.log(userAndBusinessChatroom);
+  if (userAndBusinessChatroom) {
+    return userAndBusinessChatroom.room_id;
+  }
+  const chatRoom = await saveChatRoom(
+    { name: name || `${business.handle} <> ${user.email}` },
+    { client },
+  );
+  await saveChatRoomParticipants(
+    {
+      chatRoomId: chatRoom.id,
+      participants: [user.id],
+      businessId: business.id,
+    },
+    { client },
+  );
+  return chatRoom.id;
+};
 
 export const saveChatRoomParticipants = async (
   {

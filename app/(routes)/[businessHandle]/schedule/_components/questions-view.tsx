@@ -10,11 +10,7 @@ import {
   QUESTION_TYPE_TEXT,
 } from "@/src/consts/questions";
 import { saveBooking } from "@/src/data/booking";
-import {
-  saveChatMessage,
-  saveChatRoom,
-  saveChatRoomParticipants,
-} from "@/src/data/chat";
+import { createBusinessUserChatRoom, saveChatMessage } from "@/src/data/chat";
 import { saveQuestionAnswers } from "@/src/data/question";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { ServiceEvent } from "@/types";
@@ -46,10 +42,9 @@ export default function ServiceEventQuestions({
 
   const { mutateAsync: _saveBooking } = useSupaMutation(saveBooking);
   const { mutateAsync: _saveQandA } = useSupaMutation(saveQuestionAnswers);
-  const { mutateAsync: _saveChatRoom } = useSupaMutation(saveChatRoom);
   const { mutateAsync: _saveChatMessage } = useSupaMutation(saveChatMessage);
-  const { mutateAsync: _saveChatRoomParticipants } = useSupaMutation(
-    saveChatRoomParticipants,
+  const { mutateAsync: _createBusinessAndUserChatRoom } = useSupaMutation(
+    createBusinessUserChatRoom,
   );
 
   const prettifyAnswers = () => {
@@ -98,29 +93,21 @@ export default function ServiceEventQuestions({
       }));
     await _saveQandA(questionAnswers);
 
-    const chatRoom = await _saveChatRoom({
-      name: `${businessHandle} <> ${user?.email}`,
-    });
-    await _saveChatRoomParticipants({
-      chatRoomId: chatRoom.id,
-      participants: [user.id],
-      businessId,
+    const chatRoomId = await _createBusinessAndUserChatRoom({
+      user,
+      business: {
+        id: businessId,
+        handle: businessHandle,
+      },
     });
     await _saveChatMessage({
       booking_id: booking.id,
-      room_id: chatRoom.id,
+      room_id: chatRoomId,
       sender_user_id: user.id,
       content: prettifyAnswers(),
     });
 
-    router.replace(`/${businessHandle}/chat/${chatRoom.id}`);
-    /**
-     * booking_id <- create a pending booking.
-     * save answers to db.
-     * create a chat room between the business and the logged in user as participants.
-     * create a chat message in the chat room with the answers to the questions with the booking_id.
-     * redirect user to the chat room.
-     * */
+    router.replace(`/${businessHandle}/chat`);
   };
 
   const renderQuestion = (q: Tables<"questions">) => {
