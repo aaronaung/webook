@@ -37,7 +37,11 @@ export const getBookings = async (
 };
 
 export const getBookingForServiceEventByUser = async (
-  { serviceEventId, userId }: { serviceEventId: string; userId: string },
+  {
+    serviceEventId,
+    serviceEventStart,
+    userId,
+  }: { serviceEventId: string; serviceEventStart: string; userId: string },
   { client }: SupabaseOptions,
 ) => {
   return throwOrData(
@@ -45,6 +49,7 @@ export const getBookingForServiceEventByUser = async (
       .from("bookings")
       .select()
       .eq("service_event_id", serviceEventId)
+      .eq("service_event_start", serviceEventStart)
       .eq("booker_id", userId)
       .limit(1)
       .maybeSingle(),

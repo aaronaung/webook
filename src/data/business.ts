@@ -1,6 +1,6 @@
 import { BusinessData, BusinessSchedule } from "@/types";
 import { SupabaseOptions } from "./types";
-import { throwOrJsonData } from "./util";
+import { throwOrData, throwOrJsonData } from "./util";
 
 export const getBusinessScheduleByTimeRange = async (
   {
@@ -34,7 +34,7 @@ export const getBusinessByHandle = async (
   businessHandle: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwOrJsonData<BusinessData>(
+  return throwOrData(
     client.from("businesses").select("*").eq("handle", businessHandle).single(),
   );
 };

@@ -11,14 +11,15 @@ export default async function QuestionsPage({
   searchParams,
 }: {
   params: { businessHandle: string };
-  searchParams: { event_id: string };
+  // We use event start to differentiate recurring events that belong to the same service event.
+  searchParams: { event_id: string; event_start: string };
 }) {
   const supabaseOptions = { client: supaServerComponentClient() };
   const loggedInUser = await getAuthUser(supabaseOptions);
   if (!loggedInUser) {
     redirect(
       `/login?return_path=${encodeURIComponent(
-        `/${params.businessHandle}/questions?event_id=${searchParams.event_id}`,
+        `/${params.businessHandle}/questions?event_id=${searchParams.event_id}&event_start=${searchParams.event_start}`,
       )}`,
     );
   }
@@ -32,15 +33,14 @@ export default async function QuestionsPage({
     redirect("/");
   }
 
-  // Check to see if booking for the event already exists, if so redirect to the chat room for that booking.
   const existingBooking = await getBookingForServiceEventByUser(
     {
+      serviceEventStart: searchParams.event_start,
       serviceEventId: searchParams.event_id,
       userId: loggedInUser.id,
     },
     supabaseOptions,
   );
-  console.log("existingBooking", existingBooking);
   if (existingBooking) {
     redirect(`/${params.businessHandle}/chat?room_id=${existingBooking.id}`);
   }
@@ -50,5 +50,11 @@ export default async function QuestionsPage({
     supabaseOptions,
   );
 
-  return <Questions serviceEvent={serviceEvent} loggedInUser={loggedInUser} />;
+  return (
+    <Questions
+      serviceEvent={serviceEvent}
+      serviceEventStart={searchParams.event_start}
+      loggedInUser={loggedInUser}
+    />
+  );
 }

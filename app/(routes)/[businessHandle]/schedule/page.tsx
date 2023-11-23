@@ -50,6 +50,7 @@ export default function SchedulePage({
             serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
             calendarClassName="lg:pr-14"
             onServiceEventClick={(event) => {
+              console.log("EVENT", event);
               if (!user) {
                 const returnPath = encodeURIComponent(
                   `/${params.businessHandle}/schedule${window.location.search}`,
@@ -65,7 +66,7 @@ export default function SchedulePage({
               }
               if (event.service.questions) {
                 router.push(
-                  `/${params.businessHandle}/questions?event_id=${event.id}`,
+                  `/${params.businessHandle}/questions?event_id=${event.id}&event_start=${event.start}`,
                 );
               } else {
                 router.push(

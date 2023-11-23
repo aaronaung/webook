@@ -1,10 +1,8 @@
 create table "public"."chat_rooms" (
-    -- The id is the booking id if the chat_room is created for a booking.
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
     "name" text,
-    "booking_id" uuid not null
 );
 
 
@@ -46,8 +44,6 @@ CREATE UNIQUE INDEX chat_rooms_user_participants_pkey ON public.chat_rooms_user_
 CREATE UNIQUE INDEX chat_rooms_pkey ON public.chat_rooms USING btree (id);
 
 alter table "public"."chat_rooms" add constraint "chat_rooms_pkey" PRIMARY KEY using index "chat_rooms_pkey";
-
-alter table "public"."chat_rooms" add constraint "chat_rooms_booking_id_fkey" FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE not valid;
 
 alter table "public"."chat_messages" add constraint "chat_messages_pkey" PRIMARY KEY using index "chat_messages_pkey";
 

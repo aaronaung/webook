@@ -6,6 +6,7 @@ create table "public"."bookings" (
     "service_event_id" uuid not null,
     "service_event_start" timestamp with time zone not null,
     "business_id" uuid not null,
+    "chat_room_id" uuid not null,
     "status" text not null default 'PENDING',
     UNIQUE ("booker_id", "service_event_id", "service_event_start")
 );
@@ -155,6 +156,10 @@ alter table "public"."bookings" validate constraint "bookings_booker_id_fkey";
 alter table "public"."bookings" add constraint "bookings_service_event_id_fkey" FOREIGN KEY (service_event_id) REFERENCES service_events(id) not valid;
 
 alter table "public"."bookings" validate constraint "bookings_service_event_id_fkey";
+
+alter table "public"."bookings" add constraint "bookings_chat_room_id_fkey" FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id) ON DELETE SET NULL not valid;
+
+alter table "public"."bookings" validate constraint "bookings_chat_room_id_fkey";
 
 alter table "public"."businesses" add constraint "businesses_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "users"(id) ON DELETE CASCADE not valid;
 

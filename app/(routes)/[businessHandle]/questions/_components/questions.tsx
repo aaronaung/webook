@@ -16,11 +16,13 @@ import { saveQuestionAnswers } from "@/src/data/question";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Questions({
   serviceEvent,
+  serviceEventStart,
   loggedInUser,
 }: {
   serviceEvent: Tables<"service_events"> & {
@@ -30,6 +32,7 @@ export default function Questions({
         })
       | null;
   };
+  serviceEventStart: string;
   loggedInUser: Tables<"users">;
 }) {
   const { currentViewingBusiness } = useCurrentViewingBusinessContext();
@@ -72,12 +75,29 @@ export default function Questions({
     }
 
     // todo - consider wrapping all of this in a postgres function for atomicity.
+    const room = await _createBookingChatRoom({
+      name:
+        `${serviceEvent.services?.title} - ${format(
+          new Date(serviceEventStart),
+          "MM/dd/yyyy h:mm a",
+        )}` || "",
+      bookerId: loggedInUser.id,
+      businessId: currentViewingBusiness.id,
+    });
+
+    await _saveChatMessage({
+      room_id: room.id,
+      sender_user_id: loggedInUser.id,
+      content: prettifyAnswers(),
+    });
+
     const booking = await _saveBooking({
       booker_id: loggedInUser.id,
       business_id: currentViewingBusiness.id,
       service_event_id: serviceEvent.id,
-      service_event_start: serviceEvent.start,
+      service_event_start: serviceEventStart,
       status: BOOKING_STATUS_PENDING,
+      chat_room_id: room.id,
     });
 
     const questionAnswers: Partial<Tables<"question_answers">>[] = (
@@ -90,19 +110,7 @@ export default function Questions({
     }));
     await _saveQandA(questionAnswers);
 
-    const room = await _createBookingChatRoom({
-      name: serviceEvent.services?.title || "",
-      bookingId: booking.id,
-      bookerId: loggedInUser.id,
-      businessId: currentViewingBusiness.id,
-    });
-    await _saveChatMessage({
-      room_id: room.id,
-      sender_user_id: loggedInUser.id,
-      content: prettifyAnswers(),
-    });
-
-    router.replace(`/${currentViewingBusiness.handle}/chat?room_id=${room.id}`);
+    router.refresh();
   };
 
   const renderQuestion = (q: Tables<"questions">) => {

@@ -2,20 +2,30 @@ import Navbar from "./_components/navbar";
 import { supaServerComponentClient } from "@/src/data/clients/server";
 import Hero from "./_components/hero";
 import { getAuthUser } from "@/src/data/user";
-import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
+import { getBusinessByHandle } from "@/src/data/business";
+import { redirect } from "next/navigation";
 
 export default async function ServiceProvider({
   params,
 }: {
   params: { businessHandle: string };
 }) {
-  const { currentViewingBusiness } = useCurrentViewingBusinessContext();
-  const user = await getAuthUser({ client: supaServerComponentClient() });
+  const supabaseOptions = { client: supaServerComponentClient() };
+  const user = await getAuthUser(supabaseOptions);
+
+  const business = await getBusinessByHandle(
+    params.businessHandle,
+    supabaseOptions,
+  );
+  if (!business) {
+    console.error(`Business not found for handle: ${params.businessHandle}`);
+    redirect("/");
+  }
 
   return (
     <>
-      <Navbar business={currentViewingBusiness} user={user ?? undefined} />
-      <Hero business={currentViewingBusiness} />
+      <Navbar business={business} user={user ?? undefined} />
+      <Hero business={business} />
     </>
   );
 }

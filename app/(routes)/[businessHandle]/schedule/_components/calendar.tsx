@@ -1,7 +1,13 @@
 "use client";
 
 import CalendarV2 from "@/src/components/ui/calendar-v2";
-import { format, isBefore, isSameDay, startOfToday } from "date-fns";
+import {
+  format,
+  isBefore,
+  isSameDay,
+  startOfDay,
+  startOfToday,
+} from "date-fns";
 import { useMemo } from "react";
 import { BusinessSchedule, ServiceEvent } from "@/types";
 import {
@@ -102,7 +108,14 @@ export default function ServiceEventCalendar({
             ),
           );
         }) || []
-    );
+    ).map((event) => ({
+      ...event,
+      start: new Date(
+        selectedDay.getTime() +
+          (new Date(event.start).getTime() -
+            startOfDay(new Date(event.start)).getTime()),
+      ).toISOString(),
+    }));
   }, [data, selectedCategory, selectedDay]);
 
   return (

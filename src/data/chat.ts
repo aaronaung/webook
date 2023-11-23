@@ -20,10 +20,9 @@ type CreateBookingChatRoomArgs = {
   name: string;
   bookerId: string;
   businessId: string;
-  bookingId: string;
 };
 export const createBookingChatRoom = async (
-  { name, bookingId, bookerId, businessId }: CreateBookingChatRoomArgs,
+  { name, bookerId, businessId }: CreateBookingChatRoomArgs,
   { client }: SupabaseOptions,
 ) => {
   const room = await throwOrData(
@@ -31,7 +30,6 @@ export const createBookingChatRoom = async (
       .from("chat_rooms")
       .upsert({
         name,
-        booking_id: bookingId,
       })
       .select("id")
       .limit(1)
@@ -88,6 +86,19 @@ export const saveChatMessage = async (
       .select("id")
       .limit(1)
       .single(),
+  );
+};
+
+export const listChatMessagesInRoom = async (
+  roomId: string,
+  { client }: SupabaseOptions,
+) => {
+  return throwOrData(
+    client
+      .from("chat_messages")
+      .select("*")
+      .eq("room_id", roomId)
+      .order("created_at", { ascending: true }),
   );
 };
 
