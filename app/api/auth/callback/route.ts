@@ -8,6 +8,7 @@ import type { Database } from "@/types/db";
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const returnPath = requestUrl.searchParams.get("return_path");
 
   if (code) {
     const supabase = createRouteHandlerClient<Database>({ cookies });
@@ -16,6 +17,6 @@ export async function GET(request: NextRequest) {
 
   // URL to redirect to after sign in process completes
   return NextResponse.redirect(
-    requestUrl.origin.concat("/app/business/schedule"),
+    requestUrl.origin.concat(returnPath || "/app/business/schedule"),
   );
 }

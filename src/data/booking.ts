@@ -24,11 +24,29 @@ export const deleteBooking = async (
 };
 
 export const getBookings = async (
-  businessId: string,
+  { businessId, userId }: { businessId: string; userId: string },
   { client }: SupabaseOptions,
 ) => {
-  const data = client.from("bookings").select().eq("business_id", businessId);
   return throwOrData(
-    client.from("bookings").select().eq("business_id", businessId),
+    client
+      .from("bookings")
+      .select()
+      .eq("business_id", businessId)
+      .eq("booker_id", userId),
+  );
+};
+
+export const getBookingForServiceEventByUser = async (
+  { serviceEventId, userId }: { serviceEventId: string; userId: string },
+  { client }: SupabaseOptions,
+) => {
+  return throwOrData(
+    client
+      .from("bookings")
+      .select()
+      .eq("service_event_id", serviceEventId)
+      .eq("booker_id", userId)
+      .limit(1)
+      .maybeSingle(),
   );
 };

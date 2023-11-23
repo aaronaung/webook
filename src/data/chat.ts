@@ -1,7 +1,6 @@
 import { Tables } from "@/types/db.extension";
 import { SupabaseOptions } from "./types";
 import { throwOrData } from "./util";
-import { User } from "@supabase/supabase-js";
 
 export const saveChatRoom = async (
   chatRoom: Partial<Tables<"chat_rooms">>,
@@ -17,44 +16,42 @@ export const saveChatRoom = async (
   );
 };
 
-type CreateBusinessUserChatRoomParams = {
-  name?: string;
-  business: Partial<Tables<"businesses">>;
-  user: Partial<User>;
+type CreateBookingChatRoomArgs = {
+  name: string;
+  bookerId: string;
+  businessId: string;
+  bookingId: string;
 };
-export const createBusinessUserChatRoom = async (
-  { name, business, user }: CreateBusinessUserChatRoomParams,
+export const createBookingChatRoom = async (
+  { name, bookingId, bookerId, businessId }: CreateBookingChatRoomArgs,
   { client }: SupabaseOptions,
 ) => {
-  if (!business.id || !user.id) {
-    return;
-  }
-  const userAndBusinessChatroom = await throwOrData(
+  const room = await throwOrData(
     client
-      .from("chat_rooms_participants")
-      .select("room_id")
-      .eq("user_id", user.id!)
-      .eq("business_id", business.id!)
+      .from("chat_rooms")
+      .upsert({
+        name,
+        booking_id: bookingId,
+      })
+      .select("id")
       .limit(1)
-      .maybeSingle(),
+      .single(),
   );
-  console.log(userAndBusinessChatroom);
-  if (userAndBusinessChatroom) {
-    return userAndBusinessChatroom.room_id;
-  }
-  const chatRoom = await saveChatRoom(
-    { name: name || `${business.handle} <> ${user.email}` },
-    { client },
+
+  const addUserParticipant = throwOrData(
+    client.from("chat_rooms_user_participants").upsert({
+      room_id: room.id,
+      user_id: bookerId,
+    }),
   );
-  await saveChatRoomParticipants(
-    {
-      chatRoomId: chatRoom.id,
-      participants: [user.id],
-      businessId: business.id,
-    },
-    { client },
+  const addBusinessParticipant = throwOrData(
+    client.from("chat_rooms_business_participants").upsert({
+      room_id: room.id,
+      business_id: businessId,
+    }),
   );
-  return chatRoom.id;
+  await Promise.all([addUserParticipant, addBusinessParticipant]);
+  return room;
 };
 
 export const saveChatRoomParticipants = async (
@@ -94,18 +91,39 @@ export const saveChatMessage = async (
   );
 };
 
+export const getChatRoom = async (
+  chatRoomId: string,
+  { client }: SupabaseOptions,
+) => {
+  return throwOrData(
+    client
+      .from("chat_rooms")
+      .select("*")
+      .eq("id", chatRoomId)
+      .limit(1)
+      .maybeSingle(),
+  );
+};
+
+export const listChatRoomsByUserParticipant = async (
+  userId: string,
+  { client }: SupabaseOptions,
+) => {
+  const queryResult = await throwOrData(
+    client
+      .from("chat_rooms_user_participants")
+      .select("chat_rooms(*)")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false }),
+  );
+  return queryResult
+    .filter((r) => r.chat_rooms !== null)
+    .map((r) => r.chat_rooms) as Tables<"chat_rooms">[];
+};
+
 export const deleteChatRoom = async (
   chatRoomId: string,
   { client }: SupabaseOptions,
 ) => {
   return throwOrData(client.from("chat_rooms").delete().eq("id", chatRoomId));
-};
-
-export const getChatRooms = async (
-  businessId: string,
-  { client }: SupabaseOptions,
-) => {
-  return throwOrData(
-    client.from("chat_rooms").select().eq("business_id", businessId),
-  );
 };

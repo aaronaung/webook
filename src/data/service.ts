@@ -182,3 +182,16 @@ export const deleteServiceEvent = async (
     client.from("service_events").delete().eq("id", serviceEventId),
   );
 };
+
+export const getDetailedServiceEvent = async (
+  serviceEventId: string,
+  { client }: SupabaseOptions,
+) => {
+  return await throwOrData(
+    client
+      .from("service_events")
+      .select("*, services(* , questions(*))")
+      .eq("id", serviceEventId)
+      .single(),
+  );
+};

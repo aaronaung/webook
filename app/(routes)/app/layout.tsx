@@ -1,22 +1,12 @@
 import { navigation, userNavigation } from "./navigation";
 import { Suspense } from "react";
 import Navbar from "./_components/navbar";
-import { getAuthUser } from "@/src/data/user";
-import { supaServerComponentClient } from "@/src/data/clients/server";
-import { redirect } from "next/navigation";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getAuthUser({
-    client: supaServerComponentClient(),
-  });
-  if (!user) {
-    redirect("/login");
-  }
-
   return (
     <div className="h-full overflow-hidden">
       <Navbar navigation={navigation} userNavigation={userNavigation} />

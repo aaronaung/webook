@@ -1,18 +1,12 @@
 "use client";
 
 import { add, format, parse, startOfToday } from "date-fns";
-import { useState } from "react";
-import ServiceEventCalendar from "./_components/calendar-view";
-import { ServiceEvent } from "@/types";
+import ServiceEventCalendar from "./_components/calendar";
 import { useRouter } from "next/navigation";
-import ServiceEventQuestions from "./_components/questions-view";
-import ServiceEventBooking from "./_components/booking-view";
 import { toast } from "@/src/components/ui/use-toast";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { getBusinessScheduleByTimeRange } from "@/src/data/business";
 import { getAuthUser } from "@/src/data/user";
-
-type ViewModes = "questions" | "calendar" | "booking";
 
 export default function SchedulePage({
   params,
@@ -42,70 +36,46 @@ export default function SchedulePage({
     },
   );
 
-  const [viewMode, setViewMode] = useState<ViewModes>("calendar");
-  const [selectedServiceEvent, setSelectedServiceEvent] =
-    useState<ServiceEvent>();
-
   if (isLoading || userIsLoading) {
     // todo - add a loading state.
-    return <></>;
+    return <>Loading...</>;
   }
 
   return (
     <div className="py-6">
-      {viewMode === "calendar" && (
-        <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
-          <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-            <ServiceEventCalendar
-              data={data || []}
-              serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
-              calendarClassName="lg:pr-14"
-              onServiceEventClick={(event) => {
-                if (!user) {
-                  const returnPath = encodeURIComponent(
-                    `/${params.businessHandle}/schedule${window.location.search}`,
-                  );
-                  toast({
-                    title: "Please login to continue.",
-                    description:
-                      "You need to be logged in to continue with booking.",
-                    variant: "default",
-                  });
-                  router.replace(
-                    `/login?returnPath=${returnPath}&backPath=${returnPath}`,
-                  );
-                  return;
-                }
-                setSelectedServiceEvent(event);
-                if (event.service.questions) {
-                  setViewMode("questions");
-                } else {
-                  setViewMode("booking");
-                }
-              }}
-            />
-          </div>
+      <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
+        <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
+          <ServiceEventCalendar
+            data={data || []}
+            serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
+            calendarClassName="lg:pr-14"
+            onServiceEventClick={(event) => {
+              if (!user) {
+                const returnPath = encodeURIComponent(
+                  `/${params.businessHandle}/schedule${window.location.search}`,
+                );
+                toast({
+                  title: "Please login to continue.",
+                  description:
+                    "You need to be logged in to continue with booking.",
+                  variant: "default",
+                });
+                router.replace(`/login?return_path=${returnPath}`);
+                return;
+              }
+              if (event.service.questions) {
+                router.push(
+                  `/${params.businessHandle}/questions?event_id=${event.id}`,
+                );
+              } else {
+                router.push(
+                  `/${params.businessHandle}/booking/confirmation?event_id=${event.id}`,
+                );
+              }
+            }}
+          />
         </div>
-      )}
-      {selectedServiceEvent && viewMode === "questions" && (
-        <ServiceEventQuestions
-          user={user ?? undefined}
-          businessHandle={params.businessHandle}
-          businessId={data?.[0].business_id}
-          event={selectedServiceEvent}
-          onBack={() => {
-            setViewMode("calendar");
-          }}
-        />
-      )}
-      {selectedServiceEvent && viewMode === "booking" && (
-        <ServiceEventBooking
-          event={selectedServiceEvent}
-          onBack={() => {
-            setViewMode("calendar");
-          }}
-        />
-      )}
+      </div>
     </div>
   );
 }

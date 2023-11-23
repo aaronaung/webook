@@ -72,7 +72,7 @@ export default function UserAuthForm({
         email: formValues.email,
         password: formValues.password,
         options: {
-          emailRedirectTo: `${location.origin}/api/auth/callback?returnPath=${returnPath}`,
+          emailRedirectTo: `${location.origin}/api/auth/callback?return_path=${returnPath}`,
         },
       });
       if (error) {
@@ -106,7 +106,7 @@ export default function UserAuthForm({
         await supaClientComponentClient().auth.signInWithOAuth({
           provider: "google",
           options: {
-            redirectTo: `${location.origin}/api/auth/callback?returnPath=${returnPath}`,
+            redirectTo: `${location.origin}/api/auth/callback?return_path=${returnPath}`,
           },
         });
       if (error) {

@@ -1,74 +1,39 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getAuthUser } from "@/src/data/user";
+import { supaServerComponentClient } from "@/src/data/clients/server";
+import { getChatRoom, listChatRoomsByUserParticipant } from "@/src/data/chat";
+import Chat from "./_components/chat";
 
-import {
-  ChatBody,
-  ChatContainer,
-  ChatHeader,
-  ChatInput,
-  ChatMessage,
-} from "@/src/components/chat-room/chat-room";
-import { useRouter } from "next/navigation";
-
-export default function ChatRoom({
+export default async function ChatPage({
   params,
+  searchParams,
 }: {
   params: { businessHandle: string };
+  searchParams: { room_id: string };
 }) {
-  const router = useRouter();
+  const supabaseOptions = { client: supaServerComponentClient() };
+  const loggedInUser = await getAuthUser(supabaseOptions);
+  if (!loggedInUser) {
+    redirect(
+      `/login?return_path=${encodeURIComponent(
+        `/${params.businessHandle}/chat?room_id=${searchParams.room_id}`,
+      )}`,
+    );
+  }
+
+  const initialRoom = await getChatRoom(searchParams.room_id, supabaseOptions);
+
+  // todo - in the future we should get the rooms in proximity to the initial room passed in param
+  const userChatRooms = await listChatRoomsByUserParticipant(
+    loggedInUser.id,
+    supabaseOptions,
+  );
+
   return (
-    <div>
-      <ChatContainer>
-        <ChatHeader
-          title="Aaron Didi <> aaronaung.95@gmail.com"
-          subtitle="Last active: 12/12/2022 6:36pm"
-          onBack={() => {
-            router.push(`/${params.businessHandle}/schedule`);
-          }}
-        />
-        <ChatBody>
-          {(
-            [
-              {
-                content: "Hello",
-                side: "left",
-                position: "top",
-              },
-              {
-                content: "how you doing",
-                side: "left",
-                position: "middle",
-              },
-              {
-                content: "I miss you",
-                side: "left",
-                position: "bottom",
-              },
-              {
-                content: "Wassup",
-                side: "right",
-                position: "top",
-              },
-              {
-                content: "Nothing much. You?",
-                side: "left",
-                position: "top",
-              },
-              {
-                content: "Nothing much. You?",
-                side: "left",
-                position: "bottom",
-              },
-            ] as const
-          ).map((chatMessage, i) => (
-            <ChatMessage key={i} chatMessage={chatMessage} />
-          ))}
-        </ChatBody>
-        <ChatInput
-          onSend={(message) => {
-            console.log("sending message", message);
-          }}
-        />
-      </ChatContainer>
-    </div>
+    <Chat
+      initialRoom={initialRoom ?? undefined}
+      rooms={userChatRooms ?? []}
+      loggedInUser={loggedInUser}
+    />
   );
 }

@@ -30,6 +30,15 @@ export const getBusinessData = async (
   );
 };
 
+export const getBusinessByHandle = async (
+  businessHandle: string,
+  { client }: SupabaseOptions,
+) => {
+  return throwOrJsonData<BusinessData>(
+    client.from("businesses").select("*").eq("handle", businessHandle).single(),
+  );
+};
+
 export const getLoggedInUserBusinesses = async ({
   client,
 }: SupabaseOptions) => {

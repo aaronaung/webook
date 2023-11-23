@@ -17,7 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { useDebounce } from "usehooks-ts";
-import { PostgrestError, User } from "@supabase/supabase-js";
+import { PostgrestError } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { FileRejection } from "react-dropzone";
 import { UNIQUE_CONSTRAINT_VIOLATION } from "@/src/consts/postgres_errors";
@@ -55,12 +55,10 @@ const FILE_SIZE_LIMIT = 5000000; // 5MB in bytes
 
 export default function BusinessProfileForm({
   onBack,
-  business,
   loggedInUser,
 }: {
   onBack?: () => void;
-  business?: Tables<"businesses">;
-  loggedInUser: User;
+  loggedInUser: Tables<"users">;
 }) {
   const {
     register,

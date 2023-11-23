@@ -2,9 +2,12 @@ create table "public"."bookings" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
-    "booker_id" uuid,
+    "booker_id" uuid not null,
     "service_event_id" uuid not null,
-    "status" text not null default 'pending'
+    "service_event_start" timestamp with time zone not null,
+    "business_id" uuid not null,
+    "status" text not null default 'PENDING',
+    UNIQUE ("booker_id", "service_event_id", "service_event_start")
 );
 
 

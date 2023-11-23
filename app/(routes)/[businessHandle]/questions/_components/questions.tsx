@@ -1,39 +1,39 @@
+"use client";
 import HeaderWithAction from "@/src/components/shared/header-with-action";
 import { Button } from "@/src/components/ui/button";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { Label } from "@/src/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
-import { toast } from "@/src/components/ui/use-toast";
 import { BOOKING_STATUS_PENDING } from "@/src/consts/booking";
 import {
   QUESTION_TYPE_BOOLEAN,
   QUESTION_TYPE_TEXT,
 } from "@/src/consts/questions";
+import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { saveBooking } from "@/src/data/booking";
-import { createBusinessUserChatRoom, saveChatMessage } from "@/src/data/chat";
+import { createBookingChatRoom, saveChatMessage } from "@/src/data/chat";
 import { saveQuestionAnswers } from "@/src/data/question";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
-import { ServiceEvent } from "@/types";
 import { Tables } from "@/types/db.extension";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type ServiceEventQuestionsProps = {
-  user?: User;
-  event: ServiceEvent;
-  businessHandle: string;
-  businessId?: string;
-  onBack: () => void;
-};
-export default function ServiceEventQuestions({
-  user,
-  event,
-  businessHandle,
-  businessId,
-  onBack,
-}: ServiceEventQuestionsProps) {
+export default function Questions({
+  serviceEvent,
+  loggedInUser,
+}: {
+  serviceEvent: Tables<"service_events"> & {
+    services:
+      | (Tables<"services"> & {
+          questions: Tables<"questions">[];
+        })
+      | null;
+  };
+  loggedInUser: Tables<"users">;
+}) {
+  const { currentViewingBusiness } = useCurrentViewingBusinessContext();
+
   const router = useRouter();
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
@@ -43,14 +43,16 @@ export default function ServiceEventQuestions({
   const { mutateAsync: _saveBooking } = useSupaMutation(saveBooking);
   const { mutateAsync: _saveQandA } = useSupaMutation(saveQuestionAnswers);
   const { mutateAsync: _saveChatMessage } = useSupaMutation(saveChatMessage);
-  const { mutateAsync: _createBusinessAndUserChatRoom } = useSupaMutation(
-    createBusinessUserChatRoom,
+  const { mutateAsync: _createBookingChatRoom } = useSupaMutation(
+    createBookingChatRoom,
   );
 
   const prettifyAnswers = () => {
     let prettifiedAnswers = "";
     for (const [qId, ans] of Object.entries(answers)) {
-      const q = event.service.questions.find((q) => q.id === qId);
+      const q = (serviceEvent.services?.questions || []).find(
+        (q: Tables<"questions">) => q.id === qId,
+      );
       if (q) {
         if (q.type === QUESTION_TYPE_BOOLEAN) {
           prettifiedAnswers += `${q.question}:\n ${ans ? "Yes" : "No"}\n`;
@@ -63,15 +65,7 @@ export default function ServiceEventQuestions({
   };
 
   const handleContinue = async () => {
-    if (!user || !businessId) {
-      toast({
-        title: "Something went wrong",
-        description: "It's us, not you. Please reload and try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-    for (const q of event.service.questions) {
+    for (const q of serviceEvent.services?.questions || []) {
       if (!isRequiredQuestionAnswered(q)) {
         return;
       }
@@ -79,35 +73,36 @@ export default function ServiceEventQuestions({
 
     // todo - consider wrapping all of this in a postgres function for atomicity.
     const booking = await _saveBooking({
-      booker_id: user?.id,
-      service_event_id: event.id,
+      booker_id: loggedInUser.id,
+      business_id: currentViewingBusiness.id,
+      service_event_id: serviceEvent.id,
+      service_event_start: serviceEvent.start,
       status: BOOKING_STATUS_PENDING,
     });
 
-    const questionAnswers: Partial<Tables<"question_answers">>[] =
-      event.service.questions.map((q) => ({
-        booking_id: booking.id,
-        question_id: q.id,
-        bool_answer: q.type === QUESTION_TYPE_BOOLEAN ? answers[q.id] : null,
-        text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
-      }));
+    const questionAnswers: Partial<Tables<"question_answers">>[] = (
+      serviceEvent.services?.questions || []
+    ).map((q: Tables<"questions">) => ({
+      booking_id: booking.id,
+      question_id: q.id,
+      bool_answer: q.type === QUESTION_TYPE_BOOLEAN ? answers[q.id] : null,
+      text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
+    }));
     await _saveQandA(questionAnswers);
 
-    const chatRoomId = await _createBusinessAndUserChatRoom({
-      user,
-      business: {
-        id: businessId,
-        handle: businessHandle,
-      },
+    const room = await _createBookingChatRoom({
+      name: serviceEvent.services?.title || "",
+      bookingId: booking.id,
+      bookerId: loggedInUser.id,
+      businessId: currentViewingBusiness.id,
     });
     await _saveChatMessage({
-      booking_id: booking.id,
-      room_id: chatRoomId,
-      sender_user_id: user.id,
+      room_id: room.id,
+      sender_user_id: loggedInUser.id,
       content: prettifyAnswers(),
     });
 
-    router.replace(`/${businessHandle}/chat`);
+    router.replace(`/${currentViewingBusiness.handle}/chat?room_id=${room.id}`);
   };
 
   const renderQuestion = (q: Tables<"questions">) => {
@@ -166,7 +161,12 @@ export default function ServiceEventQuestions({
       <HeaderWithAction
         title="Almost there"
         leftActionBtn={
-          <Button onClick={onBack} variant="ghost">
+          <Button
+            onClick={() => {
+              router.back();
+            }}
+            variant="ghost"
+          >
             <ArrowLeftIcon className="h-5 w-5" />
           </Button>
         }
@@ -174,10 +174,14 @@ export default function ServiceEventQuestions({
       <div className="relative">
         <div className="flex flex-col gap-5 p-6 lg:p-10">
           <p className="text-sm text-muted-foreground">
-            Please answer the following questions before booking &quot;
-            {event.service.title}&quot;.
+            Please answer the following questions before booking
+            {serviceEvent.services?.title ? (
+              <> &quot;{serviceEvent.services.title}&quot;.</>
+            ) : (
+              "."
+            )}
           </p>
-          {(event.service.questions || []).map((q) => (
+          {(serviceEvent.services?.questions || []).map((q) => (
             <div className="" key={q.id}>
               {renderQuestion(q)}
             </div>
@@ -187,8 +191,8 @@ export default function ServiceEventQuestions({
           <Button
             className="float-right m-4"
             onClick={handleContinue}
-            disabled={(event.service.questions || [])
-              .map((q) => isRequiredQuestionAnswered(q))
+            disabled={(serviceEvent.services?.questions || [])
+              .map((q: Tables<"questions">) => isRequiredQuestionAnswered(q))
               .includes(false)}
           >
             Continue

@@ -52,6 +52,7 @@
     "lucide-react": "^0.284.0",
     "next": "14.0.1",
     "next-themes": "^0.2.1",
+    "path-to-regexp": "^6.2.1",
     "react": "^18",
     "react-aria": "^3.29.1",
     "react-big-calendar": "^1.8.4",

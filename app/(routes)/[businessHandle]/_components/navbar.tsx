@@ -2,12 +2,12 @@
 
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tables } from "@/types/db.extension";
-import { User } from "@supabase/supabase-js";
 import { Button } from "../../../../src/components/ui/button";
 import { useRouter } from "next/navigation";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
+import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -21,14 +21,19 @@ export default function Navbar({
   user,
 }: {
   business: Tables<"businesses">;
-  user?: User;
+  user?: Tables<"users">;
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { setCurrentViewingBusiness } = useCurrentViewingBusinessContext();
   const router = useRouter();
+
+  useEffect(() => {
+    setCurrentViewingBusiness(business);
+  }, [setCurrentViewingBusiness, business]);
 
   const handleLogin = () => {
     const returnPath = encodeURIComponent(`/${business.handle}`);
-    router.replace(`/login?returnPath=${returnPath}&backPath=${returnPath}`);
+    router.replace(`/login?return_path=${returnPath}`);
     router.refresh();
   };
   const handleLogout = async () => {

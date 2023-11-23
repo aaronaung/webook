@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@/src/components/ui/button";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
+import { Tables } from "@/types/db.extension";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { User } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ const navigation = [
   { name: "Marketplace", href: "#" },
   { name: "Company", href: "#" },
 ];
-export default function Navbar({ user }: { user?: User }) {
+export default function Navbar({ user }: { user?: Tables<"users"> }) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
