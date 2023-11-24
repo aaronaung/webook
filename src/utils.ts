@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge";
 import { supaClientComponentClient } from "./data/clients/browser";
 import crypto from "crypto";
 import { BUCKETS, STORAGE_DIR_PATHS } from "./consts/storage";
+import { Message } from "./components/chat-room/chat-room";
+import { Tables } from "@/types/db.extension";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -113,3 +115,83 @@ export const generatePassword = (
   Array.from(crypto.randomFillSync(new Uint32Array(length)))
     .map((x) => characters[x % characters.length])
     .join("");
+
+export const chatMessagesToChatRoomMessages = (
+  messages: Partial<Tables<"chat_messages">>[],
+  selfId: string,
+): Message[] => {
+  let lastKnownPosition: "top" | "middle" | "bottom" = "top";
+  let lastKnownSender = "";
+  const chatRoomMessages: Message[] = [];
+  for (const msg of messages) {
+    if (!msg.content) {
+      continue;
+    }
+    const senderId = msg.sender_user_id || msg.sender_business_id;
+
+    if (lastKnownSender !== senderId) {
+      if (lastKnownPosition === "middle") {
+        chatRoomMessages[chatRoomMessages.length - 1].position = "bottom";
+      }
+      lastKnownPosition = "top";
+      lastKnownSender = senderId as string;
+    } else {
+      lastKnownPosition = "middle";
+    }
+
+    chatRoomMessages.push({
+      content: msg.content,
+      position: lastKnownPosition,
+      side: senderId === selfId ? "right" : "left",
+    });
+  }
+  if (lastKnownPosition === "middle") {
+    chatRoomMessages[chatRoomMessages.length - 1].position = "bottom";
+  }
+
+  return chatRoomMessages;
+};
+
+console.log(
+  chatMessagesToChatRoomMessages(
+    [
+      {
+        content: "test",
+        sender_user_id: "1",
+      },
+      {
+        content: "test",
+        sender_user_id: "2",
+      },
+      {
+        content: "test",
+        sender_user_id: "2",
+      },
+      {
+        content: "test",
+        sender_user_id: "2",
+      },
+      // {
+      //   content: "test",
+      //   sender_user_id: "2",
+      // },
+      // {
+      //   content: "test",
+      //   sender_user_id: "1",
+      // },
+      // {
+      //   content: "test",
+      //   sender_user_id: "1",
+      // },
+      // {
+      //   content: "test",
+      //   sender_user_id: "1",
+      // },
+      // {
+      //   content: "test",
+      //   sender_user_id: "1",
+      // },
+    ],
+    "1",
+  ),
+);

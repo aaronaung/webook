@@ -31,7 +31,7 @@ export default function Chat({
               setCurrentRoom(room);
             }}
           >
-            {room.name}
+            {room.id} - {room.name}
           </div>
         ))}
       </div>

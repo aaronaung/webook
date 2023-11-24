@@ -36,12 +36,13 @@ export function ChatInput({ className, onSend }: ChatInputProps) {
   );
 }
 
+export type Message = {
+  position: "top" | "middle" | "bottom";
+  side: "left" | "right";
+  content: string;
+};
 type ChatMessageProps = {
-  chatMessage: {
-    position: "top" | "middle" | "bottom";
-    side: "left" | "right";
-    content: string;
-  };
+  chatMessage: Message;
 };
 export function ChatMessage({ chatMessage }: ChatMessageProps) {
   const determineRoundedCorners = () => {

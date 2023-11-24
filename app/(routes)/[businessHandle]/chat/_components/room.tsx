@@ -7,10 +7,13 @@ import {
   ChatMessage,
 } from "@/src/components/chat-room/chat-room";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
-import { listChatMessagesInRoom } from "@/src/data/chat";
-import { useSupaQuery } from "@/src/hooks/use-supabase";
+import { listChatMessagesInRoom, saveChatMessage } from "@/src/data/chat";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { chatMessagesToChatRoomMessages } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type RoomProps = {
   room: Tables<"chat_rooms">;
@@ -19,13 +22,57 @@ type RoomProps = {
 export default function Room({ room, loggedInUser }: RoomProps) {
   const router = useRouter();
   const { currentViewingBusiness } = useCurrentViewingBusinessContext();
-  const { data: messages, isLoading: isLoadingMessages } = useSupaQuery(
-    listChatMessagesInRoom,
-    room.id,
-    {
-      queryKey: ["listChatMessagesInRoom", room.id],
-    },
-  );
+  const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
+
+  const { mutate: sendMessage } = useSupaMutation(saveChatMessage);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const messages = await listChatMessagesInRoom(room.id, {
+        client: supaClientComponentClient(),
+      });
+      setMessages(messages);
+    };
+    fetchMessages();
+  }, [room.id]);
+
+  useEffect(() => {
+    const client = supaClientComponentClient();
+    const chatMessagesChannel = client
+      .channel("chat_messages")
+      .on<Tables<"chat_messages">>(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
+          filter: `room_id=eq.${room.id}`,
+        },
+        (payload) => {
+          // TODO: add new user to cache if their profile doesn't exist
+          setMessages((prevMessages) => [...prevMessages, payload.new]);
+          // if (messagesRef.current) {
+          //   messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+          // }
+        },
+      )
+      .subscribe();
+
+    // todo: subscribe to new messages
+    return () => {
+      console.log("tearing down", room.id);
+      // todo: unsubscribe from new messages
+      client.removeChannel(chatMessagesChannel);
+    };
+  }, [room.id]);
+
+  const handleNewMessage = (message: string) => {
+    sendMessage({
+      room_id: room.id,
+      sender_user_id: loggedInUser.id,
+      content: message,
+    });
+  };
 
   return (
     <ChatContainer>
@@ -40,58 +87,16 @@ export default function Room({ room, loggedInUser }: RoomProps) {
           router.back();
         }}
       />
-      {isLoadingMessages ? (
-        <>Loading...</>
-      ) : (
-        <ChatBody>
-          {(
-            [
-              ...(messages || []).map((m, index) => ({
-                content: m.content,
-                side: m.sender_user_id === loggedInUser.id ? "right" : "left",
-                position: "middle", // todo - add top and bottom positions
-              })),
-              {
-                content: "Hello",
-                side: "left",
-                position: "top",
-              },
-              {
-                content: "how you doing",
-                side: "left",
-                position: "middle",
-              },
-              {
-                content: "I miss you",
-                side: "left",
-                position: "bottom",
-              },
-              {
-                content: "Wassup",
-                side: "right",
-                position: "top",
-              },
-              {
-                content: "Nothing much. You?",
-                side: "left",
-                position: "top",
-              },
-              {
-                content: "Nothing much. You?",
-                side: "left",
-                position: "bottom",
-              },
-            ] as const
-          ).map((chatMessage, i) => (
+
+      <ChatBody>
+        {chatMessagesToChatRoomMessages(messages || [], loggedInUser.id).map(
+          (chatMessage, i) => (
             <ChatMessage key={i} chatMessage={chatMessage} />
-          ))}
-        </ChatBody>
-      )}
-      <ChatInput
-        onSend={(message) => {
-          console.log("sending message", message);
-        }}
-      />
+          ),
+        )}
+      </ChatBody>
+
+      <ChatInput onSend={handleNewMessage} />
     </ChatContainer>
   );
 }
