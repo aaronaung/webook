@@ -1,9 +1,9 @@
 "use client";
 
 import { Tables } from "@/types/db.extension";
-import { useState } from "react";
 import Room from "./room";
 import { cn } from "@/src/utils";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Chat({
   loggedInUser,
@@ -15,7 +15,16 @@ export default function Chat({
   rooms: Tables<"chat_rooms">[];
 }) {
   // todo: if initalRoom is null set to the latest booking room
-  const [currentRoom, setCurrentRoom] = useState(initialRoom || rooms[0]);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const currentRoomId = searchParams.get("room_id") || rooms[0].id;
+  const currentRoom = rooms.find((room) => room.id === currentRoomId);
+
+  const handleRoomSelect = (newRoomId: string) => {
+    const newParams = new URLSearchParams(searchParams.toString());
+    newParams.set("room_id", newRoomId);
+    router.replace(`${window.location.pathname}?${newParams.toString()}`);
+  };
 
   return (
     <div className="flex">
@@ -24,11 +33,11 @@ export default function Chat({
           <div
             key={room.id}
             className={cn(
-              room.id === currentRoom.id && "bg-gray-200",
+              room.id === searchParams.get("room_id") && "bg-gray-200",
               "cursor-pointer border-b-secondary-foreground p-2",
             )}
             onClick={() => {
-              setCurrentRoom(room);
+              handleRoomSelect(room.id);
             }}
           >
             {room.id} - {room.name}
@@ -36,7 +45,7 @@ export default function Chat({
         ))}
       </div>
       <div>
-        <Room room={currentRoom} loggedInUser={loggedInUser} />
+        <Room room={currentRoom!} loggedInUser={loggedInUser} />
       </div>
     </div>
   );

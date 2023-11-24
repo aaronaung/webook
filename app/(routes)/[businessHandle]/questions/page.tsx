@@ -42,7 +42,9 @@ export default async function QuestionsPage({
     supabaseOptions,
   );
   if (existingBooking) {
-    redirect(`/${params.businessHandle}/chat?room_id=${existingBooking.id}`);
+    redirect(
+      `/${params.businessHandle}/chat?room_id=${existingBooking.chat_room_id}`,
+    );
   }
 
   const serviceEvent = await getDetailedServiceEvent(
