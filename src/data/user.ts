@@ -11,7 +11,12 @@ export const getAuthUser = async ({ client }: SupabaseOptions) => {
 
     if (user) {
       return throwOrData(
-        client.from("users").select("*").eq("id", user.id).limit(1).single(),
+        client
+          .from("users")
+          .select("*")
+          .eq("id", user.id)
+          .limit(1)
+          .maybeSingle(),
       );
     }
     return user;

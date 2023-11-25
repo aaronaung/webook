@@ -54,15 +54,15 @@ values
 (
   (select id from public.service_categories where title = 'Studio rental'),
   3600000, -- 1 hours in milliseconds
-  'Small room rental (1-10 people hourly)',
-  NULL,
+  'Small room rental',
+  10,
   60000
 ),
 (
   (select id from public.service_categories where title = 'Studio rental'),
   3600000, -- 1 hours in milliseconds
-  'Large room rental (10+ people hourly)',
-  NULL,
+  'Large room rental',
+  10,
   80000
 );
 
@@ -73,16 +73,16 @@ WITH schedule_data AS (
     service_title
   FROM (
     VALUES 
-      ('OCTOBER 2 2023 5:00PM PDT',  'Small room rental (1-10 people hourly)'),
-      ('OCTOBER 2 2023 5:00PM PDT',  'Large room rental (10+ people hourly)'),
-      ('OCTOBER 2 2023 9:00PM PDT',  'Small room rental (1-10 people hourly)'),
-      ('OCTOBER 3 2023 9:30PM PDT',  'Small room rental (1-10 people hourly)'),
-      ('OCTOBER 3 2023 10:00PM PDT', 'Large room rental (10+ people hourly)'),
-      ('OCTOBER 4 2023 8:30PM PDT',  'Small room rental (1-10 people hourly)'),
-      ('OCTOBER 5 2023 9:00PM PDT',  'Small room rental (1-10 people hourly)'),
-      ('OCTOBER 5 2023 10:00PM PDT', 'Large room rental (10+ people hourly)'),
-      ('OCTOBER 6 2023 5:00PM PDT',  'Large room rental (10+ people hourly)'),
-      ('OCTOBER 6 2023 5:00PM PDT',  'Small room rental (1-10 people hourly)')
+      ('OCTOBER 2 2023 5:00PM PDT',  'Small room rental'),
+      ('OCTOBER 2 2023 5:00PM PDT',  'Large room rental'),
+      ('OCTOBER 2 2023 9:00PM PDT',  'Small room rental'),
+      ('OCTOBER 3 2023 9:30PM PDT',  'Small room rental'),
+      ('OCTOBER 3 2023 10:00PM PDT', 'Large room rental'),
+      ('OCTOBER 4 2023 8:30PM PDT',  'Small room rental'),
+      ('OCTOBER 5 2023 9:00PM PDT',  'Small room rental'),
+      ('OCTOBER 5 2023 10:00PM PDT', 'Large room rental'),
+      ('OCTOBER 6 2023 5:00PM PDT',  'Large room rental'),
+      ('OCTOBER 6 2023 5:00PM PDT',  'Small room rental')
   ) AS schedule (date, service_title)
 )
 INSERT INTO service_events (start, recurrence_start, recurrence_interval, recurrence_count, service_id)
