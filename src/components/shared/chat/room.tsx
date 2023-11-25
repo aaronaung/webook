@@ -6,7 +6,6 @@ import {
   ChatInput,
   ChatMessage,
 } from "@/src/components/chat-room/chat-room";
-import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { listChatMessagesInRoom, saveChatMessage } from "@/src/data/chat";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
@@ -17,11 +16,13 @@ import { useEffect, useState } from "react";
 
 type RoomProps = {
   room: Tables<"chat_rooms">;
-  loggedInUser: Tables<"users">;
+  loggedInUser?: Tables<"users">;
+  business?: Tables<"businesses">;
 };
-export default function Room({ room, loggedInUser }: RoomProps) {
+
+// Note: Either loggedInUser or business must be provided.
+export default function Room({ room, loggedInUser, business }: RoomProps) {
   const router = useRouter();
-  const { currentViewingBusiness } = useCurrentViewingBusinessContext();
   const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
 
   const { mutate: sendMessage } = useSupaMutation(saveChatMessage);
@@ -69,15 +70,16 @@ export default function Room({ room, loggedInUser }: RoomProps) {
   const handleNewMessage = (message: string) => {
     sendMessage({
       room_id: room.id,
-      sender_user_id: loggedInUser.id,
       content: message,
+      ...(business ? { sender_business_id: business.id } : {}),
+      ...(loggedInUser ? { sender_user_id: loggedInUser.id } : {}),
     });
   };
 
   return (
     <ChatContainer>
       <ChatHeader
-        title={room.name || `${currentViewingBusiness?.title} <> me`}
+        title={room.name || `Room ${room.id}`}
         subtitle={
           room.created_at
             ? `Created: ${new Date(room.created_at).toISOString()}`
@@ -89,11 +91,12 @@ export default function Room({ room, loggedInUser }: RoomProps) {
       />
 
       <ChatBody>
-        {chatMessagesToChatRoomMessages(messages || [], loggedInUser.id).map(
-          (chatMessage, i) => (
-            <ChatMessage key={i} chatMessage={chatMessage} />
-          ),
-        )}
+        {chatMessagesToChatRoomMessages(
+          messages || [],
+          loggedInUser?.id || business?.id || "",
+        ).map((chatMessage, i) => (
+          <ChatMessage key={i} chatMessage={chatMessage} />
+        ))}
       </ChatBody>
 
       <ChatInput onSend={handleNewMessage} />

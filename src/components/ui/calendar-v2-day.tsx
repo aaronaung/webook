@@ -1,5 +1,5 @@
 import { cn } from "@/src/utils";
-import { format, isSameMonth, isToday } from "date-fns";
+import { format, isBefore, isSameMonth, isToday, startOfDay } from "date-fns";
 import { useDrop } from "react-dnd";
 import { Tables } from "@/types/db.extension";
 
@@ -32,6 +32,8 @@ export default function CalendarV2Day({
     [],
   );
 
+  const inThePast = isBefore(day, startOfDay(new Date()));
+
   return (
     <button
       type="button"
@@ -55,7 +57,9 @@ export default function CalendarV2Day({
         "mx-auto flex h-8 w-8 items-center justify-center rounded-full",
         isOver && canDrop && "cursor-pointer bg-green-800",
         !isOver && canDrop && "bg-green-50 text-secondary-foreground",
+        inThePast && "bg-secondary text-muted-foreground hover:bg-secondary",
       )}
+      disabled={inThePast}
     >
       <time dateTime={format(day, "yyyy-MM-dd")}>{format(day, "d")}</time>
     </button>

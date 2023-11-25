@@ -36,43 +36,15 @@ export const createBookingChatRoom = async (
       .single(),
   );
 
-  const addUserParticipant = throwOrData(
-    client.from("chat_rooms_user_participants").upsert({
+  await throwOrData(
+    client.from("chat_room_participants").upsert({
       room_id: room.id,
       user_id: bookerId,
-    }),
-  );
-  const addBusinessParticipant = throwOrData(
-    client.from("chat_rooms_business_participants").upsert({
-      room_id: room.id,
       business_id: businessId,
     }),
   );
-  await Promise.all([addUserParticipant, addBusinessParticipant]);
-  return room;
-};
 
-export const saveChatRoomParticipants = async (
-  {
-    chatRoomId,
-    participants,
-    businessId,
-  }: {
-    chatRoomId: string;
-    participants: string[];
-    businessId: string;
-  },
-  { client }: SupabaseOptions,
-) => {
-  return throwOrData(
-    client.from("chat_rooms_participants").upsert(
-      participants.map((participant) => ({
-        room_id: chatRoomId,
-        user_id: participant,
-        business_id: businessId,
-      })),
-    ),
-  );
+  return room;
 };
 
 export const saveChatMessage = async (
@@ -116,15 +88,38 @@ export const getChatRoom = async (
   );
 };
 
-export const listChatRoomsByUserParticipant = async (
-  userId: string,
+export const listChatRoomsByUserParticipantForBusiness = async (
+  {
+    userId,
+    businessId,
+  }: {
+    userId: string;
+    businessId: string;
+  },
   { client }: SupabaseOptions,
 ) => {
   const queryResult = await throwOrData(
     client
-      .from("chat_rooms_user_participants")
+      .from("chat_room_participants")
       .select("chat_rooms(*)")
       .eq("user_id", userId)
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: false }),
+  );
+  return queryResult
+    .filter((r) => r.chat_rooms !== null)
+    .map((r) => r.chat_rooms) as Tables<"chat_rooms">[];
+};
+
+export const listChatRoomsByBusinessParticipant = async (
+  businessId: string,
+  { client }: SupabaseOptions,
+) => {
+  const queryResult = await throwOrData(
+    client
+      .from("chat_room_participants")
+      .select("chat_rooms(*)")
+      .eq("business_id", businessId)
       .order("created_at", { ascending: false }),
   );
   return queryResult

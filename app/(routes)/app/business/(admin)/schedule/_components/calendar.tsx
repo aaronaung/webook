@@ -158,6 +158,16 @@ export default function ScheduleCalendar({
         })}
         onView={(view) => setCalView(view)}
         localizer={localizer}
+        dayPropGetter={(date) => {
+          if (isBefore(date, today)) {
+            return {
+              className: "bg-secondary text-muted-foreground",
+            };
+          }
+          return {
+            className: "cursor-pointer hover:bg-green-50",
+          };
+        }}
         onEventDrop={
           onEventDrop as any /* todo - the library typing is all messed up */
         }

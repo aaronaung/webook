@@ -22,7 +22,7 @@ export type FormSchemaType = z.infer<typeof formSchema>;
 
 // todo - implement forgot password + remember me.
 export default function UserAuthForm({
-  returnPath = "app/business/schedule",
+  returnPath = "/app/business/schedule",
 }: {
   returnPath?: string;
 }) {

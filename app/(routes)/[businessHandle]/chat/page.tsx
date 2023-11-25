@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/src/data/user";
 import { supaServerComponentClient } from "@/src/data/clients/server";
-import { getChatRoom, listChatRoomsByUserParticipant } from "@/src/data/chat";
-import Chat from "./_components/chat";
+import { listChatRoomsByUserParticipantForBusiness } from "@/src/data/chat";
+import Chat from "@/src/components/shared/chat/chat";
+import { getBusinessByHandle } from "@/src/data/business";
 
 export default async function ChatPage({
   params,
@@ -20,20 +21,23 @@ export default async function ChatPage({
       )}`,
     );
   }
+  const business = await getBusinessByHandle(
+    params.businessHandle,
+    supabaseOptions,
+  );
+  if (!business) {
+    console.error(`Business not found for handle: ${params.businessHandle}`);
+    redirect("/");
+  }
 
-  const initialRoom = await getChatRoom(searchParams.room_id, supabaseOptions);
-
-  // todo - in the future we should get the rooms in proximity to the initial room passed in param
-  const userChatRooms = await listChatRoomsByUserParticipant(
-    loggedInUser.id,
+  // todo - in the future when we have pagination, we should get the rooms in proximity to the room in search param
+  const userChatRooms = await listChatRoomsByUserParticipantForBusiness(
+    {
+      userId: loggedInUser.id,
+      businessId: business.id,
+    },
     supabaseOptions,
   );
 
-  return (
-    <Chat
-      initialRoom={initialRoom ?? undefined}
-      rooms={userChatRooms ?? []}
-      loggedInUser={loggedInUser}
-    />
-  );
+  return <Chat rooms={userChatRooms ?? []} loggedInUser={loggedInUser} />;
 }

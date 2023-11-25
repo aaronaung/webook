@@ -16,7 +16,7 @@ import { Tables } from "@/types/db.extension";
 import { BuildingOfficeIcon } from "@heroicons/react/24/outline";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Image from "@/src/components/ui/image";
 
 export default function Navbar({
@@ -27,6 +27,7 @@ export default function Navbar({
   const { currentBusiness, setCurrentBusiness } = useCurrentBusinessContext();
   const router = useRouter();
   const pathName = usePathname();
+  const searchParams = useSearchParams();
 
   return (
     <aside className="flex overflow-x-auto pb-4 lg:block lg:h-full lg:w-64 lg:flex-none">
@@ -64,7 +65,7 @@ export default function Navbar({
             {currentBusiness && (
               <>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger value={currentBusiness.handle} asChild>
                     <div className="flex cursor-pointer items-center gap-x-2 rounded-md py-2 pl-2 pr-3 font-medium hover:bg-secondary hover:text-primary ">
                       <Image
                         src={getBusinessLogoUrl(currentBusiness.handle)}
@@ -83,12 +84,7 @@ export default function Navbar({
                     <DropdownMenuRadioGroup
                       value={currentBusiness?.handle}
                       onValueChange={(handle) => {
-                        const business = businesses.find(
-                          (b) => b.handle === handle,
-                        );
-                        if (business) {
-                          setCurrentBusiness(business);
-                        }
+                        setCurrentBusiness(handle);
                       }}
                     >
                       {businesses.map((business) => (

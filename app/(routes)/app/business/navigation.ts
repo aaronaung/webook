@@ -1,6 +1,6 @@
 import {
   CalendarIcon,
-  Cog8ToothIcon,
+  ChatBubbleOvalLeftIcon,
   QuestionMarkCircleIcon,
   Square3Stack3DIcon,
   UsersIcon,
@@ -19,5 +19,5 @@ export const navigation = [
     icon: QuestionMarkCircleIcon,
     href: "/app/business/questions",
   },
-  { name: "Settings", icon: Cog8ToothIcon, href: "/app/business/settings" },
+  { name: "Chat", icon: ChatBubbleOvalLeftIcon, href: "/app/business/chat" },
 ];

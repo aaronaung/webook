@@ -12,6 +12,7 @@ import { getLoggedInUserBusinesses } from "@/src/data/business";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = useSupaQuery(getLoggedInUserBusinesses);
   const router = useRouter();
+
   if (isLoading) {
     return <>Loading...</>;
   }

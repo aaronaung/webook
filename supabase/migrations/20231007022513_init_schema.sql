@@ -1,19 +1,3 @@
-create table "public"."bookings" (
-    "id" uuid not null default gen_random_uuid(),
-    "created_at" timestamp with time zone default now(),
-    "updated_at" timestamp with time zone default now(),
-    "booker_id" uuid not null,
-    "service_event_id" uuid not null,
-    "service_event_start" timestamp with time zone not null,
-    "business_id" uuid not null,
-    "chat_room_id" uuid not null,
-    "status" text not null default 'PENDING',
-    UNIQUE ("booker_id", "service_event_id", "service_event_start")
-);
-
-
-alter table "public"."bookings" enable row level security;
-
 create table "public"."businesses" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone default now(),
@@ -115,8 +99,6 @@ create table "public"."users" (
 
 alter table "public"."users" enable row level security;
 
-CREATE UNIQUE INDEX bookings_pkey ON public.bookings USING btree (id);
-
 CREATE UNIQUE INDEX businesses_pkey ON public.businesses USING btree (id);
 
 CREATE UNIQUE INDEX businesses_handle_unique ON public.businesses USING btree (handle);
@@ -133,8 +115,6 @@ CREATE UNIQUE INDEX staffs_pkey ON public.staffs USING btree (id);
 
 CREATE UNIQUE INDEX users_pkey ON public."users" USING btree (id);
 
-alter table "public"."bookings" add constraint "bookings_pkey" PRIMARY KEY using index "bookings_pkey";
-
 alter table "public"."businesses" add constraint "businesses_pkey" PRIMARY KEY using index "businesses_pkey";
 
 alter table "public"."services" add constraint "services_pkey" PRIMARY KEY using index "services_pkey";
@@ -148,18 +128,6 @@ alter table "public"."service_events_staffs" add constraint "service_events_staf
 alter table "public"."staffs" add constraint "staffs_pkey" PRIMARY KEY using index "staffs_pkey";
 
 alter table "public"."users" add constraint "users_pkey" PRIMARY KEY using index "users_pkey";
-
-alter table "public"."bookings" add constraint "bookings_booker_id_fkey" FOREIGN KEY (booker_id) REFERENCES "users"(id) ON DELETE CASCADE not valid;
-
-alter table "public"."bookings" validate constraint "bookings_booker_id_fkey";
-
-alter table "public"."bookings" add constraint "bookings_service_event_id_fkey" FOREIGN KEY (service_event_id) REFERENCES service_events(id) not valid;
-
-alter table "public"."bookings" validate constraint "bookings_service_event_id_fkey";
-
-alter table "public"."bookings" add constraint "bookings_chat_room_id_fkey" FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id) ON DELETE SET NULL not valid;
-
-alter table "public"."bookings" validate constraint "bookings_chat_room_id_fkey";
 
 alter table "public"."businesses" add constraint "businesses_owner_id_fkey" FOREIGN KEY (owner_id) REFERENCES "users"(id) ON DELETE CASCADE not valid;
 

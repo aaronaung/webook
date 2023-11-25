@@ -177,6 +177,46 @@ export interface Database {
           }
         ]
       }
+      chat_room_participants: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_room_participants_business_id_fkey"
+            columns: ["business_id"]
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_room_participants_room_id_fkey"
+            columns: ["room_id"]
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_room_participants_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       chat_rooms: {
         Row: {
           created_at: string | null
@@ -197,68 +237,6 @@ export interface Database {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      chat_rooms_business_participants: {
-        Row: {
-          business_id: string
-          created_at: string | null
-          room_id: string
-        }
-        Insert: {
-          business_id: string
-          created_at?: string | null
-          room_id: string
-        }
-        Update: {
-          business_id?: string
-          created_at?: string | null
-          room_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_rooms_business_participants_business_id_fkey"
-            columns: ["business_id"]
-            referencedRelation: "businesses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chat_rooms_business_participants_room_id_fkey"
-            columns: ["room_id"]
-            referencedRelation: "chat_rooms"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      chat_rooms_user_participants: {
-        Row: {
-          created_at: string | null
-          room_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string | null
-          room_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string | null
-          room_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "chat_rooms_user_participants_room_id_fkey"
-            columns: ["room_id"]
-            referencedRelation: "chat_rooms"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "chat_rooms_user_participants_user_id_fkey"
-            columns: ["user_id"]
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          }
-        ]
       }
       question_answers: {
         Row: {
@@ -601,21 +579,6 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
-      }
-      test_tenant: {
-        Row: {
-          details: string | null
-          id: number
-        }
-        Insert: {
-          details?: string | null
-          id?: number
-        }
-        Update: {
-          details?: string | null
-          id?: number
-        }
-        Relationships: []
       }
       users: {
         Row: {

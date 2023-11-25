@@ -152,46 +152,46 @@ export const chatMessagesToChatRoomMessages = (
   return chatRoomMessages;
 };
 
-console.log(
-  chatMessagesToChatRoomMessages(
-    [
-      {
-        content: "test",
-        sender_user_id: "1",
-      },
-      {
-        content: "test",
-        sender_user_id: "2",
-      },
-      {
-        content: "test",
-        sender_user_id: "2",
-      },
-      {
-        content: "test",
-        sender_user_id: "2",
-      },
-      // {
-      //   content: "test",
-      //   sender_user_id: "2",
-      // },
-      // {
-      //   content: "test",
-      //   sender_user_id: "1",
-      // },
-      // {
-      //   content: "test",
-      //   sender_user_id: "1",
-      // },
-      // {
-      //   content: "test",
-      //   sender_user_id: "1",
-      // },
-      // {
-      //   content: "test",
-      //   sender_user_id: "1",
-      // },
-    ],
-    "1",
-  ),
-);
+// console.log(
+//   chatMessagesToChatRoomMessages(
+//     [
+//       {
+//         content: "test",
+//         sender_user_id: "1",
+//       },
+//       {
+//         content: "test",
+//         sender_user_id: "2",
+//       },
+//       {
+//         content: "test",
+//         sender_user_id: "2",
+//       },
+//       {
+//         content: "test",
+//         sender_user_id: "2",
+//       },
+//       // {
+//       //   content: "test",
+//       //   sender_user_id: "2",
+//       // },
+//       // {
+//       //   content: "test",
+//       //   sender_user_id: "1",
+//       // },
+//       // {
+//       //   content: "test",
+//       //   sender_user_id: "1",
+//       // },
+//       // {
+//       //   content: "test",
+//       //   sender_user_id: "1",
+//       // },
+//       // {
+//       //   content: "test",
+//       //   sender_user_id: "1",
+//       // },
+//     ],
+//     "1",
+//   ),
+// );

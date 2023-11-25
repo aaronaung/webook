@@ -1,15 +1,10 @@
 import { Tables } from "@/types/db.extension";
-import {
-  Dispatch,
-  SetStateAction,
-  createContext,
-  useContext,
-  useState,
-} from "react";
+import { createContext, useContext } from "react";
+import { useLocalStorage } from "usehooks-ts";
 
 type CurrentBusinessContextValue = {
   currentBusiness: Tables<"businesses">;
-  setCurrentBusiness: Dispatch<SetStateAction<Tables<"businesses">>>;
+  setCurrentBusiness: (newHandle: string) => void;
 };
 
 const CurrentBusinessContext =
@@ -24,15 +19,26 @@ function useCurrentBusinessContext() {
   return context;
 }
 
-function CurrentBusinessProvider(props: {
+function CurrentBusinessProvider({
+  initialBusinesses,
+  ...props
+}: {
   initialBusinesses: Tables<"businesses">[];
   children: React.ReactNode;
 }) {
-  const [currentBusiness, setCurrentBusiness] = useState(
-    props.initialBusinesses?.[0],
+  const [businessHandle, setBusinessHandle] = useLocalStorage(
+    "current_business",
+    initialBusinesses[0].handle,
   );
+
+  const setCurrentBusiness = (newHandle: string) => {
+    setBusinessHandle(newHandle);
+  };
+
   const value = {
-    currentBusiness: currentBusiness || props.initialBusinesses?.[0],
+    currentBusiness:
+      initialBusinesses.find((b) => b.handle === businessHandle) ||
+      initialBusinesses?.[0],
     setCurrentBusiness,
   };
 

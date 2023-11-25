@@ -172,6 +172,7 @@ export default function Services() {
         <EmptyState
           Icon={Square3Stack3DIcon}
           title="No service category found"
+          description="Service categories are used to group your services."
           actionButtonText="Start by creating one"
           onAction={() =>
             setSgDialogState({
