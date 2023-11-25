@@ -4,6 +4,7 @@ import { Button } from "@/src/components/ui/button";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { Label } from "@/src/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
+import { toast } from "@/src/components/ui/use-toast";
 import { BOOKING_STATUS_PENDING } from "@/src/consts/booking";
 import {
   QUESTION_TYPE_BOOLEAN,
@@ -36,6 +37,7 @@ export default function Questions({
   loggedInUser: Tables<"users">;
 }) {
   const { currentViewingBusiness } = useCurrentViewingBusinessContext();
+  const [isProcessingBooking, setIsProcessingBooking] = useState(false);
 
   const router = useRouter();
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
@@ -74,43 +76,53 @@ export default function Questions({
       }
     }
 
-    // todo - consider wrapping all of this in a postgres function for atomicity.
-    const room = await _createBookingChatRoom({
-      name:
-        `${serviceEvent.services?.title} - ${format(
-          new Date(serviceEventStart),
-          "MM/dd/yyyy h:mm a",
-        )}` || "",
-      bookerId: loggedInUser.id,
-      businessId: currentViewingBusiness.id,
-    });
+    try {
+      setIsProcessingBooking(true);
+      // todo - consider wrapping all of this in a postgres function for atomicity.
+      const room = await _createBookingChatRoom({
+        name:
+          `${serviceEvent.services?.title} - ${format(
+            new Date(serviceEventStart),
+            "MM/dd/yyyy h:mm a",
+          )}` || "",
+        bookerId: loggedInUser.id,
+        businessId: currentViewingBusiness.id,
+      });
 
-    await _saveChatMessage({
-      room_id: room.id,
-      sender_user_id: loggedInUser.id,
-      content: prettifyAnswers(),
-    });
+      await _saveChatMessage({
+        room_id: room.id,
+        sender_user_id: loggedInUser.id,
+        content: prettifyAnswers(),
+      });
 
-    const booking = await _saveBooking({
-      booker_id: loggedInUser.id,
-      business_id: currentViewingBusiness.id,
-      service_event_id: serviceEvent.id,
-      service_event_start: serviceEventStart,
-      status: BOOKING_STATUS_PENDING,
-      chat_room_id: room.id,
-    });
+      const booking = await _saveBooking({
+        booker_id: loggedInUser.id,
+        business_id: currentViewingBusiness.id,
+        service_event_id: serviceEvent.id,
+        service_event_start: serviceEventStart,
+        status: BOOKING_STATUS_PENDING,
+        chat_room_id: room.id,
+      });
 
-    const questionAnswers: Partial<Tables<"question_answers">>[] = (
-      serviceEvent.services?.questions || []
-    ).map((q: Tables<"questions">) => ({
-      booking_id: booking.id,
-      question_id: q.id,
-      bool_answer: q.type === QUESTION_TYPE_BOOLEAN ? answers[q.id] : null,
-      text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
-    }));
-    await _saveQandA(questionAnswers);
-
-    router.refresh();
+      const questionAnswers: Partial<Tables<"question_answers">>[] = (
+        serviceEvent.services?.questions || []
+      ).map((q: Tables<"questions">) => ({
+        booking_id: booking.id,
+        question_id: q.id,
+        bool_answer: q.type === QUESTION_TYPE_BOOLEAN ? answers[q.id] : null,
+        text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
+      }));
+      await _saveQandA(questionAnswers);
+      router.refresh();
+    } catch (err) {
+      toast({
+        title: "It's on us",
+        description: "An error occurred. Please reload and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingBooking(false);
+    }
   };
 
   const renderQuestion = (q: Tables<"questions">) => {
@@ -199,9 +211,12 @@ export default function Questions({
           <Button
             className="float-right m-4"
             onClick={handleContinue}
-            disabled={(serviceEvent.services?.questions || [])
-              .map((q: Tables<"questions">) => isRequiredQuestionAnswered(q))
-              .includes(false)}
+            disabled={
+              isProcessingBooking ||
+              (serviceEvent.services?.questions || [])
+                .map((q: Tables<"questions">) => isRequiredQuestionAnswered(q))
+                .includes(false)
+            }
           >
             Continue
           </Button>

@@ -50,7 +50,6 @@ export default function SchedulePage({
             serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
             calendarClassName="lg:pr-14"
             onServiceEventClick={(event) => {
-              console.log("EVENT", event);
               if (!user) {
                 const returnPath = encodeURIComponent(
                   `/${params.businessHandle}/schedule${window.location.search}`,

@@ -12,7 +12,7 @@ type ChatInputProps = {
 export function ChatInput({ className, onSend }: ChatInputProps) {
   const [message, setMessage] = useState("");
   return (
-    <div className="fixed bottom-2 w-full max-w-4xl p-4">
+    <div className="w-full max-w-4xl p-4">
       <form
         className={cn("flex gap-x-2", className)}
         onSubmit={(e) => {

@@ -16,7 +16,7 @@ create table "public"."chat_messages" (
     "sender_user_id" uuid,
     "sender_business_id" uuid
 );
-
+alter publication supabase_realtime add table chat_messages;
 alter table "public"."chat_messages" enable row level security;
 
 -- NOTE: This enforces that only ONE user and ONE business can be in a room.

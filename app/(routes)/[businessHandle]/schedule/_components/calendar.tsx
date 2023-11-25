@@ -131,20 +131,22 @@ export default function ServiceEventCalendar({
         <p className="text- my-4 text-sm font-semibold">
           {format(selectedDay, "MMMM dd")}
         </p>
-        <Tabs
-          value={selectedCategory}
-          onValueChange={(selected) => handleCategorySelect(selected)}
-        >
-          <div className="flex max-w-full items-center overflow-x-scroll">
-            <TabsList className="relative overflow-visible">
-              {(data || []).map((sg) => (
-                <TabsTrigger key={sg.id} value={sg.id}>
-                  {sg.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-        </Tabs>
+        {(data || []).length > 0 && (
+          <Tabs
+            value={selectedCategory}
+            onValueChange={(selected) => handleCategorySelect(selected)}
+          >
+            <div className="flex max-w-full items-center overflow-x-scroll">
+              <TabsList className="relative overflow-visible">
+                {(data || []).map((sg) => (
+                  <TabsTrigger key={sg.id} value={sg.id}>
+                    {sg.title}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+          </Tabs>
+        )}
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
           {selectedDayServiceEvents.length > 0 ? (
             selectedDayServiceEvents.map((event) => (
