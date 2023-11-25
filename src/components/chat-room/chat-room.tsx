@@ -1,40 +1,69 @@
-import { PropsWithChildren, useState } from "react";
+import { PropsWithChildren, forwardRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import HeaderWithAction from "../shared/header-with-action";
 import { cn } from "@/src/utils";
 import { Send } from "lucide-react";
 
-type ChatInputProps = {
+type ChatContainerProps = {
   className?: string;
-  onSend: (message: string) => void;
 };
-export function ChatInput({ className, onSend }: ChatInputProps) {
-  const [message, setMessage] = useState("");
+export function ChatContainer({
+  className,
+  children,
+}: PropsWithChildren<ChatContainerProps>) {
   return (
-    <div className="w-full max-w-4xl p-4">
-      <form
-        className={cn("flex gap-x-2", className)}
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSend(message);
-          setMessage("");
-        }}
-      >
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="flex-grow rounded-lg p-2"
-          placeholder="Type a message"
-        />
-        <Button>
-          <Send className="h-4 w-4" />
-        </Button>
-      </form>
+    <div className={cn("flex max-h-full w-full flex-col", className)}>
+      {children}
     </div>
   );
 }
+
+type ChatHeaderProps = {
+  title: string;
+  subtitle: string;
+  onBack?: () => void;
+  actionBtn?: React.ReactNode;
+};
+export function ChatHeader({
+  title,
+  subtitle,
+  onBack,
+  actionBtn,
+}: ChatHeaderProps) {
+  return (
+    <HeaderWithAction
+      className="mb-4"
+      title={title}
+      subtitle={subtitle}
+      leftActionBtn={
+        onBack && (
+          <Button onClick={onBack} variant="ghost">
+            <ArrowLeftIcon className="h-5 w-5" />
+          </Button>
+        )
+      }
+      rightActionBtn={actionBtn}
+    />
+  );
+}
+
+export const ChatBody = forwardRef<
+  HTMLDivElement,
+  PropsWithChildren<{ className?: string }>
+>(({ children, className }: PropsWithChildren<{ className?: string }>, ref) => {
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "flex flex-1 flex-col overflow-y-scroll p-4 lg:px-8",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+});
 
 export type Message = {
   position: "top" | "middle" | "bottom";
@@ -81,43 +110,33 @@ export function ChatMessage({ chatMessage }: ChatMessageProps) {
   );
 }
 
-export function ChatBody({ children }: PropsWithChildren<{}>) {
-  return <div className="flex flex-col p-4">{children}</div>;
-}
-
-type ChatHeaderProps = {
-  title: string;
-  subtitle: string;
-  onBack?: () => void;
-  actionBtn?: React.ReactNode;
-};
-export function ChatHeader({
-  title,
-  subtitle,
-  onBack,
-  actionBtn,
-}: ChatHeaderProps) {
-  return (
-    <HeaderWithAction
-      className="mb-4"
-      title={title}
-      subtitle={subtitle}
-      leftActionBtn={
-        <Button onClick={onBack} variant="ghost">
-          <ArrowLeftIcon className="h-5 w-5" />
-        </Button>
-      }
-      rightActionBtn={actionBtn}
-    />
-  );
-}
-
-type ChatContainerProps = {
+type ChatInputProps = {
   className?: string;
+  onSend: (message: string) => void;
 };
-export function ChatContainer({
-  className,
-  children,
-}: PropsWithChildren<ChatContainerProps>) {
-  return <div className={cn("max-w-4xl", className)}>{children}</div>;
+export function ChatInput({ className, onSend }: ChatInputProps) {
+  const [message, setMessage] = useState("");
+  return (
+    <div className="w-full p-4 lg:px-8">
+      <form
+        className={cn("flex gap-x-2", className)}
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSend(message);
+          setMessage("");
+        }}
+      >
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="flex-grow rounded-lg p-2"
+          placeholder="Type a message"
+        />
+        <Button>
+          <Send className="h-4 w-4" />
+        </Button>
+      </form>
+    </div>
+  );
 }

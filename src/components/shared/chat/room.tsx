@@ -11,20 +11,25 @@ import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { chatMessagesToChatRoomMessages } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { isMobile } from "react-device-detect";
 
 type RoomProps = {
   room: Tables<"chat_rooms">;
   loggedInUser?: Tables<"users">;
   business?: Tables<"businesses">;
+  onBack?: () => void;
 };
 
 // Note: Either loggedInUser or business must be provided.
-export default function Room({ room, loggedInUser, business }: RoomProps) {
-  const router = useRouter();
+export default function Room({
+  room,
+  loggedInUser,
+  business,
+  onBack,
+}: RoomProps) {
   const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
-
+  const chatBodyRef = useRef<HTMLDivElement>(null);
   const { mutate: sendMessage } = useSupaMutation(saveChatMessage);
 
   useEffect(() => {
@@ -33,9 +38,12 @@ export default function Room({ room, loggedInUser, business }: RoomProps) {
         client: supaClientComponentClient(),
       });
       setMessages(messages);
+      if (chatBodyRef.current) {
+        chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+      }
     };
     fetchMessages();
-  }, [room.id]);
+  }, [room.id, chatBodyRef]);
 
   useEffect(() => {
     const client = supaClientComponentClient();
@@ -52,9 +60,9 @@ export default function Room({ room, loggedInUser, business }: RoomProps) {
         (payload) => {
           // TODO: add new user to cache if their profile doesn't exist
           setMessages((prevMessages) => [...prevMessages, payload.new]);
-          // if (messagesRef.current) {
-          //   messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-          // }
+          if (chatBodyRef.current) {
+            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+          }
         },
       )
       .subscribe();
@@ -85,12 +93,10 @@ export default function Room({ room, loggedInUser, business }: RoomProps) {
             ? `Created: ${new Date(room.created_at).toISOString()}`
             : ""
         }
-        onBack={() => {
-          router.back();
-        }}
+        onBack={isMobile ? onBack : undefined}
       />
 
-      <ChatBody>
+      <ChatBody ref={chatBodyRef}>
         {chatMessagesToChatRoomMessages(
           messages || [],
           loggedInUser?.id || business?.id || "",

@@ -39,5 +39,13 @@ export default async function ChatPage({
     supabaseOptions,
   );
 
-  return <Chat rooms={userChatRooms ?? []} loggedInUser={loggedInUser} />;
+  if (userChatRooms.length === 0) {
+    redirect(`/${params.businessHandle}/schedule`);
+  }
+
+  return (
+    <div className="m-auto h-full max-w-6xl p-4">
+      <Chat rooms={userChatRooms} loggedInUser={loggedInUser} />
+    </div>
+  );
 }

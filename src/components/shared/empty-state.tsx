@@ -7,7 +7,8 @@ type EmptyStateProps = {
   actionButtonText?: string;
   title: string;
   description?: string;
-  Icon: React.ComponentType<{ className?: string }>;
+  Icon?: React.ComponentType<{ className?: string }>;
+  icon?: React.ReactNode;
 };
 
 export default function EmptyState({
@@ -16,10 +17,12 @@ export default function EmptyState({
   title,
   description,
   Icon,
+  icon,
 }: EmptyStateProps) {
   return (
     <div className="text-center">
-      <Icon className="mx-auto h-12 w-12" aria-hidden="true" />
+      {Icon && <Icon className="mx-auto h-12 w-12" aria-hidden="true" />}
+      {icon && icon}
       <h3 className="mt-2 text-sm font-semibold text-gray-900">{title}</h3>
       {description && (
         <p className="mt-1 text-sm text-gray-500">{description}</p>

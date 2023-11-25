@@ -4,8 +4,8 @@ import { Tables } from "@/types/db.extension";
 import Room from "./room";
 import { cn } from "@/src/utils";
 import { useRouter, useSearchParams } from "next/navigation";
-import EmptyState from "../empty-state";
-import { ChatBubbleOvalLeftIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+import { isMobile } from "react-device-detect";
 
 export default function Chat({
   loggedInUser,
@@ -22,27 +22,22 @@ export default function Chat({
   const currentRoomId = searchParams.get("room_id") || rooms[0]?.id || null;
   const currentRoom = rooms.find((room) => room.id === currentRoomId);
 
+  const [showSideBar, setShowSideBar] = useState(false);
+
   const handleRoomSelect = (newRoomId: string) => {
     const newParams = new URLSearchParams(searchParams.toString());
     newParams.set("room_id", newRoomId);
     router.replace(`${window.location.pathname}?${newParams.toString()}`);
   };
 
-  if (rooms.length === 0) {
-    return (
-      <EmptyState
-        title={"You currently have no messages."}
-        description={
-          "Once a customer books an appointment with you, you will be able to chat with them here."
-        }
-        Icon={ChatBubbleOvalLeftIcon}
-      />
-    );
-  }
-
   return (
-    <div className="flex">
-      <div className="h-full">
+    <div className="flex max-h-full w-full overflow-hidden">
+      <div
+        className={cn(
+          "hidden max-h-full overflow-scroll sm:block lg:flex-[0.75]",
+          isMobile && showSideBar ? "block flex-1" : "hidden",
+        )}
+      >
         {rooms.map((room) => (
           <div
             key={room.id}
@@ -52,18 +47,25 @@ export default function Chat({
             )}
             onClick={() => {
               handleRoomSelect(room.id);
+              setShowSideBar(false);
             }}
           >
             {room.id} - {room.name}
           </div>
         ))}
       </div>
-      <div>
+
+      <div
+        className={cn("flex-1", isMobile && showSideBar ? "hidden" : "block")}
+      >
         {currentRoom ? (
           <Room
             room={currentRoom}
             loggedInUser={loggedInUser}
             business={business}
+            onBack={() => {
+              setShowSideBar(true);
+            }}
           />
         ) : (
           <div>Room not found.</div>
