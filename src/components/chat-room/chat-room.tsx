@@ -48,7 +48,7 @@ export function ChatHeader({
   );
 }
 
-export const ChatBody = forwardRef<
+const ChatBody = forwardRef<
   HTMLDivElement,
   PropsWithChildren<{ className?: string }>
 >(({ children, className }: PropsWithChildren<{ className?: string }>, ref) => {
@@ -64,6 +64,8 @@ export const ChatBody = forwardRef<
     </div>
   );
 });
+ChatBody.displayName = "ChatBody";
+export ChatBody;
 
 export type Message = {
   position: "top" | "middle" | "bottom";
