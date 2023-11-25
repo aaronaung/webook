@@ -65,7 +65,7 @@ const ChatBody = forwardRef<
   );
 });
 ChatBody.displayName = "ChatBody";
-export ChatBody;
+export { ChatBody };
 
 export type Message = {
   position: "top" | "middle" | "bottom";
