@@ -6,14 +6,16 @@ import {
   ChatInput,
   ChatMessage,
 } from "@/src/components/chat-room/chat-room";
+import { getBookingByChatRoom, saveBooking } from "@/src/data/booking";
 import { listChatMessagesInRoom, saveChatMessage } from "@/src/data/chat";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
-import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { chatMessagesToChatRoomMessages } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { flushSync } from "react-dom";
+import { BOOKING_STATUS_LABELS, BookingStatus } from "@/src/consts/booking";
 
 type RoomProps = {
   room: Tables<"chat_rooms">;
@@ -23,6 +25,8 @@ type RoomProps = {
 };
 
 // Note: Either loggedInUser or business must be provided.
+// If business is provided then the chat room is a business chat room.
+// If loggedInUser is provided then the chat room is a user chat room.
 export default function Room({
   room,
   loggedInUser,
@@ -32,6 +36,13 @@ export default function Room({
   const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const { mutate: sendMessage } = useSupaMutation(saveChatMessage);
+  const { mutate: _saveBooking } = useSupaMutation(saveBooking, {
+    invalidate: [["getBookingByChatRoom", room.id]],
+  });
+  const { data: booking } = useSupaQuery(getBookingByChatRoom, room.id, {
+    queryKey: ["getBookingByChatRoom", room.id],
+  });
+  const [bookingStatus, setBookingStatus] = useState(booking?.status);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -87,6 +98,24 @@ export default function Room({
     });
   };
 
+  const handleBookingStatusChange = (newStatus: BookingStatus) => {
+    setBookingStatus(newStatus);
+    if (booking && business) {
+      _saveBooking({
+        ...booking,
+        status: newStatus,
+      });
+
+      sendMessage({
+        room_id: room.id,
+        content: `${business.title} updated the booking status from '${
+          BOOKING_STATUS_LABELS[booking.status as BookingStatus]
+        }' to '${BOOKING_STATUS_LABELS[newStatus]}'.`,
+        ...(business ? { sender_business_id: business.id } : {}),
+      });
+    }
+  };
+
   return (
     <ChatContainer>
       <ChatHeader
@@ -108,7 +137,19 @@ export default function Room({
         ))}
       </ChatBody>
 
-      <ChatInput onSend={handleNewMessage} />
+      <div className="flex items-center ">
+        <ChatInput
+          onSend={handleNewMessage}
+          bookingStatus={(bookingStatus || booking?.status) as BookingStatus}
+          onBookingStatusChange={
+            business
+              ? (newStatus) => {
+                  handleBookingStatusChange(newStatus);
+                }
+              : undefined
+          }
+        />
+      </div>
     </ChatContainer>
   );
 }

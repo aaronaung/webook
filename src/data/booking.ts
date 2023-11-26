@@ -55,3 +55,17 @@ export const getBookingForServiceEventByUser = async (
       .maybeSingle(),
   );
 };
+
+export const getBookingByChatRoom = async (
+  chatRoomId: string,
+  { client }: SupabaseOptions,
+) => {
+  return throwOrData(
+    client
+      .from("bookings")
+      .select()
+      .eq("chat_room_id", chatRoomId)
+      .limit(1)
+      .maybeSingle(),
+  );
+};

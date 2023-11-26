@@ -4,6 +4,14 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import HeaderWithAction from "../shared/header-with-action";
 import { cn } from "@/src/utils";
 import { Send } from "lucide-react";
+import {
+  BOOKING_STATUS_CANCELED,
+  BOOKING_STATUS_CONFIRMED,
+  BOOKING_STATUS_LABELS,
+  BOOKING_STATUS_PENDING,
+  BookingStatus,
+} from "@/src/consts/booking";
+import InputSelect from "../ui/input/select";
 
 type ChatContainerProps = {
   className?: string;
@@ -114,14 +122,34 @@ export function ChatMessage({ chatMessage }: ChatMessageProps) {
 
 type ChatInputProps = {
   className?: string;
+  bookingStatus?: BookingStatus;
+  onBookingStatusChange?: (newStatus: BookingStatus) => void;
   onSend: (message: string) => void;
 };
-export function ChatInput({ className, onSend }: ChatInputProps) {
+export function ChatInput({
+  className,
+  onSend,
+  bookingStatus,
+  onBookingStatusChange,
+}: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const getBookingStatusIcon = (status: BookingStatus) => {
+    switch (status) {
+      case BOOKING_STATUS_CONFIRMED:
+        return "✅";
+      case BOOKING_STATUS_CANCELED:
+        return "❌";
+      case BOOKING_STATUS_PENDING:
+        return "🕒";
+      default:
+        return "🕒";
+    }
+  };
+
   return (
     <div className="w-full p-4 lg:px-8">
       <form
-        className={cn("flex gap-x-2", className)}
+        className={cn("flex items-center gap-x-2", className)}
         onSubmit={(e) => {
           e.preventDefault();
           onSend(message);
@@ -138,6 +166,22 @@ export function ChatInput({ className, onSend }: ChatInputProps) {
         <Button>
           <Send className="h-4 w-4" />
         </Button>
+        {bookingStatus && onBookingStatusChange && (
+          <InputSelect
+            selectLabel="Booking Status"
+            className="w-36"
+            value={bookingStatus}
+            options={Object.keys(BOOKING_STATUS_LABELS).map((key) => ({
+              label: `${getBookingStatusIcon(key as BookingStatus)}  ${
+                BOOKING_STATUS_LABELS[key as BookingStatus]
+              }`,
+              value: key,
+            }))}
+            onChange={(newStatus) => {
+              onBookingStatusChange?.(newStatus);
+            }}
+          />
+        )}
       </form>
     </div>
   );

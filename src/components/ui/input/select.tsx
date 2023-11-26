@@ -12,6 +12,7 @@ import {
 } from "../select";
 import { cn } from "@/src/utils";
 import _ from "lodash";
+import { SelectLabel, SelectSeparator } from "@radix-ui/react-select";
 
 type InputSelectOption = {
   label: string;
@@ -20,10 +21,11 @@ type InputSelectOption = {
 
 type InputSelectProps = ControlledRhfInputProps & {
   options: InputSelectOption[];
+  selectLabel?: string;
   defaultValue?: any;
 };
 export default function InputSelect(props: InputSelectProps) {
-  const input = ({ field }: { field: ControllerRenderProps }) => (
+  const input = ({ field }: { field?: ControllerRenderProps }) => (
     <InputDecorator {...props}>
       <Select
         {..._.omit(field, ["ref"])} // passing ref throws a warning.
@@ -32,7 +34,7 @@ export default function InputSelect(props: InputSelectProps) {
           ? { onValueChange: props.onChange }
           : {
               onValueChange: (value) => {
-                field.onChange(value);
+                field?.onChange(value);
               },
             })}
         {...(props.defaultValue ? { defaultValue: props.defaultValue } : {})}
@@ -41,13 +43,21 @@ export default function InputSelect(props: InputSelectProps) {
         <SelectTrigger
           className={cn(
             "mt-1.5 w-full",
-            !field.value && "text-muted-foreground",
+            !field?.value && "text-muted-foreground",
           )}
         >
           <SelectValue placeholder={props.inputProps?.placeholder} />
         </SelectTrigger>
         <SelectContent className="max-h-[250px] overflow-scroll">
           <SelectGroup>
+            {props.selectLabel && (
+              <>
+                <SelectLabel className="ml-2 text-sm text-muted-foreground">
+                  {props.selectLabel}
+                </SelectLabel>
+                <SelectSeparator className="my-3" />
+              </>
+            )}
             {props.options.map((option) => (
               <SelectItem
                 className="cursor-pointer"
@@ -62,6 +72,10 @@ export default function InputSelect(props: InputSelectProps) {
       </Select>
     </InputDecorator>
   );
+
+  if (!props.control) {
+    return input({});
+  }
 
   return (
     <Controller

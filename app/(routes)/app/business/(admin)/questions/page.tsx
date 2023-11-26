@@ -88,11 +88,7 @@ export default function Questions() {
     <div>
       <p className="mb-4 text-sm text-muted-foreground">
         Set up questions to ask your users before they book a service. Questions
-        can be attached to one or more services. Go to{" "}
-        <a href="/app/business/services" className="text-primary underline">
-          Services
-        </a>{" "}
-        to start adding questions to your services.
+        can be attached to one or more services.
       </p>
       {(questions || []).length === 0 ? (
         <EmptyState

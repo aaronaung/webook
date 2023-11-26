@@ -1,8 +1,10 @@
 export const BOOKING_STATUS_PENDING = "PENDING";
 export const BOOKING_STATUS_CONFIRMED = "CONFIRMED";
-export const BOOKING_STATUS_CANCELLED = "CANCELLED";
-export const BOOKING_STATUS_LABELS: { [k: string]: string } = {
+export const BOOKING_STATUS_CANCELED = "CANCELED";
+export const BOOKING_STATUS_LABELS = {
   [BOOKING_STATUS_PENDING]: "Pending",
   [BOOKING_STATUS_CONFIRMED]: "Confirmed",
-  [BOOKING_STATUS_CANCELLED]: "Cancelled",
+  [BOOKING_STATUS_CANCELED]: "Canceled",
 };
+
+export type BookingStatus = keyof typeof BOOKING_STATUS_LABELS;

@@ -61,7 +61,10 @@ export default function Chat({
       </div>
 
       <div
-        className={cn("flex-1", isMobile && showSideBar ? "hidden" : "block")}
+        className={cn(
+          "flex-1",
+          isMobile && showSideBar ? "hidden" : "block w-full",
+        )}
       >
         {currentRoom ? (
           <Room
