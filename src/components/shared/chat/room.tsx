@@ -69,7 +69,6 @@ export default function Room({
 
     // todo: subscribe to new messages
     return () => {
-      console.log("tearing down", room.id);
       // todo: unsubscribe from new messages
       client.removeChannel(chatMessagesChannel);
     };

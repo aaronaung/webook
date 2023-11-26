@@ -13,7 +13,7 @@ export const getStaffs = async (
       .from("staffs")
       .select("*")
       .eq("business_id", businessId)
-      .order("created_at", { ascending: true }),
+      .order("created_at", { ascending: false }),
   );
 };
 

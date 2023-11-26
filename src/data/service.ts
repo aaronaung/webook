@@ -69,7 +69,13 @@ export const saveService = async (
   {
     service,
     questionIds,
-  }: { service: Partial<Tables<"services">>; questionIds?: string[] },
+  }: {
+    service: Partial<Tables<"services">>;
+    questionIds?: {
+      added: string[];
+      removed: string[];
+    };
+  },
   { client }: SupabaseOptions,
 ) => {
   const saved = await throwOrData(
@@ -100,7 +106,10 @@ export const saveServiceEvent = async (
     deleteLiveStream,
   }: {
     serviceEvent: Partial<Tables<"service_events">>;
-    staffIds?: string[];
+    staffIds: {
+      added: string[];
+      removed: string[];
+    };
     createLiveStreamRequest?: CreateLiveStreamMeetingRequest;
     deleteLiveStream?: boolean;
   },
@@ -113,9 +122,8 @@ export const saveServiceEvent = async (
       .select("id"),
   );
 
-  if (staffIds) {
-    await saveServiceEventStaff(saved[0].id, staffIds, { client });
-  }
+  await saveServiceEventStaff(saved[0].id, staffIds, { client });
+
   if (createLiveStreamRequest) {
     await createLiveStreamForServiceEvent(
       saved[0].id,
@@ -131,47 +139,64 @@ export const saveServiceEvent = async (
   return saved;
 };
 
-// todo: This will delete all service event staff for the given service event id, and then upsert the new ones.
 export const saveServiceEventStaff = async (
-  serviceId: string,
-  staffIds: string[],
+  serviceEventId: string,
+  staffIds: {
+    added: string[];
+    removed: string[];
+  },
   { client }: SupabaseOptions,
 ) => {
-  await throwOrData(
-    client
-      .from("service_events_staffs")
-      .delete()
-      .eq("service_event_id", serviceId),
-  );
+  if (staffIds.removed.length > 0) {
+    await throwOrData(
+      client
+        .from("service_events_staffs")
+        .delete()
+        .eq("service_event_id", serviceEventId)
+        .in("staff_id", staffIds.removed),
+    );
+  }
 
-  return throwOrData(
-    client.from("service_events_staffs").upsert(
-      staffIds.map((staffId) => ({
-        service_event_id: serviceId,
-        staff_id: staffId,
-      })),
-    ),
-  );
+  if (staffIds.added.length > 0) {
+    await throwOrData(
+      client.from("service_events_staffs").upsert(
+        staffIds.added.map((staffId) => ({
+          service_event_id: serviceEventId,
+          staff_id: staffId,
+        })),
+      ),
+    );
+  }
 };
 
-// This will delete all service questions for the given service id, and then upsert the new ones.
 export const saveServiceQuestion = async (
   serviceId: string,
-  questionIds: string[],
+  questionIds: {
+    added: string[];
+    removed: string[];
+  },
   { client }: SupabaseOptions,
 ) => {
-  await throwOrData(
-    client.from("services_questions").delete().eq("service_id", serviceId),
-  );
+  if (questionIds.removed.length > 0) {
+    await throwOrData(
+      client
+        .from("services_questions")
+        .delete()
+        .eq("service_id", serviceId)
+        .in("question_id", questionIds.removed),
+    );
+  }
 
-  return throwOrData(
-    client.from("services_questions").upsert(
-      questionIds.map((questionId) => ({
-        service_id: serviceId,
-        question_id: questionId,
-      })),
-    ),
-  );
+  if (questionIds.added.length > 0) {
+    await throwOrData(
+      client.from("services_questions").upsert(
+        questionIds.added.map((questionId) => ({
+          service_id: serviceId,
+          question_id: questionId,
+        })),
+      ),
+    );
+  }
 };
 
 export const deleteServiceEvent = async (

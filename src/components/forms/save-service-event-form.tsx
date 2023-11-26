@@ -26,6 +26,7 @@ import { deleteServiceEvent, saveServiceEvent } from "@/src/data/service";
 import { addMilliseconds } from "date-fns";
 import InputSelect from "../ui/input/select";
 import EmptyState from "../shared/empty-state";
+import { strListDiff } from "@/src/utils";
 
 const formSchema = z.object({
   service_id: z.string(),
@@ -141,6 +142,11 @@ export default function SaveServiceEventForm({
     const liveStreamStatusChanged =
       initialLiveStreamEnabled !== liveStreamEnabled;
 
+    const staffIdChanges = strListDiff(
+      defaultValues?.staff_ids || [],
+      formValues.staff_ids || [],
+    );
+
     _saveServiceEvent({
       serviceEvent: {
         ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if original  exists, then we are editing an existing service  (not creating a new one)
@@ -156,7 +162,7 @@ export default function SaveServiceEventForm({
           ? formValues.recurrence_count
           : null,
       },
-      staffIds: formValues.staff_ids,
+      staffIds: staffIdChanges,
       createLiveStreamRequest:
         liveStreamStatusChanged && liveStreamEnabled && selectedService
           ? {

@@ -116,6 +116,15 @@ export const generatePassword = (
     .map((x) => characters[x % characters.length])
     .join("");
 
+export const strListDiff = (originalList: string[], newList: string[]) => {
+  const added = newList.filter((id) => !originalList.find((i) => i === id));
+  const removed = originalList.filter((id) => !newList.find((i) => i === id));
+  return {
+    added,
+    removed,
+  };
+};
+
 export const chatMessagesToChatRoomMessages = (
   messages: Partial<Tables<"chat_messages">>[],
   selfId: string,

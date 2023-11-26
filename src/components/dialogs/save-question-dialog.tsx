@@ -7,13 +7,16 @@ import {
 import SaveQuestionForm, {
   SaveQuestionFormSchemaType,
 } from "../forms/save-question-form";
+import { Service } from "@/types";
 
 export function SaveQuestionDialog({
   initFormValues,
+  availableServices,
   onClose,
   isOpen,
 }: {
   initFormValues?: SaveQuestionFormSchemaType;
+  availableServices: Service[];
   onClose: () => void;
   isOpen: boolean;
 }) {
@@ -25,6 +28,7 @@ export function SaveQuestionDialog({
         </DialogHeader>
         <SaveQuestionForm
           defaultValues={initFormValues}
+          availableServices={availableServices}
           onSubmitted={onClose}
         />
       </DialogContent>

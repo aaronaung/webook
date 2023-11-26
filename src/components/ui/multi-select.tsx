@@ -53,7 +53,6 @@ export function FancyMultiSelect({
         if (e.key === "Delete" || e.key === "Backspace") {
           if (input.value === "") {
             const newSelected = [...selected];
-            console.log("new selected", newSelected);
             newSelected.pop();
             onSelectChange(newSelected);
           }

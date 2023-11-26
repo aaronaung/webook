@@ -23,6 +23,7 @@ export default async function QuestionsPage({
       )}`,
     );
   }
+  console.log("HERE");
 
   const business = await getBusinessByHandle(
     params.businessHandle,
@@ -32,7 +33,11 @@ export default async function QuestionsPage({
     console.error(`Business not found for handle: ${params.businessHandle}`);
     redirect("/");
   }
+  console.log("buisness");
 
+  if (!searchParams.event_id || !searchParams.event_start) {
+    redirect("/");
+  }
   const existingBooking = await getBookingForServiceEventByUser(
     {
       serviceEventStart: searchParams.event_start,

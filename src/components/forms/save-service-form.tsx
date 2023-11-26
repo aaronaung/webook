@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { saveService } from "@/src/data/service";
+import { strListDiff } from "@/src/utils";
 
 const formSchema = z.object({
   title: z
@@ -89,17 +90,10 @@ export default function SaveServiceForm({
   );
 
   const onFormSuccess = (formValues: SaveServiceFormSchemaType) => {
-    let questionsChanged = false;
-    if (defaultValues?.question_ids?.length !== selectedQuestions.length) {
-      questionsChanged = true;
-    } else {
-      for (const q in selectedQuestions) {
-        if (!defaultValues?.question_ids.some((id) => id === q)) {
-          questionsChanged = true;
-          break;
-        }
-      }
-    }
+    const questionChanges = strListDiff(
+      defaultValues?.question_ids ?? [],
+      selectedQuestions,
+    );
 
     _saveService({
       service: {
@@ -107,7 +101,7 @@ export default function SaveServiceForm({
         ...formValues,
         service_category_id: serviceCategoryId,
       },
-      questionIds: questionsChanged ? selectedQuestions : undefined, // if no questions were changed, then we don't need to send the questionIds (link table won't be updated)
+      questionIds: questionChanges,
     });
   };
 

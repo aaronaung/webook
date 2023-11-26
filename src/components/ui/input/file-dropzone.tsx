@@ -13,9 +13,6 @@ export default function FileDropzone({
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
     useDropzone({
       onDrop,
-      onDropAccepted: () => {
-        console.log("hello onDropAccepted");
-      },
       ...options,
     });
 

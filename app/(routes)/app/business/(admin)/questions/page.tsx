@@ -8,6 +8,7 @@ import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { deleteQuestion, getQuestions } from "@/src/data/question";
+import { getServiceCategoriesWithServices } from "@/src/data/service";
 import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
@@ -16,18 +17,31 @@ import { useCallback, useState } from "react";
 
 export default function Questions() {
   const { currentBusiness } = useCurrentBusinessContext();
-  const { data: questions, isLoading } = useSupaQuery(
+  const { data: questions, isLoading: isLoadingQuestions } = useSupaQuery(
     getQuestions,
     currentBusiness.id,
     { queryKey: ["getQuestions", currentBusiness.id] },
   );
 
+  const { data: servicesWithCategories, isLoading: isLoadingServices } =
+    useSupaQuery(getServiceCategoriesWithServices, currentBusiness.id, {
+      queryKey: ["getServiceCategoriesWithServices", currentBusiness.id],
+    });
+
+  const services = (servicesWithCategories || [])
+    .map((sc) => sc.services)
+    .flat();
+
   const { mutate: _deleteQuestion, isPending: deleting } = useSupaMutation(
     deleteQuestion,
     {
-      invalidate: [["getQuestions", currentBusiness.id]],
+      invalidate: [
+        ["getQuestions", currentBusiness.id],
+        ["getServiceCategoriesWithServices", currentBusiness.id],
+      ],
     },
   );
+
   const [qDialogState, setQDialogState] = useState<{
     isOpen: boolean;
     initFormValues?: SaveQuestionFormSchemaType;
@@ -46,6 +60,11 @@ export default function Questions() {
               question: row.original.question,
               type: row.original.type,
               required: row.original.required ?? false,
+              service_ids: services
+                .filter((s) =>
+                  s.questions.some((q) => q.id === row.original.id),
+                )
+                .map((s) => s.id),
             },
           });
           break;
@@ -58,10 +77,10 @@ export default function Questions() {
           console.error("Unknown row action");
       }
     },
-    [],
+    [services],
   );
 
-  if (isLoading) {
+  if (isLoadingQuestions || isLoadingServices) {
     return <>Loading...</>;
   }
 
@@ -103,6 +122,7 @@ export default function Questions() {
         </div>
       )}
       <SaveQuestionDialog
+        availableServices={services}
         isOpen={qDialogState.isOpen}
         initFormValues={qDialogState.initFormValues}
         onClose={() => {

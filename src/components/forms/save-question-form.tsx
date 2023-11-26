@@ -13,11 +13,16 @@ import {
 import InputSwitch from "../ui/input/switch";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { saveQuestion } from "@/src/data/question";
+import InputMultiSelect from "../ui/input/multi-select";
+import { Service } from "@/types";
+import _ from "lodash";
+import { strListDiff } from "@/src/utils";
 
 const formSchema = z.object({
   question: z.string().min(1, { message: "Question is required." }),
   type: z.string(),
   required: z.boolean(),
+  service_ids: z.array(z.string()).optional(),
 });
 
 export type SaveQuestionFormSchemaType = z.infer<typeof formSchema> & {
@@ -26,11 +31,13 @@ export type SaveQuestionFormSchemaType = z.infer<typeof formSchema> & {
 
 type SaveQuestionFormProps = {
   defaultValues?: SaveQuestionFormSchemaType;
+  availableServices: Service[];
   onSubmitted: () => void;
 };
 
 export default function SaveQuestionForm({
   defaultValues,
+  availableServices,
   onSubmitted,
 }: SaveQuestionFormProps) {
   const {
@@ -52,18 +59,29 @@ export default function SaveQuestionForm({
   });
   const { currentBusiness } = useCurrentBusinessContext();
   const { mutate: _saveQuestion, isPending } = useSupaMutation(saveQuestion, {
-    invalidate: [["getQuestions", currentBusiness.id]],
+    invalidate: [
+      ["getQuestions", currentBusiness.id],
+      ["getServiceCategoriesWithServices", currentBusiness.id],
+    ],
     onSettled: () => {
       onSubmitted();
     },
   });
 
   const handleOnFormSuccess = (formValues: SaveQuestionFormSchemaType) => {
+    const serviceChanges = strListDiff(
+      defaultValues?.service_ids || [],
+      formValues.service_ids || [],
+    );
+
     _saveQuestion({
-      ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
-      ...formValues,
-      type: formValues.type,
-      business_id: currentBusiness.id,
+      serviceIds: serviceChanges,
+      question: {
+        ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service category (not creating a new one)
+        ..._.omit(formValues, "service_ids"),
+        type: formValues.type,
+        business_id: currentBusiness.id,
+      },
     });
   };
 
@@ -94,6 +112,21 @@ export default function SaveQuestionForm({
         label="Required"
         description="Turning this on will require customers to answer this question before booking."
       />
+      {availableServices.length > 0 && (
+        <InputMultiSelect
+          rhfKey="service_ids"
+          options={(availableServices || []).map((s) => ({
+            label: s.title,
+            value: s.id,
+          }))}
+          control={control}
+          error={errors.service_ids?.message}
+          label="Services"
+          inputProps={{
+            placeholder: "Select services to attach question to",
+          }}
+        />
+      )}
       <Button className="float-right mt-6" type="submit" disabled={isPending}>
         {isPending ? <Loader2 className="animate-spin" /> : "Save"}
       </Button>

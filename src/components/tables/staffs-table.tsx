@@ -83,7 +83,7 @@ export default function StaffsTable({ data, onRowAction }: StaffTableProp) {
         },
       }),
     ],
-    [],
+    [onRowAction],
   );
 
   return (

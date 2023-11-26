@@ -117,7 +117,7 @@ export default function ServicesTable({
         },
       }),
     ],
-    [],
+    [onRowAction],
   );
 
   return (

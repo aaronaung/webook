@@ -61,7 +61,7 @@ export default function QuestionsTable({
         },
       }),
     ],
-    [],
+    [onRowAction],
   );
 
   return (
