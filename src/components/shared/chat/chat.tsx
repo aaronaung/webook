@@ -6,6 +6,7 @@ import { cn } from "@/src/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { isMobile } from "react-device-detect";
+import HeaderWithAction from "../header-with-action";
 
 export default function Chat({
   loggedInUser,
@@ -38,19 +39,23 @@ export default function Chat({
           isMobile && showSideBar ? "block flex-1" : "hidden",
         )}
       >
+        <HeaderWithAction
+          title={"Chat rooms"}
+          subtitle={"Select a chat room to view messages."}
+        />
         {rooms.map((room) => (
           <div
             key={room.id}
             className={cn(
-              room.id === searchParams.get("room_id") && "bg-gray-200",
-              "cursor-pointer border-b-secondary-foreground p-2",
+              room.id === currentRoomId && "bg-secondary",
+              "mt-4 cursor-pointer rounded-lg border-b-secondary-foreground p-2",
             )}
             onClick={() => {
               handleRoomSelect(room.id);
               setShowSideBar(false);
             }}
           >
-            {room.id} - {room.name}
+            {room.name}
           </div>
         ))}
       </div>

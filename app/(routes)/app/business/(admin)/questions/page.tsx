@@ -77,7 +77,7 @@ export default function Questions() {
           console.error("Unknown row action");
       }
     },
-    [services],
+    [_deleteQuestion, deleting, qDialogState.isOpen, services],
   );
 
   if (isLoadingQuestions || isLoadingServices) {

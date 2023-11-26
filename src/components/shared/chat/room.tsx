@@ -13,6 +13,7 @@ import { chatMessagesToChatRoomMessages } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
+import { flushSync } from "react-dom";
 
 type RoomProps = {
   room: Tables<"chat_rooms">;
@@ -37,13 +38,16 @@ export default function Room({
       const messages = await listChatMessagesInRoom(room.id, {
         client: supaClientComponentClient(),
       });
-      setMessages(messages);
+      // We need to flush the dom here, since the messages changes the height of the chat body.
+      flushSync(() => {
+        setMessages(messages);
+      });
       if (chatBodyRef.current) {
         chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
       }
     };
     fetchMessages();
-  }, [room.id, chatBodyRef]);
+  }, [room.id]);
 
   useEffect(() => {
     const client = supaClientComponentClient();
