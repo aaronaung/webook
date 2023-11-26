@@ -106,7 +106,7 @@ export const saveServiceEvent = async (
     deleteLiveStream,
   }: {
     serviceEvent: Partial<Tables<"service_events">>;
-    staffIds: {
+    staffIds?: {
       added: string[];
       removed: string[];
     };
@@ -122,7 +122,9 @@ export const saveServiceEvent = async (
       .select("id"),
   );
 
-  await saveServiceEventStaff(saved[0].id, staffIds, { client });
+  if (staffIds) {
+    await saveServiceEventStaff(saved[0].id, staffIds, { client });
+  }
 
   if (createLiveStreamRequest) {
     await createLiveStreamForServiceEvent(
