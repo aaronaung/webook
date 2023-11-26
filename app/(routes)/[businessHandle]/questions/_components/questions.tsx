@@ -42,8 +42,10 @@ export default function Questions({
   const router = useRouter();
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
-  const isRequiredQuestionAnswered = (q: Tables<"questions">) =>
-    q.required && answers[q.id] !== undefined && answers[q.id] !== "";
+  const isRequiredQuestionAnswered = (q: Tables<"questions">) => {
+    console.log(q, answers);
+    return q.required && answers[q.id] !== undefined && answers[q.id] !== "";
+  };
 
   const { mutateAsync: _saveBooking } = useSupaMutation(saveBooking);
   const { mutateAsync: _saveQandA } = useSupaMutation(saveQuestionAnswers);
@@ -71,7 +73,7 @@ export default function Questions({
 
   const handleContinue = async () => {
     for (const q of serviceEvent.services?.questions || []) {
-      if (!isRequiredQuestionAnswered(q)) {
+      if (q.required && !isRequiredQuestionAnswered(q)) {
         return;
       }
     }
@@ -164,15 +166,15 @@ export default function Questions({
         answerBox = <></>;
     }
     return (
-      <>
+      <div key={q.id}>
         <p className="mb-2 text-sm">{q.question}</p>
         {answerBox}
-        {!isRequiredQuestionAnswered(q) && (
+        {q.required && !isRequiredQuestionAnswered(q) && (
           <p className="mt-2 text-sm text-destructive">
             You must answer this question before proceeding.
           </p>
         )}
-      </>
+      </div>
     );
   };
 
@@ -214,8 +216,11 @@ export default function Questions({
             disabled={
               isProcessingBooking ||
               (serviceEvent.services?.questions || [])
-                .map((q: Tables<"questions">) => isRequiredQuestionAnswered(q))
-                .includes(false)
+                .map(
+                  (q: Tables<"questions">) =>
+                    q.required && !isRequiredQuestionAnswered(q),
+                )
+                .includes(true)
             }
           >
             Continue
