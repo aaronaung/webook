@@ -42,6 +42,7 @@ export default async function ChatPage({
   if (userChatRooms.length === 0) {
     redirect(`/${params.businessHandle}/schedule`);
   }
+  console.log(userChatRooms);
 
   return (
     <div className="m-auto h-full max-w-6xl p-4">

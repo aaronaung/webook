@@ -1,13 +1,23 @@
 import {
   CalendarIcon,
   ChatBubbleOvalLeftIcon,
+  ClockIcon,
   QuestionMarkCircleIcon,
   Square3Stack3DIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 
 export const navigation = [
-  { name: "Schedule", icon: CalendarIcon, href: "/app/business/schedule" },
+  {
+    name: "Availability",
+    icon: ClockIcon,
+    href: "/app/business/availability",
+  },
+  {
+    name: "Scheduled Events",
+    icon: CalendarIcon,
+    href: "/app/business/schedule",
+  },
   {
     name: "Services",
     icon: Square3Stack3DIcon,

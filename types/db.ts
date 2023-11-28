@@ -9,6 +9,108 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      availability_schedules: {
+        Row: {
+          business_id: string
+          created_at: string
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          business_id: string
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_schedules_business_id_fkey"
+            columns: ["business_id"]
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      availability_slot_overrides: {
+        Row: {
+          availability_schedule_id: string
+          created_at: string
+          date: string
+          end: number
+          id: number
+          start: number
+        }
+        Insert: {
+          availability_schedule_id: string
+          created_at?: string
+          date: string
+          end: number
+          id?: number
+          start: number
+        }
+        Update: {
+          availability_schedule_id?: string
+          created_at?: string
+          date?: string
+          end?: number
+          id?: number
+          start?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_slot_overrides_availability_schedule_id_fkey"
+            columns: ["availability_schedule_id"]
+            referencedRelation: "availability_schedules"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      availability_weekly_slots: {
+        Row: {
+          availability_schedule_id: string
+          created_at: string
+          day: string
+          end: number
+          id: string
+          start: number
+          updated_at: string | null
+        }
+        Insert: {
+          availability_schedule_id: string
+          created_at?: string
+          day: string
+          end: number
+          id?: string
+          start: number
+          updated_at?: string | null
+        }
+        Update: {
+          availability_schedule_id?: string
+          created_at?: string
+          day?: string
+          end?: number
+          id?: string
+          start?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_weekly_slots_availability_schedule_id_fkey"
+            columns: ["availability_schedule_id"]
+            referencedRelation: "availability_schedules"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       bookings: {
         Row: {
           booker_id: string
@@ -512,6 +614,34 @@ export interface Database {
           }
         ]
       }
+      services_availability_schedules: {
+        Row: {
+          availability_schedule_id: string
+          service_id: string
+        }
+        Insert: {
+          availability_schedule_id: string
+          service_id: string
+        }
+        Update: {
+          availability_schedule_id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_availability_schedules_availability_schedule_id_fkey"
+            columns: ["availability_schedule_id"]
+            referencedRelation: "availability_schedules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_availability_schedules_service_id_fkey"
+            columns: ["service_id"]
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       services_questions: {
         Row: {
           question_id: string
@@ -582,6 +712,7 @@ export interface Database {
       }
       users: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string | null
           email_verified_at: string | null
@@ -591,6 +722,7 @@ export interface Database {
           updated_at: string | null
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           email_verified_at?: string | null
@@ -600,6 +732,7 @@ export interface Database {
           updated_at?: string | null
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string | null
           email_verified_at?: string | null
