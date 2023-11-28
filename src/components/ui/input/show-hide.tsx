@@ -32,7 +32,7 @@ export default function InputShowHide(props: InputShowHideProps) {
           type={obscured ? "password" : "text"}
         />
         <div
-          className="w-6"
+          className="w-6 cursor-pointer"
           onClick={() => {
             setObscured(!obscured);
           }}

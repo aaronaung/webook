@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { supaClientComponentClient } from "./data/clients/browser";
 import crypto from "crypto";
 import { BUCKETS, STORAGE_DIR_PATHS } from "./consts/storage";
-import { Message } from "./components/chat-room/chat-room";
+import { Message } from "./components/ui/chat/chat";
 import { Tables } from "@/types/db.extension";
 
 export function cn(...inputs: ClassValue[]) {

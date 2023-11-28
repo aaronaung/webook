@@ -93,6 +93,7 @@ create table "public"."users" (
     "email" text,
     "first_name" text,
     "last_name" text,
+    "avatar_url" text,
     "email_verified_at" timestamp with time zone
 );
 
@@ -170,8 +171,8 @@ using (true);
 create function public.handle_new_user() 
 returns trigger as $$
 begin
-  insert into public.users (id) -- TODO (IMPORTANT): Collect other fields.
-  values (new.id);
+  insert into public.users (id, email) 
+  values (new.id, new.email);
   return new;
 end;
 $$ language plpgsql security definer;

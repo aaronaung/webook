@@ -118,13 +118,16 @@ export const listChatRoomsByBusinessParticipant = async (
   const queryResult = await throwOrData(
     client
       .from("chat_room_participants")
-      .select("chat_rooms(*)")
+      .select("chat_rooms(*), users(*)")
       .eq("business_id", businessId)
       .order("created_at", { ascending: false }),
   );
   return queryResult
     .filter((r) => r.chat_rooms !== null)
-    .map((r) => r.chat_rooms) as Tables<"chat_rooms">[];
+    .map((r) => ({
+      ...r.chat_rooms,
+      booker: { ...r.users },
+    })) as (Tables<"chat_rooms"> & { booker: Tables<"users"> })[];
 };
 
 export const deleteChatRoom = async (

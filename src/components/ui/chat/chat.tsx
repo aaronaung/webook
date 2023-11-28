@@ -1,7 +1,7 @@
 import { PropsWithChildren, forwardRef, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "../button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import HeaderWithAction from "../shared/header-with-action";
+import HeaderWithAction from "../../shared/header-with-action";
 import { cn } from "@/src/utils";
 import { Send } from "lucide-react";
 import {
@@ -11,7 +11,7 @@ import {
   BOOKING_STATUS_PENDING,
   BookingStatus,
 } from "@/src/consts/booking";
-import InputSelect from "../ui/input/select";
+import InputSelect from "../input/select";
 
 type ChatContainerProps = {
   className?: string;
@@ -87,19 +87,19 @@ export function ChatMessage({ chatMessage }: ChatMessageProps) {
   const determineRoundedCorners = () => {
     if (chatMessage.side === "left") {
       if (chatMessage.position === "top") {
-        return "rounded-bl-sm";
+        return "rounded-bl-none";
       } else if (chatMessage.position === "middle") {
-        return "rounded-l-sm";
+        return "rounded-l-lg";
       } else if (chatMessage.position === "bottom") {
-        return "rounded-tl-sm";
+        return "rounded-tl-none";
       }
     } else {
       if (chatMessage.position === "top") {
-        return "rounded-br-sm";
+        return "rounded-br-none";
       } else if (chatMessage.position === "middle") {
-        return "rounded-r-sm";
+        return "rounded-r-lg";
       } else if (chatMessage.position === "bottom") {
-        return "rounded-tr-sm";
+        return "rounded-tr-none";
       }
     }
   };
@@ -111,7 +111,7 @@ export function ChatMessage({ chatMessage }: ChatMessageProps) {
         chatMessage.side === "right"
           ? "bg-primary text-secondary"
           : "bg-secondary",
-        "my-1 max-w-2xl rounded-xl p-2",
+        "my-1 max-w-[75%] rounded-xl p-2",
         determineRoundedCorners(),
       )}
     >

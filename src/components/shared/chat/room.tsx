@@ -5,7 +5,7 @@ import {
   ChatHeader,
   ChatInput,
   ChatMessage,
-} from "@/src/components/chat-room/chat-room";
+} from "@/src/components/ui/chat/chat";
 import { getBookingByChatRoom, saveBooking } from "@/src/data/booking";
 import { listChatMessagesInRoom, saveChatMessage } from "@/src/data/chat";
 import { supaClientComponentClient } from "@/src/data/clients/browser";

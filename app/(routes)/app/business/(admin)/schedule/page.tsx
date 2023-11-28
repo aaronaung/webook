@@ -136,7 +136,7 @@ export default function SchedulePage() {
         availableServices={businessData?.services || []}
         availableStaffs={businessData?.staffs || []}
       />
-      <div className="mb-2 flex-shrink-0">
+      <div className="mb-3 flex-shrink-0">
         {_.isEmpty(businessData?.services) ? (
           <EmptyState
             Icon={Square3Stack3DIcon}
@@ -151,12 +151,7 @@ export default function SchedulePage() {
               You can select a calendar slot to create an event or click on an
               existing event to edit it.
             </p>
-            <ScheduleCalendar
-              onDropFromOutside={onDropFromOutside}
-              onEventDrop={onEventDrop}
-              onSelectEvent={onSelectEvent}
-              onSelectSlot={onSelectSlot}
-            />
+
             {/* <p className="mb-2 text-sm text-muted-foreground">
               You can drag and drop services onto the calendar to create an
               event.
@@ -179,6 +174,14 @@ export default function SchedulePage() {
           </>
         )}
       </div>
+      {!_.isEmpty(businessData?.services) && (
+        <ScheduleCalendar
+          onDropFromOutside={onDropFromOutside}
+          onEventDrop={onEventDrop}
+          onSelectEvent={onSelectEvent}
+          onSelectSlot={onSelectSlot}
+        />
+      )}
     </div>
   );
 }

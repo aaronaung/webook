@@ -15,7 +15,7 @@ export default function Chat({
 }: {
   loggedInUser?: Tables<"users">;
   business?: Tables<"businesses">;
-  rooms: Tables<"chat_rooms">[];
+  rooms: (Tables<"chat_rooms"> & Partial<{ booker: Tables<"users"> }>)[];
 }) {
   // todo: if initalRoom is null set to the latest booking room
   const searchParams = useSearchParams();
@@ -55,7 +55,12 @@ export default function Chat({
               setShowSideBar(false);
             }}
           >
-            {room.name}
+            <p>{room.name}</p>
+            {business && (
+              <p>
+                {room.booker?.first_name} {room.booker?.last_name}
+              </p>
+            )}
           </div>
         ))}
       </div>
