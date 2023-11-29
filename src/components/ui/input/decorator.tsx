@@ -18,13 +18,16 @@ export default function InputDecorator({
       )}
       <div
         className={cn(
-          "mt-1.5 text-lg",
+          label && "mt-1.5",
+          "text-lg",
           error && "rounded-md ring-1 ring-destructive ring-offset-background",
         )}
       >
         {props.children}
       </div>
-      <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
+      {description && (
+        <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
+      )}
       {error && <p className="my-2 text-sm text-destructive">{error}</p>}
     </div>
   );

@@ -40,12 +40,7 @@ export default function InputSelect(props: InputSelectProps) {
         {...(props.defaultValue ? { defaultValue: props.defaultValue } : {})}
         {...props}
       >
-        <SelectTrigger
-          className={cn(
-            "mt-1.5 w-full",
-            !field?.value && "text-muted-foreground",
-          )}
-        >
+        <SelectTrigger className={cn("w-full")}>
           <SelectValue placeholder={props.inputProps?.placeholder} />
         </SelectTrigger>
         <SelectContent className="max-h-[250px] overflow-scroll">

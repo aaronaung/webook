@@ -54,12 +54,19 @@ export const deleteAvailabilitySchedule = async (
 };
 
 export const deleteWeeklyAvailabilitySlot = async (
-  slotId: string,
+  { slotId, day }: { slotId?: string; day?: string },
   { client }: SupabaseOptions,
 ) => {
-  return throwOrData(
-    client.from("availability_weekly_slots").delete().eq("id", slotId),
-  );
+  let mutation = client.from("availability_weekly_slots").delete();
+
+  if (slotId) {
+    mutation = mutation.eq("id", slotId);
+  }
+
+  if (day) {
+    mutation = mutation.eq("day", day);
+  }
+  return throwOrData(mutation);
 };
 
 export const deleteAvailabilitySlotOverride = async (

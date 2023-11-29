@@ -1,6 +1,9 @@
+"use client";
+
 type SlotOverridesProps = {
   scheduleId: string;
 };
+
 export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
   return (
     <div className="col-span-1">
