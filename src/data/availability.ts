@@ -70,12 +70,19 @@ export const deleteWeeklyAvailabilitySlot = async (
 };
 
 export const deleteAvailabilitySlotOverride = async (
-  slotId: string,
+  { slotId, date }: { slotId?: string; date?: string },
   { client }: SupabaseOptions,
 ) => {
-  return throwOrData(
-    client.from("availability_slot_overrides").delete().eq("id", slotId),
-  );
+  let mutation = client.from("availability_slot_overrides").delete();
+
+  if (slotId) {
+    mutation = mutation.eq("id", slotId);
+  }
+
+  if (date) {
+    mutation = mutation.eq("date", date);
+  }
+  return throwOrData(mutation);
 };
 
 export const getAvailabilitySchedules = async (
@@ -86,7 +93,8 @@ export const getAvailabilitySchedules = async (
     client
       .from("availability_schedules")
       .select("*")
-      .eq("business_id", businessId),
+      .eq("business_id", businessId)
+      .order("created_at", { ascending: true }),
   );
 };
 
@@ -98,7 +106,8 @@ export const getWeeklyAvailabilitySlotsBySchedule = async (
     client
       .from("availability_weekly_slots")
       .select("*")
-      .eq("availability_schedule_id", scheduleId),
+      .eq("availability_schedule_id", scheduleId)
+      .order("created_at", { ascending: true }),
   );
 };
 
@@ -110,6 +119,7 @@ export const getAvailabilitySlotOverridesBySchedule = async (
     client
       .from("availability_slot_overrides")
       .select("*")
-      .eq("availability_schedule_id", scheduleId),
+      .eq("availability_schedule_id", scheduleId)
+      .order("created_at", { ascending: true }),
   );
 };

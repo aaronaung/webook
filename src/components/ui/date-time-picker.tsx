@@ -130,6 +130,9 @@ type DatePickerProps = {
   onChange: (value: { date: Date; hasTime: boolean }) => void;
   isDisabled?: boolean;
   className?: string;
+  disableTimePicker?: boolean;
+  placeholder?: string;
+  variant?: React.ComponentProps<typeof Button>["variant"];
 };
 const DateTimePicker = (props: DatePickerProps) => {
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -143,6 +146,9 @@ const DateTimePicker = (props: DatePickerProps) => {
       date: value.toDate(timeZone),
       hasTime: newHasTime ?? hasTime,
     });
+    if (props.disableTimePicker) {
+      setOpen(false);
+    }
   };
   const datePickerProps: DatePickerStateOptions<CalendarDateTime> = {
     value: props.value?.date
@@ -167,10 +173,11 @@ const DateTimePicker = (props: DatePickerProps) => {
     <Popover open={open} onOpenChange={setOpen} aria-label="Date Time Picker">
       <PopoverTrigger asChild>
         <Button
-          variant={"outline"}
+          variant={props.variant || "outline"}
           className={cn(
             "h-12 w-full min-w-[240px] justify-start text-left",
             !props.value && "text-muted-foreground",
+            props.className,
           )}
           disabled={props.isDisabled}
         >
@@ -178,7 +185,7 @@ const DateTimePicker = (props: DatePickerProps) => {
           {props.value?.date ? (
             format(props.value.date, dateDisplayFormat)
           ) : (
-            <span>Pick a date</span>
+            <span>{props.placeholder || "Pick a date"}</span>
           )}
         </Button>
       </PopoverTrigger>
@@ -189,19 +196,21 @@ const DateTimePicker = (props: DatePickerProps) => {
           onSelect={(value) => onChangeWrapper(dateToCalendarDateTime(value!))}
           initialFocus
           footer={
-            <TimeField
-              aria-label="Time Picker"
-              disabled={!props.value?.date}
-              hasTime={hasTime}
-              onHasTimeChange={(newHasTime) =>
-                onChangeWrapper(
-                  dateToCalendarDateTime(props.value?.date!),
-                  newHasTime,
-                )
-              }
-              value={hasTime ? state.timeValue : null}
-              onChange={state.setTimeValue}
-            />
+            props.disableTimePicker ? undefined : (
+              <TimeField
+                aria-label="Time Picker"
+                disabled={!props.value?.date}
+                hasTime={hasTime}
+                onHasTimeChange={(newHasTime) =>
+                  onChangeWrapper(
+                    dateToCalendarDateTime(props.value?.date!),
+                    newHasTime,
+                  )
+                }
+                value={hasTime ? state.timeValue : null}
+                onChange={state.setTimeValue}
+              />
+            )
           }
         />
       </PopoverContent>

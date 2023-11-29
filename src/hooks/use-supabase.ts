@@ -24,15 +24,19 @@ export function useSupaMutation<Args, Result>(
   const queryClient = useQueryClient();
 
   return useMutation({
+    ...options,
     mutationFn: (mutationArgs: Args) =>
       fn(mutationArgs, { client: supaClientComponentClient() }),
-    meta: { errorMessage: options.errorMessage || "Failed to run mutation." },
-    onSuccess: () => {
+    meta: {
+      errorMessage: options.errorMessage || "Failed to run mutation.",
+      ...options.meta,
+    },
+    onSuccess: (data, variables, context) => {
       for (const queryKey of options.invalidate || []) {
         queryClient.invalidateQueries({ queryKey });
       }
+      options.onSuccess?.(data, variables, context);
     },
-    ...options,
   });
 }
 

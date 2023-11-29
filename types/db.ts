@@ -46,7 +46,7 @@ export interface Database {
           created_at: string
           date: string
           end: number
-          id: number
+          id: string
           start: number
         }
         Insert: {
@@ -54,7 +54,7 @@ export interface Database {
           created_at?: string
           date: string
           end: number
-          id?: number
+          id?: string
           start: number
         }
         Update: {
@@ -62,7 +62,7 @@ export interface Database {
           created_at?: string
           date?: string
           end?: number
-          id?: number
+          id?: string
           start?: number
         }
         Relationships: [
