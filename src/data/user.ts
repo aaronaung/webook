@@ -31,7 +31,9 @@ export const getAuthUser = async ({ client }: SupabaseOptions) => {
               last_name: user.user_metadata.full_name.split(" ")[1],
             })
             .eq("id", user.id)
+            .select("*")
             .limit(1)
+            .order("created_at", { ascending: false })
             .maybeSingle(),
         );
       } else {
