@@ -7,6 +7,7 @@ import { Button } from "../button";
 
 type InputDateTimePickerProps = ControlledRhfInputProps & {
   disableTimePicker?: boolean;
+  disablePastDays?: boolean;
   variant?: React.ComponentProps<typeof Button>["variant"];
 };
 
@@ -28,6 +29,7 @@ export default function InputDateTimePicker(props: InputDateTimePickerProps) {
           disableTimePicker={props.disableTimePicker}
           placeholder={props.inputProps?.placeholder}
           variant={props.variant}
+          disablePastDays={props.disablePastDays}
         />
       </InputDecorator>
     );

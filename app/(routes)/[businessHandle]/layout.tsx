@@ -1,5 +1,6 @@
 import { CurrentViewingBusinessProvider } from "@/src/contexts/current-viewing-business";
-import { supaStaticRouteClient } from "@/src/data/clients/server";
+import { getBusinessByHandle } from "@/src/data/business";
+import { supaServerComponentClient } from "@/src/data/clients/server";
 import { redirect } from "next/navigation";
 
 export default async function Layout({
@@ -9,14 +10,14 @@ export default async function Layout({
   params: { businessHandle: string };
   children: React.ReactNode;
 }) {
-  const { data: business, ...props } = await supaStaticRouteClient
-    .from("businesses")
-    .select("*")
-    .eq("handle", params.businessHandle)
-    .single();
+  const supabaseOptions = { client: supaServerComponentClient() };
 
+  const business = await getBusinessByHandle(
+    params.businessHandle,
+    supabaseOptions,
+  );
   if (!business) {
-    // todo - redirect to 404.
+    console.error(`Business not found for handle: ${params.businessHandle}`);
     redirect("/");
   }
 

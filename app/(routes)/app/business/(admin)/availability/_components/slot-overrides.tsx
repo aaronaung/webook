@@ -116,11 +116,10 @@ export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
       return;
     }
 
-    const { start, end } = constructNewSlot(slotOverrides, date);
     saveSlot({
       date,
-      start,
-      end,
+      start: 18 * 30 * 60 * 1000,
+      end: 34 * 30 * 60 * 1000,
       availability_schedule_id: scheduleId,
     });
   };
@@ -168,15 +167,15 @@ export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
         </div>
       ))}
       <InputDateTimePicker
-        className="mt-8 w-[65px]"
+        className="mt-6"
         disableTimePicker
+        disablePastDays
         inputProps={{
           placeholder: "Add date",
         }}
         onChange={(val) => {
           handleOnDateAdd(val.date.toISOString());
         }}
-        variant="default"
       />
     </div>
   );

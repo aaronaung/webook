@@ -131,6 +131,7 @@ type DatePickerProps = {
   isDisabled?: boolean;
   className?: string;
   disableTimePicker?: boolean;
+  disablePastDays?: boolean;
   placeholder?: string;
   variant?: React.ComponentProps<typeof Button>["variant"];
 };
@@ -193,6 +194,7 @@ const DateTimePicker = (props: DatePickerProps) => {
         <Calendar
           mode="single"
           selected={props.value?.date || undefined}
+          disablePastDays={props.disablePastDays || false}
           onSelect={(value) => onChangeWrapper(dateToCalendarDateTime(value!))}
           initialFocus
           footer={

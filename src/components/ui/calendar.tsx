@@ -7,16 +7,20 @@ import { DayPicker } from "react-day-picker";
 import { cn } from "@/src/utils";
 import { buttonVariants } from "@/src/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  disablePastDays?: boolean;
+};
 
 function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  disablePastDays = false,
   ...props
 }: CalendarProps) {
   return (
     <DayPicker
+      disabled={disablePastDays ? { before: new Date() } : undefined}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
