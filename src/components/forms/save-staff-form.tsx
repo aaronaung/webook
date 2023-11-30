@@ -121,7 +121,10 @@ export default function SaveStaffForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onFormSuccess)}>
+    <form
+      className="flex flex-col gap-y-3"
+      onSubmit={handleSubmit(onFormSuccess)}
+    >
       <InputText
         rhfKey="first_name"
         register={register}

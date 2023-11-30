@@ -194,9 +194,12 @@ export default function SaveServiceEventForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onFormSuccess, onFormError)}>
+    <form
+      className="flex flex-col gap-y-3"
+      onSubmit={handleSubmit(onFormSuccess, onFormError)}
+    >
       {isRecurrentEvent && (
-        <p className="mb-1 text-sm text-destructive">
+        <p className="mb-2 text-sm text-destructive">
           This is a recurring event. Updates are not allowed.
         </p>
       )}
@@ -214,7 +217,7 @@ export default function SaveServiceEventForm({
       />
 
       {_.isEmpty(availableStaffs) ? (
-        <div className="mt-3 flex flex-col gap-y-2">
+        <div className="flex flex-col gap-y-2">
           <Label>Staff</Label>
           <Button
             onClick={(e) => {
@@ -257,7 +260,7 @@ export default function SaveServiceEventForm({
         label="End (calculated using service duration)"
         disabled
       />
-      <div className="my-3">
+      <div>
         <div className="flex items-center space-x-2">
           <Label htmlFor="enable-recurrence">Live stream</Label>
           <Switch
@@ -290,7 +293,7 @@ export default function SaveServiceEventForm({
           </>
         )}
       </div>
-      <div className="my-3 flex items-center space-x-2">
+      <div className="flex items-center space-x-2">
         <Label htmlFor="enable-recurrence">Recurrence</Label>
         <Switch
           id="enable-recurrence"
@@ -306,7 +309,6 @@ export default function SaveServiceEventForm({
             control={control}
             error={errors.recurrence_start?.message}
             label="Recurrence start"
-            className="mb-2"
             disabled={isRecurrentEvent}
           />
           <InputText
@@ -351,7 +353,7 @@ export default function SaveServiceEventForm({
         </>
       )}
       {!isRecurrentEvent && (
-        <>
+        <div className="ml-auto flex gap-x-2">
           <Button
             className="float-right mt-6"
             type="submit"
@@ -378,7 +380,7 @@ export default function SaveServiceEventForm({
               {isDeleting ? <Loader2 className="animate-spin" /> : "Delete"}
             </Button>
           )}
-        </>
+        </div>
       )}
       {recurrenceEnabled && defaultValues?.id && (
         <DeleteConfirmationDialog

@@ -86,13 +86,16 @@ export default function SaveQuestionForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleOnFormSuccess)}>
+    <form
+      className="flex flex-col gap-y-3"
+      onSubmit={handleSubmit(handleOnFormSuccess)}
+    >
       <InputText
         label="Question"
         rhfKey="question"
         register={register}
         inputProps={{
-          placeholder: "e.g. How many people will be attending the event?",
+          placeholder: "e.g. How many people will be there?",
         }}
         error={errors.question?.message}
       />

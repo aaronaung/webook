@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { SupabaseOptions } from "./types";
 import { throwOrData } from "./util";
 
@@ -20,8 +21,10 @@ export const getAuthUser = async ({ client }: SupabaseOptions) => {
       );
       if (
         dbUser != null &&
-        (dbUser.first_name === null || dbUser.last_name === null) &&
-        user.user_metadata
+        (dbUser.first_name === null ||
+          dbUser.last_name === null ||
+          dbUser.avatar_url === null) &&
+        !_.isEmpty(user.user_metadata)
       ) {
         return await throwOrData(
           client

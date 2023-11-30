@@ -110,7 +110,7 @@ export function FancyMultiSelect({
             onFocus={() => setOpen(true)}
             placeholder={placeholder}
             className={cn(
-              "ml-1 flex-1 border-none bg-transparent p-0 outline-none placeholder:text-sm placeholder:text-muted-foreground focus:border-none focus:ring-0",
+              "ml-1 flex-1 border-none bg-transparent p-0 outline-none placeholder:text-muted-foreground focus:border-none focus:ring-0",
             )}
           />
         </div>

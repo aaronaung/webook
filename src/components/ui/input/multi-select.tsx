@@ -15,7 +15,7 @@ type InputMultiSelectProps = ControlledRhfInputProps & {
 };
 export default function InputMultiSelect(props: InputMultiSelectProps) {
   const input = ({ field }: { field: ControllerRenderProps }) => (
-    <InputDecorator {...props} className="mt-1.5">
+    <InputDecorator {...props}>
       <FancyMultiSelect
         options={props.options}
         disabled={props.disabled}
