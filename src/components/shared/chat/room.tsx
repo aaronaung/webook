@@ -73,8 +73,10 @@ export default function Room({
           filter: `room_id=eq.${room.id}`,
         },
         (payload) => {
-          // TODO: add new user to cache if their profile doesn't exist
-          setMessages((prevMessages) => [...prevMessages, payload.new]);
+          // We need to flush the dom here, since the messages changes the height of the chat body.
+          flushSync(() => {
+            setMessages((prevMessages) => [...prevMessages, payload.new]);
+          });
           if (chatBodyRef.current) {
             chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
           }

@@ -32,10 +32,10 @@ export default function Chat({
   };
 
   return (
-    <div className="flex max-h-full w-full overflow-hidden">
+    <div className="flex h-full w-full overflow-hidden">
       <div
         className={cn(
-          "hidden max-h-full overflow-scroll sm:block lg:flex-[0.75]",
+          "hidden h-full overflow-scroll sm:block lg:flex-[0.75]",
           isMobile && showSideBar ? "block flex-1" : "hidden",
         )}
       >

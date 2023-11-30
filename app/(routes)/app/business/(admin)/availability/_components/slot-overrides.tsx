@@ -17,7 +17,7 @@ import { toast } from "@/src/components/ui/use-toast";
 import { Tables } from "@/types/db.extension";
 import { Button } from "@/src/components/ui/button";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { format, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
 
 type SlotOverridesProps = {
   scheduleId: string;
@@ -107,10 +107,9 @@ export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
       )
     ) {
       toast({
-        title: `Overrides for date ${format(
-          new Date(date),
-          "MM/dd/yyyy",
-        )} already exists.`,
+        title: `Overrides for date "${new Date(
+          date,
+        ).toDateString()}" already exists.`,
         variant: "destructive",
       });
       return;

@@ -21,7 +21,7 @@ export function ChatContainer({
   children,
 }: PropsWithChildren<ChatContainerProps>) {
   return (
-    <div className={cn("flex max-h-full w-full flex-col", className)}>
+    <div className={cn("flex h-full w-full flex-col", className)}>
       {children}
     </div>
   );
