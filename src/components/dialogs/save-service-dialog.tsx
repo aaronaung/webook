@@ -15,12 +15,14 @@ export function SaveServiceDialog({
   isOpen,
   serviceCategoryId,
   availableQuestions,
+  availableAvailabilitySchedules,
 }: {
   initFormValues?: SaveServiceFormSchemaType;
   onClose: () => void;
   isOpen: boolean;
   serviceCategoryId?: string;
   availableQuestions?: Tables<"questions">[];
+  availableAvailabilitySchedules?: Tables<"availability_schedules">[];
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -33,6 +35,7 @@ export function SaveServiceDialog({
           onSubmitted={onClose}
           serviceCategoryId={serviceCategoryId}
           availableQuestions={availableQuestions}
+          availableAvailabilitySchedules={availableAvailabilitySchedules}
         />
       </DialogContent>
     </Dialog>

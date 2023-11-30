@@ -220,6 +220,7 @@ export default function SaveServiceEventForm({
         <div className="flex flex-col gap-y-2">
           <Label>Staff</Label>
           <Button
+            variant="outline"
             onClick={(e) => {
               e.preventDefault();
               router.push("/app/business/staffs");

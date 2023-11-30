@@ -82,10 +82,12 @@ export const saveService = async (
     client
       .from("services")
       .upsert({ ...(service as Tables<"services">) })
-      .select("id"),
+      .select("id")
+      .limit(1)
+      .single(),
   );
   if (questionIds) {
-    await saveServiceQuestion(saved[0].id, questionIds, { client });
+    await saveServiceQuestion(saved.id, questionIds, { client });
   }
   return saved;
 };

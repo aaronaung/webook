@@ -573,6 +573,7 @@ export interface Database {
       }
       services: {
         Row: {
+          availability_schedule_id: string | null
           booking_limit: number | null
           created_at: string | null
           description: string | null
@@ -584,6 +585,7 @@ export interface Database {
           updated_at: string | null
         }
         Insert: {
+          availability_schedule_id?: string | null
           booking_limit?: number | null
           created_at?: string | null
           description?: string | null
@@ -595,6 +597,7 @@ export interface Database {
           updated_at?: string | null
         }
         Update: {
+          availability_schedule_id?: string | null
           booking_limit?: number | null
           created_at?: string | null
           description?: string | null
@@ -607,37 +610,15 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "services_service_category_id_fkey"
-            columns: ["service_category_id"]
-            referencedRelation: "service_categories"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      services_availability_schedules: {
-        Row: {
-          availability_schedule_id: string
-          service_id: string
-        }
-        Insert: {
-          availability_schedule_id: string
-          service_id: string
-        }
-        Update: {
-          availability_schedule_id?: string
-          service_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "services_availability_schedules_availability_schedule_id_fkey"
+            foreignKeyName: "services_availability_schedule_id_fkey"
             columns: ["availability_schedule_id"]
             referencedRelation: "availability_schedules"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "services_availability_schedules_service_id_fkey"
-            columns: ["service_id"]
-            referencedRelation: "services"
+            foreignKeyName: "services_service_category_id_fkey"
+            columns: ["service_category_id"]
+            referencedRelation: "service_categories"
             referencedColumns: ["id"]
           }
         ]

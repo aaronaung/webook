@@ -17,7 +17,7 @@ export default function InputDateTimePicker(props: InputDateTimePickerProps) {
       field?.onChange(date);
     };
     return (
-      <InputDecorator {...props} className="mt-1.5">
+      <InputDecorator {...props}>
         <DateTimePicker
           className={cn("w-full", props.className)}
           isDisabled={props.disabled}

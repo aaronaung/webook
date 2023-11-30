@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { saveService } from "@/src/data/service";
 import { strListDiff } from "@/src/utils";
+import InputSelect from "../ui/input/select";
 
 const formSchema = z.object({
   title: z
@@ -41,12 +42,14 @@ const formSchema = z.object({
     .positive({
       message: "Booking limit must be a positive number.",
     }),
+  availability_schedule_id: z.string().optional(),
 });
 
 type SaveServiceFormProps = {
   serviceCategoryId?: string;
   defaultValues?: SaveServiceFormSchemaType;
   availableQuestions?: Tables<"questions">[];
+  availableAvailabilitySchedules?: Tables<"availability_schedules">[];
   onSubmitted: () => void;
 };
 
@@ -59,6 +62,7 @@ export default function SaveServiceForm({
   serviceCategoryId,
   defaultValues,
   availableQuestions,
+  availableAvailabilitySchedules,
   onSubmitted,
 }: SaveServiceFormProps) {
   const {
@@ -154,6 +158,7 @@ export default function SaveServiceForm({
         <div className="mt-3 flex flex-col gap-y-2">
           <Label>Questions</Label>
           <Button
+            variant="outline"
             onClick={(e) => {
               e.preventDefault();
               router.push("/app/business/questions");
@@ -175,8 +180,42 @@ export default function SaveServiceForm({
           }}
           label="Questions"
           inputProps={{
-            placeholder: "For customers to answer before booking (Optional) ",
+            placeholder: "For customers to answer before booking",
           }}
+        />
+      )}
+      {(availableAvailabilitySchedules || []).length === 0 ? (
+        <div className="flex flex-col gap-y-2">
+          <Label>Availability Schedule</Label>
+          <Button
+            variant="outline"
+            onClick={(e) => {
+              e.preventDefault();
+              router.push("/app/business/availability");
+            }}
+          >
+            No availability schedule found - Create one
+          </Button>
+        </div>
+      ) : (
+        <InputSelect
+          control={control}
+          description="The service will be available for booking during the times specified in the schedule."
+          options={[
+            {
+              label: "None",
+              value: null,
+            },
+            ...(availableAvailabilitySchedules || []).map((q) => ({
+              label: q.name,
+              value: q.id,
+            })),
+          ]}
+          inputProps={{
+            placeholder: "Select an availability schedule",
+          }}
+          rhfKey="availability_schedule_id"
+          label="Availability Schedule"
         />
       )}
       <Button className="float-right mt-6" type="submit" disabled={isPending}>

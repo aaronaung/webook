@@ -62,6 +62,10 @@ export default function ServicesTable({
         header: "",
         enableHiding: true,
       }),
+      columnHelper.accessor("availability_schedule_id", {
+        header: "",
+        enableHiding: true,
+      }),
       // columnHelper.accessor("image_url", {
       //   header: "Image",
       //   cell: ({ row }) => <SvcImgCell row={row} />,
@@ -126,6 +130,7 @@ export default function ServicesTable({
         columnVisibility: {
           id: false,
           questions: false,
+          availability_schedule_id: false,
         },
       }}
       columns={columns as AccessorFnColumnDef<Service>[]}

@@ -42,6 +42,7 @@ import {
   getServiceCategoriesWithServices,
 } from "@/src/data/service";
 import { getQuestions } from "@/src/data/question";
+import { getAvailabilitySchedules } from "@/src/data/availability";
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service categories on mobile)
 export default function Services() {
@@ -59,6 +60,12 @@ export default function Services() {
     useSupaQuery(getServiceCategoriesWithServices, currentBusiness?.id, {
       queryKey: ["getServiceCategoriesWithServices", currentBusiness.id],
     });
+  const {
+    data: availabilitySchedules,
+    isLoading: isAvailabilitySchedulesLoading,
+  } = useSupaQuery(getAvailabilitySchedules, currentBusiness?.id, {
+    queryKey: ["getAvailabilitySchedules", currentBusiness.id],
+  });
 
   const { mutate: _deleteServiceCategory, isPending: isDeleteSgPending } =
     useSupaMutation(deleteServiceCategory, {
@@ -92,31 +99,37 @@ export default function Services() {
     isOpen: false,
   });
 
-  const onSvcRowAction = useCallback((row: Row<Service>, action: RowAction) => {
-    switch (action) {
-      case RowAction.EDIT:
-        setSvcDialogState({
-          isOpen: !svcDialogState.isOpen,
-          initFormValues: {
-            id: row.original.id,
-            title: row.original.title,
-            price: row.original.price ?? 0,
-            duration: row.original.duration ?? 0,
-            booking_limit: row.original.booking_limit ?? 0,
-            question_ids: (row.original.questions ?? []).map((q) => q.id),
-          },
-          serviceCategoryId: row.original.service_category_id ?? undefined,
-        });
-        break;
-      case RowAction.DELETE:
-        if (!isDeleteSvcPending) {
-          _deleteService(row.original.id);
-        }
-        break;
-      default:
-        console.error("Unknown row action");
-    }
-  }, []);
+  const onSvcRowAction = useCallback(
+    (row: Row<Service>, action: RowAction) => {
+      console.log(row);
+      switch (action) {
+        case RowAction.EDIT:
+          setSvcDialogState({
+            isOpen: !svcDialogState.isOpen,
+            initFormValues: {
+              id: row.original.id,
+              title: row.original.title,
+              price: row.original.price ?? 0,
+              duration: row.original.duration ?? 0,
+              booking_limit: row.original.booking_limit ?? 0,
+              question_ids: (row.original.questions ?? []).map((q) => q.id),
+              availability_schedule_id:
+                row.original.availability_schedule_id ?? undefined,
+            },
+            serviceCategoryId: row.original.service_category_id ?? undefined,
+          });
+          break;
+        case RowAction.DELETE:
+          if (!isDeleteSvcPending) {
+            _deleteService(row.original.id);
+          }
+          break;
+        default:
+          console.error("Unknown row action");
+      }
+    },
+    [_deleteService, isDeleteSvcPending, svcDialogState.isOpen],
+  );
 
   function handleSgDelete(sg: ServiceCategoryWithServices) {
     if (!_.isEmpty(sg.services)) {
@@ -131,7 +144,11 @@ export default function Services() {
     }
   }
 
-  if (isServiceCategoriesLoading || isQuestionsLoading) {
+  if (
+    isServiceCategoriesLoading ||
+    isQuestionsLoading ||
+    isAvailabilitySchedulesLoading
+  ) {
     return <>Loading...</>;
   }
   return (
@@ -161,6 +178,7 @@ export default function Services() {
         initFormValues={svcDialogState.initFormValues}
         serviceCategoryId={svcDialogState.serviceCategoryId}
         availableQuestions={questions}
+        availableAvailabilitySchedules={availabilitySchedules}
         onClose={() =>
           setSvcDialogState({
             ...svcDialogState,
