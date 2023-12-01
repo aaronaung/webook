@@ -36,6 +36,7 @@ export default async function ServiceProvider({
           ></img>
           <div className="w-[90%] text-center">
             <p className="mb-2 text-[38px] font-bold">{business.title}</p>
+            {/** @ts-ignore */}
             <p style={{ textWrap: "balance" }}>{business.description}</p>
           </div>
           <div className="mt-[20px] flex justify-center gap-x-3 text-muted-foreground">
