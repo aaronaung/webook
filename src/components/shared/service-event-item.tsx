@@ -1,16 +1,18 @@
 import PriceTag from "@/src/components/ui/price-tag";
-import { getServiceImgUrl, getStaffHeadshotUrl } from "@/src/utils";
+import { cn, getServiceImgUrl, getStaffHeadshotUrl } from "@/src/utils";
 import { ServiceEvent } from "@/types";
 import { format } from "date-fns";
 import _ from "lodash";
-import Image from "../../../../../src/components/ui/image";
+import Image from "../ui/image";
 
 export default function ServiceEventItem({
   event,
   onClick,
+  className,
 }: {
   event: ServiceEvent;
   onClick: () => void;
+  className?: string;
 }) {
   const startDateTime = new Date(event.start || "");
   const staffName = (event.staffs || [])
@@ -32,7 +34,10 @@ export default function ServiceEventItem({
   return (
     <li
       onClick={onClick}
-      className="group flex cursor-pointer items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100"
+      className={cn(
+        "group flex cursor-pointer items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100",
+        className,
+      )}
     >
       <div className="flex h-12 w-12 shrink-0 -space-x-1">
         <dt className="sr-only">Staffs</dt>
@@ -55,7 +60,7 @@ export default function ServiceEventItem({
           <p className="font-medium text-foreground">{event.service.title} </p>
           <p className="text-foreground">{staffName}</p>
         </div>
-        <div className="flex flex-col items-end justify-center gap-1">
+        <div className="flex shrink-0 flex-col items-end justify-center gap-1">
           <PriceTag price={event.service.price} />
           <p className="text-muted-foreground">
             <time dateTime={event.start || ""}>

@@ -224,3 +224,18 @@ export const getDetailedServiceEvent = async (
       .single(),
   );
 };
+
+export const getServicesWithAvailabilitySchedule = async (
+  businessId: string,
+  { client }: SupabaseOptions,
+) => {
+  const services = await throwOrData(
+    client
+      .from("services")
+      .select("*, availability_schedules(*), service_categories(*)")
+      .eq("service_categories.business_id", businessId)
+      .not("availability_schedules", "is", null),
+  );
+
+  return services;
+};

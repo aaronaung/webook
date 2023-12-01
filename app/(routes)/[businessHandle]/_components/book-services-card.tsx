@@ -4,55 +4,64 @@ import {
   CardDescription,
   CardHeader,
 } from "@/src/components/ui/card";
-const people = [
-  {
-    name: "Leslie Alexander",
-    email: "leslie.alexander@example.com",
-    role: "Co-Founder / CEO",
-    imageUrl:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-  },
-  // More people...
-];
+import { getServicesWithAvailabilitySchedule } from "@/src/data/service";
+import { useSupaQuery } from "@/src/hooks/use-supabase";
+import { Tables } from "@/types/db.extension";
 
-function Content() {
-  return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      {people.map((person) => (
-        <div
-          key={person.email}
-          className="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
-        >
-          <div className="flex-shrink-0">
-            <img
-              className="h-10 w-10 rounded-full"
-              src={person.imageUrl}
-              alt=""
-            />
-          </div>
-          <div className="min-w-0 flex-1">
-            <a href="#" className="focus:outline-none">
-              <span className="absolute inset-0" aria-hidden="true" />
-              <p className="text-sm font-medium text-gray-900">{person.name}</p>
-              <p className="truncate text-sm text-gray-500">{person.role}</p>
-            </a>
-          </div>
-        </div>
-      ))}
-    </div>
+export default function BookServicesCard({
+  business,
+}: {
+  business: Tables<"businesses">;
+}) {
+  const { data, isLoading } = useSupaQuery(
+    getServicesWithAvailabilitySchedule,
+    business.id,
+    {
+      queryKey: ["getServicesWithAvailabilitySchedule", business.id],
+    },
   );
-}
 
-export default function BookServicesCard() {
+  if (isLoading) {
+    return <>Loading...</>;
+  }
   return (
     <Card className="w-full">
       <CardHeader>
         <CardDescription>
-          Click on each service to see availability
+          Click on each service to see its availability schedule
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Content />
+        <ul role="list" className="divide-y divide-gray-100 text-sm">
+          {(data || []).map((service) => (
+            <div
+              key={service.id}
+              className="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
+            >
+              <div className="flex-shrink-0">
+                <img
+                  className="h-10 w-10 rounded-full"
+                  src={`https://ui-avatars.com/api/?name=${service.title}`}
+                  alt=""
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <a href="#" className="focus:outline-none">
+                  <span className="absolute inset-0" aria-hidden="true" />
+                  <p className="text-sm font-medium text-gray-900">
+                    {service.title}
+                  </p>
+                  <p className="truncate text-sm text-gray-500">
+                    {service.description}
+                  </p>
+                  <p className="truncate text-sm text-gray-500">
+                    $100 per hour
+                  </p>
+                </a>
+              </div>
+            </div>
+          ))}
+        </ul>
       </CardContent>
     </Card>
   );

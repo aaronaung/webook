@@ -36,7 +36,7 @@ export default function Tabs({ business }: { business: Tables<"businesses"> }) {
         </Button>
       </div>
       {selected === TabTypes.BOOK_SERVICES ? (
-        <BookServicesCard />
+        <BookServicesCard business={business} />
       ) : (
         <ScheduledEventsCard business={business} />
       )}

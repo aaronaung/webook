@@ -10,12 +10,8 @@ import {
 } from "date-fns";
 import { useMemo } from "react";
 import { BusinessSchedule, ServiceEvent } from "@/types";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "../../../../../src/components/ui/tabs";
-import ServiceEventItem from "./service-event-item";
+import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import ServiceEventItem from "@/src/components/shared/service-event-item";
 import { useRouter, useSearchParams } from "next/navigation";
 
 type ServiceEventCalendarProps = {
