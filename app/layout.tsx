@@ -7,6 +7,7 @@ import { Toaster } from "@/src/components/ui/toaster";
 import { toast } from "@/src/components/ui/use-toast";
 import ReactDnDProvider from "@/src/providers/react-dnd-provider";
 import { TooltipProvider } from "@/src/components/ui/tooltip";
+import { MantineProvider } from "@mantine/core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,7 +51,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           > */}
-            <TooltipProvider>{children}</TooltipProvider>
+
+            <MantineProvider>
+              <TooltipProvider>{children}</TooltipProvider>
+            </MantineProvider>
             {/* </ThemeProvider> */}
           </ReactDnDProvider>
         </ReactQueryProvider>
