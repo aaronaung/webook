@@ -8,7 +8,7 @@ import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { deleteQuestion, getQuestions } from "@/src/data/question";
-import { getServiceCategoriesWithServices } from "@/src/data/service";
+import { getServices } from "@/src/data/service";
 import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
@@ -23,21 +23,20 @@ export default function Questions() {
     { queryKey: ["getQuestions", currentBusiness.id] },
   );
 
-  const { data: servicesWithCategories, isLoading: isLoadingServices } =
-    useSupaQuery(getServiceCategoriesWithServices, currentBusiness.id, {
-      queryKey: ["getServiceCategoriesWithServices", currentBusiness.id],
-    });
-
-  const services = (servicesWithCategories || [])
-    .map((sc) => sc.services)
-    .flat();
+  const { data: services, isLoading: isLoadingServices } = useSupaQuery(
+    getServices,
+    currentBusiness.id,
+    {
+      queryKey: ["getServices", currentBusiness.id],
+    },
+  );
 
   const { mutate: _deleteQuestion, isPending: deleting } = useSupaMutation(
     deleteQuestion,
     {
       invalidate: [
         ["getQuestions", currentBusiness.id],
-        ["getServiceCategoriesWithServices", currentBusiness.id],
+        ["getServices", currentBusiness.id],
       ],
     },
   );
@@ -60,7 +59,7 @@ export default function Questions() {
               question: row.original.question,
               type: row.original.type,
               required: row.original.required ?? false,
-              service_ids: services
+              service_ids: (services || [])
                 .filter((s) =>
                   s.questions.some((q) => q.id === row.original.id),
                 )
@@ -118,7 +117,7 @@ export default function Questions() {
         </div>
       )}
       <SaveQuestionDialog
-        availableServices={services}
+        availableServices={services || []}
         isOpen={qDialogState.isOpen}
         initFormValues={qDialogState.initFormValues}
         onClose={() => {

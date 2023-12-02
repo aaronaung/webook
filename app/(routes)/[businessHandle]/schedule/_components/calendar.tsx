@@ -9,16 +9,20 @@ import {
   startOfToday,
 } from "date-fns";
 import { useMemo } from "react";
-import { BusinessSchedule, ServiceEvent } from "@/types";
-import { Tabs, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
 import ServiceEventItem from "@/src/components/shared/service-event-item";
 import { useRouter, useSearchParams } from "next/navigation";
+import {
+  GetScheduledEventsInTimeRangeResponse,
+  GetScheduledEventsInTimeRangeResponseSingle,
+} from "@/src/data/business";
 
 type ServiceEventCalendarProps = {
-  data: BusinessSchedule;
+  data: GetScheduledEventsInTimeRangeResponse;
   calendarClassName?: string;
   serviceEventsClassName?: string;
-  onServiceEventClick: (serviceEvent: ServiceEvent) => void;
+  onServiceEventClick: (
+    serviceEvent: GetScheduledEventsInTimeRangeResponseSingle,
+  ) => void;
 };
 
 export default function ServiceEventCalendar({
@@ -30,8 +34,12 @@ export default function ServiceEventCalendar({
   const today = startOfToday();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedDay = new Date(
-    parseInt(searchParams.get("date_millis") || "") || today.getTime(),
+  const selectedDay = useMemo(
+    () =>
+      new Date(
+        parseInt(searchParams.get("date_millis") || "") || today.getTime(),
+      ),
+    [searchParams, today],
   );
   const selectedCategory = searchParams.get("category") || data?.[0]?.id;
 
@@ -48,62 +56,57 @@ export default function ServiceEventCalendar({
 
   const selectedDayServiceEvents = useMemo(() => {
     return (
-      (data || [])
-        .find(
-          (serviceCategory) =>
-            serviceCategory.id === (selectedCategory || data?.[0]?.id),
-        )
-        ?.service_events.filter((event) => {
-          const startDateTime = new Date(event.start);
-          let repeatStartDateTime = event.recurrence_start
-            ? new Date(event.recurrence_start)
-            : null;
-          const repeatInterval = event.recurrence_interval;
+      (data || []).filter((event) => {
+        const startDateTime = new Date(event.start);
+        let repeatStartDateTime = event.recurrence_start
+          ? new Date(event.recurrence_start)
+          : null;
+        const repeatInterval = event.recurrence_interval;
 
-          if (isSameDay(startDateTime, selectedDay)) {
-            return true;
-          }
+        if (isSameDay(startDateTime, selectedDay)) {
+          return true;
+        }
 
-          if (!repeatStartDateTime || !repeatInterval) {
-            return false;
-          }
+        if (!repeatStartDateTime || !repeatInterval) {
+          return false;
+        }
 
-          if (isBefore(repeatStartDateTime, startDateTime)) {
-            repeatStartDateTime = startDateTime;
-          }
+        if (isBefore(repeatStartDateTime, startDateTime)) {
+          repeatStartDateTime = startDateTime;
+        }
 
-          if (isBefore(selectedDay, repeatStartDateTime)) {
-            // selected day is before repeat start.
-            return false;
-          }
+        if (isBefore(selectedDay, repeatStartDateTime)) {
+          // selected day is before repeat start.
+          return false;
+        }
 
-          let repeatIntervalsToJump = Math.floor(
-            (selectedDay.getTime() - repeatStartDateTime.getTime()) /
-              repeatInterval,
-          );
-          let timeLeftBeforeNextRepeatingEvent =
-            (selectedDay.getTime() - repeatStartDateTime.getTime()) %
-            repeatInterval;
-          if (timeLeftBeforeNextRepeatingEvent > 0) {
-            // if there is time left before next repeating event, add 1 to repeatIntervalsToJump
-            repeatIntervalsToJump += 1;
-          }
+        let repeatIntervalsToJump = Math.floor(
+          (selectedDay.getTime() - repeatStartDateTime.getTime()) /
+            repeatInterval,
+        );
+        let timeLeftBeforeNextRepeatingEvent =
+          (selectedDay.getTime() - repeatStartDateTime.getTime()) %
+          repeatInterval;
+        if (timeLeftBeforeNextRepeatingEvent > 0) {
+          // if there is time left before next repeating event, add 1 to repeatIntervalsToJump
+          repeatIntervalsToJump += 1;
+        }
 
-          if (
-            event.recurrence_count &&
-            repeatIntervalsToJump > event.recurrence_count
-          ) {
-            // repeat interval jump is greater than count
-            return false;
-          }
+        if (
+          event.recurrence_count &&
+          repeatIntervalsToJump > event.recurrence_count
+        ) {
+          // repeat interval jump is greater than count
+          return false;
+        }
 
-          return isSameDay(
-            selectedDay,
-            new Date(
-              startDateTime.getTime() + repeatInterval * repeatIntervalsToJump,
-            ),
-          );
-        }) || []
+        return isSameDay(
+          selectedDay,
+          new Date(
+            startDateTime.getTime() + repeatInterval * repeatIntervalsToJump,
+          ),
+        );
+      }) || []
     ).map((event) => ({
       ...event,
       start: new Date(
@@ -112,7 +115,7 @@ export default function ServiceEventCalendar({
             startOfDay(new Date(event.start)).getTime()),
       ).toISOString(),
     }));
-  }, [data, selectedCategory, selectedDay]);
+  }, [data, selectedDay]);
 
   return (
     <>
@@ -127,22 +130,6 @@ export default function ServiceEventCalendar({
         <p className="text- my-4 text-sm font-semibold">
           {format(selectedDay, "MMMM dd")}
         </p>
-        {(data || []).length > 0 && (
-          <Tabs
-            value={selectedCategory}
-            onValueChange={(selected) => handleCategorySelect(selected)}
-          >
-            <div className="flex max-w-full items-center overflow-x-scroll">
-              <TabsList className="relative overflow-visible">
-                {(data || []).map((sg) => (
-                  <TabsTrigger key={sg.id} value={sg.id}>
-                    {sg.title}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </div>
-          </Tabs>
-        )}
         <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
           {selectedDayServiceEvents.length > 0 ? (
             selectedDayServiceEvents.map((event) => (

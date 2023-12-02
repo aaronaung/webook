@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Tables } from "@/types/db.extension";
@@ -23,14 +23,15 @@ import { Loader2 } from "lucide-react";
 import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { deleteServiceEvent, saveServiceEvent } from "@/src/data/service";
-import { addMilliseconds } from "date-fns";
 import InputSelect from "../ui/input/select";
 import EmptyState from "../shared/empty-state";
 import { strListDiff } from "@/src/utils";
+import { isBefore } from "date-fns";
 
 const formSchema = z.object({
   service_id: z.string(),
   start: z.date(),
+  end: z.date(),
   recurrence_start: z.date().optional(),
   recurrence_interval: z
     .union([
@@ -52,6 +53,7 @@ const formSchema = z.object({
     ])
     .optional(),
   staff_ids: z.array(z.string()).optional(),
+  availability_schedule_id: z.string().optional(),
 });
 
 export type SaveServiceEventFormSchemaType = z.infer<typeof formSchema> & {
@@ -60,6 +62,7 @@ export type SaveServiceEventFormSchemaType = z.infer<typeof formSchema> & {
 };
 
 type SaveServiceEventFormProps = {
+  availableAvailabilitySchedules?: Tables<"availability_schedules">[];
   availableServices?: Tables<"services">[];
   availableStaffs?: Tables<"staffs">[];
   defaultValues?: Partial<SaveServiceEventFormSchemaType>;
@@ -69,20 +72,35 @@ type SaveServiceEventFormProps = {
 export default function SaveServiceEventForm({
   availableServices,
   availableStaffs,
+  availableAvailabilitySchedules,
   defaultValues,
   isRecurrentEvent,
   onSubmitted,
 }: SaveServiceEventFormProps) {
+  const defaultServiceId =
+    defaultValues?.service_id || availableServices?.[0]?.id;
+  const defaultService = (availableServices || []).find(
+    (s) => s.id === defaultServiceId,
+  );
+  const defaultEnd =
+    defaultValues?.end ||
+    new Date(
+      new Date(defaultValues?.start || "").getTime() +
+        (defaultService?.duration || 0),
+    );
+
   const {
     register,
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<SaveServiceEventFormSchemaType>({
     defaultValues: {
       ...defaultValues,
-      service_id: defaultValues?.service_id || availableServices?.[0]?.id,
+      end: defaultEnd,
+      service_id: defaultServiceId,
       recurrence_start: defaultValues?.recurrence_start || defaultValues?.start,
       recurrence_interval: defaultValues?.recurrence_interval
         ? defaultValues.recurrence_interval / 86400000
@@ -98,19 +116,35 @@ export default function SaveServiceEventForm({
     Boolean(defaultValues?.recurrence_start),
   );
   const [
-    serviceId,
     start,
+    end,
+    serviceId,
     recurrenceCount,
     recurrenceInterval,
     recurrenceStart,
   ] = watch([
-    "service_id",
     "start",
+    "end",
+    "service_id",
     "recurrence_count",
     "recurrence_interval",
     "recurrence_start",
   ]);
   const selectedService = availableServices?.find((s) => s.id === serviceId);
+  const endBeforeStart = isBefore(end, start);
+
+  useEffect(() => {
+    if (selectedService && defaultValues?.start && !defaultValues?.end) {
+      setValue(
+        "end",
+        new Date(
+          new Date(defaultValues?.start || "").getTime() +
+            selectedService.duration,
+        ),
+      );
+    }
+  }, [defaultValues?.start, defaultValues?.end, selectedService, setValue]);
+
   const hasRecurrenceError =
     recurrenceEnabled &&
     (!recurrenceCount || !recurrenceInterval || !recurrenceStart);
@@ -125,7 +159,7 @@ export default function SaveServiceEventForm({
     saveServiceEvent,
     {
       // todo: potential optimization here: this is inefficient, we refetch the entire schedule.
-      invalidate: [["getBusinessScheduleByTimeRange", currentBusiness.handle]],
+      invalidate: [["getScheduledEventsInTimeRange", currentBusiness.handle]],
       onSettled: () => {
         onSubmitted?.();
       },
@@ -133,7 +167,7 @@ export default function SaveServiceEventForm({
   );
   const { mutateAsync: _deleteServiceEvent, isPending: isDeleting } =
     useSupaMutation(deleteServiceEvent, {
-      invalidate: [["getBusinessScheduleByTimeRange", currentBusiness.handle]],
+      invalidate: [["getScheduledEventsInTimeRange", currentBusiness.handle]],
     });
 
   async function onFormSuccess(formValues: SaveServiceEventFormSchemaType) {
@@ -152,6 +186,7 @@ export default function SaveServiceEventForm({
         ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if original  exists, then we are editing an existing service  (not creating a new one)
         service_id: formValues.service_id,
         start: formValues.start.toISOString(),
+        end: formValues.end.toISOString(),
         recurrence_start: recurrenceEnabled
           ? formValues.recurrence_start?.toISOString()
           : null,
@@ -161,6 +196,7 @@ export default function SaveServiceEventForm({
         recurrence_count: recurrenceEnabled
           ? formValues.recurrence_count
           : null,
+        availability_schedule_id: formValues.availability_schedule_id,
       },
       staffIds: staffIdChanges,
       createLiveStreamRequest:
@@ -220,6 +256,7 @@ export default function SaveServiceEventForm({
         <div className="flex flex-col gap-y-2">
           <Label>Staff</Label>
           <Button
+            type="button"
             variant="outline"
             onClick={(e) => {
               e.preventDefault();
@@ -255,12 +292,37 @@ export default function SaveServiceEventForm({
         disabled={isRecurrentEvent}
       />
       <InputDateTimePicker
+        rhfKey="end"
         control={control}
-        value={addMilliseconds(start, selectedService?.duration || 0)}
-        error={errors.start?.message}
-        label="End (calculated using service duration)"
-        disabled
+        error={
+          errors.end?.message || endBeforeStart
+            ? "End must be after start."
+            : undefined
+        }
+        label="End (calculated from service duration)"
+        disabled={isRecurrentEvent}
       />
+      {(availableAvailabilitySchedules || []).length > 0 && (
+        <InputSelect
+          control={control}
+          description="Assigning the event to an availability schedule ensures the event's time slot is blocked off for booking in said schedule."
+          options={[
+            {
+              label: "None",
+              value: null,
+            },
+            ...(availableAvailabilitySchedules || []).map((q) => ({
+              label: q.name,
+              value: q.id,
+            })),
+          ]}
+          inputProps={{
+            placeholder: "None",
+          }}
+          rhfKey="availability_schedule_id"
+          label="Availability Schedule (Optional)"
+        />
+      )}
       <div>
         <div className="flex items-center space-x-2">
           <Label htmlFor="enable-recurrence">Live stream</Label>
@@ -355,13 +417,6 @@ export default function SaveServiceEventForm({
       )}
       {!isRecurrentEvent && (
         <div className="ml-auto flex gap-x-2">
-          <Button
-            className="float-right mt-6"
-            type="submit"
-            disabled={isSaving || hasRecurrenceError}
-          >
-            {isSaving ? <Loader2 className="animate-spin" /> : "Save"}
-          </Button>
           {defaultValues?.id && (
             <Button
               className="float-right mr-2 mt-6"
@@ -381,6 +436,13 @@ export default function SaveServiceEventForm({
               {isDeleting ? <Loader2 className="animate-spin" /> : "Delete"}
             </Button>
           )}
+          <Button
+            className="float-right mt-6"
+            type="submit"
+            disabled={isSaving || hasRecurrenceError || endBeforeStart}
+          >
+            {isSaving ? <Loader2 className="animate-spin" /> : "Save"}
+          </Button>
         </div>
       )}
       {recurrenceEnabled && defaultValues?.id && (

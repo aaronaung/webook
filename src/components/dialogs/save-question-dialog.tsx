@@ -7,7 +7,7 @@ import {
 import SaveQuestionForm, {
   SaveQuestionFormSchemaType,
 } from "../forms/save-question-form";
-import { Service } from "@/types";
+import { GetServicesResponseSingle } from "@/src/data/service";
 
 export function SaveQuestionDialog({
   initFormValues,
@@ -16,7 +16,7 @@ export function SaveQuestionDialog({
   isOpen,
 }: {
   initFormValues?: SaveQuestionFormSchemaType;
-  availableServices: Service[];
+  availableServices: GetServicesResponseSingle[];
   onClose: () => void;
   isOpen: boolean;
 }) {

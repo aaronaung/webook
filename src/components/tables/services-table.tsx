@@ -5,52 +5,25 @@ import {
   createColumnHelper,
 } from "@tanstack/react-table";
 import { DataTable } from "../ui/data-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { RowAction } from "./types";
-import Image from "../ui/image";
-import { BUCKETS } from "@/src/consts/storage";
-import { fetchWithRetry, getTimestampedObjUrl } from "@/src/utils";
-import { Service } from "@/types";
+import { GetServicesResponseSingle } from "@/src/data/service";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import { PRICING_INTERVALS } from "../forms/save-availability-based-service-form";
 
-const columnHelper = createColumnHelper<Service>();
-
-function SvcImgCell({ row }: { row: Row<Service> }) {
-  const [imgExists, setImgExists] = useState<boolean>(false);
-  const imgUrl = getTimestampedObjUrl(
-    BUCKETS.publicBusinessAssets,
-    `services/${row.original.id}`,
-    row.original.updated_at,
-  );
-
-  useEffect(() => {
-    fetchWithRetry(imgUrl, { method: "HEAD" })
-      .then(() => {
-        setImgExists(true);
-      })
-      .catch(() => {
-        setImgExists(false);
-      });
-  }, [imgUrl]);
-
-  if (imgExists) {
-    return (
-      <Image
-        className="h-12 w-12 rounded-full"
-        src={`${imgUrl}&random=${Date.now()}`} // random forces the image to reload
-      ></Image>
-    );
-  }
-  return <></>;
-}
+const columnHelper = createColumnHelper<GetServicesResponseSingle>();
 
 type ServicesTableProp = {
-  data: Service[];
-  onRowAction: (row: Row<Service>, action: RowAction) => void;
+  data: GetServicesResponseSingle[];
+  onRowAction: (row: Row<GetServicesResponseSingle>, action: RowAction) => void;
+  hiddenColumns?: Partial<{ [K in keyof GetServicesResponseSingle]: boolean }>;
 };
 
 export default function ServicesTable({
   data,
   onRowAction,
+  hiddenColumns = {},
 }: ServicesTableProp) {
   const columns = useMemo(
     () => [
@@ -62,38 +35,61 @@ export default function ServicesTable({
         header: "",
         enableHiding: true,
       }),
-      columnHelper.accessor("availability_schedule_id", {
-        header: "",
+      columnHelper.accessor("availability_schedules", {
+        header: "Availability schedule",
         enableHiding: true,
+        cell: ({ row }) => {
+          const schedule = row.original.availability_schedules;
+          if (schedule) {
+            return (
+              <Link href={`/app/business/availability?id=${schedule.id}`}>
+                <Button className="p-0" variant={"link"}>
+                  {schedule.name}
+                </Button>
+              </Link>
+            );
+          }
+        },
       }),
-      // columnHelper.accessor("image_url", {
-      //   header: "Image",
-      //   cell: ({ row }) => <SvcImgCell row={row} />,
-      // }),
+
       columnHelper.accessor("title", {
         header: "Title",
+        enableHiding: true,
       }),
       columnHelper.accessor("price", {
         header: "Price",
-        cell: ({ row }) =>
-          // parseFloat is used to remove trailing zeros
-          `$${parseFloat(
+        enableHiding: true,
+        cell: ({ row }) => {
+          const price = `$${parseFloat(
             (((row.getValue("price") as number) ?? 0) / 100).toFixed(2),
-          )}`,
+          )}`;
+          if (row.original.availability_schedule_id) {
+            return `${price} ${PRICING_INTERVALS[row.original.duration]}`;
+          }
+          // parseFloat is used to remove trailing zeros
+          return price;
+        },
       }),
       columnHelper.accessor("duration", {
         header: "Duration",
-        cell: ({ row }) =>
+        enableHiding: true,
+        cell: ({ row }) => {
+          if (row.original.availability_schedule_id) {
+            return "";
+          }
           // parseFloat is used to remove trailing zeros
-          `${parseFloat(
+          return `${parseFloat(
             (((row.getValue("duration") as number) ?? 0) / 60000).toFixed(2),
-          )} mins`,
+          )} mins`;
+        },
       }),
       columnHelper.accessor("booking_limit", {
         header: "Booking limit",
+        enableHiding: true,
       }),
       columnHelper.accessor("updated_at", {
         header: "Last updated",
+        enableHiding: true,
         cell: ({ row }) => {
           return new Date(row.original.updated_at!).toLocaleString();
         },
@@ -128,12 +124,17 @@ export default function ServicesTable({
     <DataTable
       initialState={{
         columnVisibility: {
-          id: false,
-          questions: false,
-          availability_schedule_id: false,
+          id: !hiddenColumns.id,
+          questions: !hiddenColumns.questions,
+          availability_schedules: !hiddenColumns.availability_schedules,
+          title: !hiddenColumns.title,
+          price: !hiddenColumns.price,
+          duration: !hiddenColumns.duration,
+          booking_limit: !hiddenColumns.booking_limit,
+          updated_at: !hiddenColumns.updated_at,
         },
       }}
-      columns={columns as AccessorFnColumnDef<Service>[]}
+      columns={columns as AccessorFnColumnDef<GetServicesResponseSingle>[]}
       data={data}
     />
   );

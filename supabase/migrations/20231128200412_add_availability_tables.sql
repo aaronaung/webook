@@ -34,29 +34,17 @@ create table "public"."availability_weekly_slots" (
 
 alter table "public"."availability_weekly_slots" enable row level security;
 
-create table "public"."services_availability_schedules" (
-    "service_id" uuid not null,
-    "availability_schedule_id" uuid not null
-);
-
-
-alter table "public"."services_availability_schedules" enable row level security;
-
 CREATE UNIQUE INDEX availability_schedules_pkey ON public.availability_schedules USING btree (id);
 
 CREATE UNIQUE INDEX availability_slot_overrides_pkey ON public.availability_slot_overrides USING btree (id);
 
-CREATE UNIQUE INDEX services_availability_schedules_pkey ON public.services_availability_schedules USING btree (service_id, availability_schedule_id);
-
-CREATE UNIQUE INDEX weekly_availability_slots_pkey ON public.availability_weekly_slots USING btree (id);
+CREATE UNIQUE INDEX availability_weekly_slots_pkey ON public.availability_weekly_slots USING btree (id);
 
 alter table "public"."availability_schedules" add constraint "availability_schedules_pkey" PRIMARY KEY using index "availability_schedules_pkey";
 
 alter table "public"."availability_slot_overrides" add constraint "availability_slot_overrides_pkey" PRIMARY KEY using index "availability_slot_overrides_pkey";
 
-alter table "public"."availability_weekly_slots" add constraint "weekly_availability_slots_pkey" PRIMARY KEY using index "weekly_availability_slots_pkey";
-
-alter table "public"."services_availability_schedules" add constraint "services_availability_schedules_pkey" PRIMARY KEY using index "services_availability_schedules_pkey";
+alter table "public"."availability_weekly_slots" add constraint "availability_weekly_slots_pkey" PRIMARY KEY using index "availability_weekly_slots_pkey";
 
 alter table "public"."availability_schedules" add constraint "availability_schedules_business_id_fkey" FOREIGN KEY (business_id) REFERENCES businesses(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
@@ -70,13 +58,11 @@ alter table "public"."availability_weekly_slots" add constraint "availability_we
 
 alter table "public"."availability_weekly_slots" validate constraint "availability_weekly_slots_availability_schedule_id_fkey";
 
-alter table "public"."services_availability_schedules" add constraint "services_availability_schedules_availability_schedule_id_fkey" FOREIGN KEY (availability_schedule_id) REFERENCES availability_schedules(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
+alter table "public"."services" add column "availability_schedule_id" uuid;
 
-alter table "public"."services_availability_schedules" validate constraint "services_availability_schedules_availability_schedule_id_fkey";
+alter table "public"."services" add constraint "services_availability_schedule_id_fkey" FOREIGN KEY (availability_schedule_id) REFERENCES availability_schedules(id) ON UPDATE CASCADE ON DELETE SET NULL not valid;
 
-alter table "public"."services_availability_schedules" add constraint "services_availability_schedules_service_id_fkey" FOREIGN KEY (service_id) REFERENCES services(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
-
-alter table "public"."services_availability_schedules" validate constraint "services_availability_schedules_service_id_fkey";
+alter table "public"."services" validate constraint "services_availability_schedule_id_fkey";
 
 create policy "Enable all for authenticated"
 on "public"."availability_schedules"
@@ -103,15 +89,4 @@ for all
 to authenticated
 using (true)
 with check (true);
-
-
-create policy "Enable all for authenticated"
-on "public"."services_availability_schedules"
-as permissive
-for all
-to authenticated
-using (true)
-with check (true);
-
-
 

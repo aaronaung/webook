@@ -1,16 +1,16 @@
 import PriceTag from "@/src/components/ui/price-tag";
 import { cn, getServiceImgUrl, getStaffHeadshotUrl } from "@/src/utils";
-import { ServiceEvent } from "@/types";
 import { format } from "date-fns";
 import _ from "lodash";
 import Image from "../ui/image";
+import { GetScheduledEventsInTimeRangeResponseSingle } from "@/src/data/business";
 
 export default function ServiceEventItem({
   event,
   onClick,
   className,
 }: {
-  event: ServiceEvent;
+  event: GetScheduledEventsInTimeRangeResponseSingle;
   onClick: () => void;
   className?: string;
 }) {

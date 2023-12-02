@@ -32,7 +32,7 @@ export default function BookServicesCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ul role="list" className="divide-y divide-gray-100 text-sm">
+        <ul role="list" className="space-y-2 divide-y divide-gray-100 text-sm">
           {(data || []).map((service) => (
             <div
               key={service.id}

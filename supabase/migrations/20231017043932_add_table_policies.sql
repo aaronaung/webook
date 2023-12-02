@@ -30,16 +30,6 @@ to authenticated
 using (true)
 with check (true);
 
-
-create policy "Enable all for authenticated users only"
-on "public"."service_categories"
-as permissive
-for all
-to authenticated
-using (true)
-with check (true);
-
-
 create policy "Enable all for authenticated users only"
 on "public"."service_events"
 as permissive

@@ -1,4 +1,3 @@
-import { ServiceCategoryWithServices } from "@/types";
 import { SupabaseOptions } from "./types";
 import { Tables } from "@/types/db.extension";
 import { throwOrData } from "./util";
@@ -8,60 +7,19 @@ import {
   deleteLiveStreamForServiceEvent,
 } from "./live-stream";
 
-export const getServiceCategoriesWithServices = async (
+export type GetServicesResponseSingle = Awaited<
+  ReturnType<typeof getServices>
+>[0];
+export const getServices = async (
   businessId: string,
   { client }: SupabaseOptions,
-): Promise<ServiceCategoryWithServices[]> => {
-  const serviceCategories = await throwOrData(
-    client
-      .from("service_categories")
-      .select("*")
-      .eq("business_id", businessId)
-      .order("created_at", { ascending: true }),
-  );
-
-  const services = await throwOrData(
+) => {
+  return await throwOrData(
     client
       .from("services")
-      .select("*, questions (*)")
-      .in(
-        "service_category_id",
-        (serviceCategories || []).map(
-          (serviceCategory: Tables<"service_categories">) => serviceCategory.id,
-        ),
-      )
-      .order("created_at", { ascending: true }),
-  );
-
-  // We do client side sorting, since we expect the service groups and services to be in the tens only.
-  return (serviceCategories || []).map(
-    (serviceCategory: Tables<"service_categories">) => ({
-      ...serviceCategory,
-      services: (services || []).filter(
-        (service: Tables<"services">) =>
-          service.service_category_id === serviceCategory.id,
-      ),
-    }),
-  );
-};
-
-export const saveServiceCategory = async (
-  serviceCategory: Partial<Tables<"service_categories">>,
-  { client }: SupabaseOptions,
-) => {
-  return throwOrData(
-    client
-      .from("service_categories")
-      .upsert({ ...(serviceCategory as Tables<"service_categories">) }),
-  );
-};
-
-export const deleteServiceCategory = async (
-  serviceCategoryId: string,
-  { client }: SupabaseOptions,
-) => {
-  return throwOrData(
-    client.from("service_categories").delete().eq("id", serviceCategoryId),
+      .select("*, questions (*), availability_schedules(*)")
+      .eq("business_id", businessId)
+      .order("id"), // just so there's a consistent order
   );
 };
 
@@ -232,8 +190,8 @@ export const getServicesWithAvailabilitySchedule = async (
   const services = await throwOrData(
     client
       .from("services")
-      .select("*, availability_schedules(*), service_categories(*)")
-      .eq("service_categories.business_id", businessId)
+      .select("*, availability_schedules(*)")
+      .eq("business_id", businessId)
       .not("availability_schedules", "is", null),
   );
 

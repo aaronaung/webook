@@ -135,7 +135,7 @@ export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
 
       {Object.keys(slotOverrides).map((date) => (
         <div key={date} className="mt-2 flex flex-col space-y-2">
-          <div className="mt-2 flex h-fit items-center space-x-2">
+          <div className="mt-1 flex h-fit items-center space-x-2">
             <div className="flex-1">
               <p className="text-sm font-medium">
                 {new Date(date).toDateString()}
@@ -166,7 +166,7 @@ export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
         </div>
       ))}
       <InputDateTimePicker
-        className="mt-6"
+        className={"mt-2"}
         disableTimePicker
         disablePastDays
         inputProps={{

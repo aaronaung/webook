@@ -6,7 +6,7 @@ DECLARE
     var_business_id uuid;
     services_data jsonb;
     staffs_data jsonb;
-    service_categories_data jsonb;
+    availability_schedules_data jsonb;
     result jsonb;
 BEGIN
     -- Get the business ID based on the handle.
@@ -17,35 +17,32 @@ BEGIN
 
     -- Fetch services data with color derived from service_categories.
     SELECT COALESCE(jsonb_agg(
-        jsonb_set(
-            jsonb_build_object(
-                'id', s.id,
-                'title', s.title,
-                'description', s.description,
-                'booking_limit', s.booking_limit,
-                'duration', s.duration,
-                'price', s.price,
-                'questions', (
-                    SELECT json_agg(jsonb_build_object(
-                        'id', q.id,
-                        'question', q.question,
-                        'type', q.type,
-                        'required', q.required,
-                        'options', q.options,
-                        'enabled', q.enabled
-                    ))
-                    FROM public.services_questions AS sq
-                    JOIN public.questions AS q ON sq.question_id = q.id
-                    WHERE sq.service_id = s.id
-                )
+        jsonb_build_object(
+            'id', s.id,
+            'title', s.title,
+            'description', s.description,
+            'booking_limit', s.booking_limit,
+            'duration', s.duration,
+            'price', s.price,
+            'color', s.color,
+            'questions', (
+                SELECT json_agg(jsonb_build_object(
+                    'id', q.id,
+                    'question', q.question,
+                    'type', q.type,
+                    'required', q.required,
+                    'options', q.options,
+                    'enabled', q.enabled
+                ))
+                FROM public.services_questions AS sq
+                JOIN public.questions AS q ON sq.question_id = q.id
+                WHERE sq.service_id = s.id
             ),
-            '{color}', ('"' || sg.color || '"')::jsonb
-        )
-    ), '[]'::jsonb)
+            'availability_schedule_id', s.availability_schedule_id
+        )), '[]'::jsonb)
     INTO services_data
     FROM public.services s
-    JOIN public.service_categories sg ON s.service_category_id = sg.id
-    WHERE sg.business_id = var_business_id;
+    WHERE s.business_id = var_business_id;
 
     -- Fetch staff data.
     SELECT COALESCE(jsonb_agg(
@@ -60,23 +57,20 @@ BEGIN
     FROM public.staffs staff
     WHERE staff.business_id = var_business_id;
 
-    -- Fetch service category data.
+    -- Fetch availability schedules.
     SELECT COALESCE(jsonb_agg(
         jsonb_build_object(
-            'id', sg.id,
-            'title', sg.title,
-            'description', sg.description,
-            'color', sg.color,
-            'priority', sg.priority
+            'id', availability_schedule.id,
+            'name', availability_schedule.name
         )), '[]'::jsonb)
-    INTO service_categories_data
-    FROM public.service_categories sg
-    WHERE sg.business_id = var_business_id;
+    INTO availability_schedules_data
+    FROM public.availability_schedules availability_schedule
+    WHERE availability_schedule.business_id = var_business_id;
 
     -- Append the data to the result object.
     result := jsonb_set(result, '{services}', services_data);
     result := jsonb_set(result, '{staffs}', staffs_data);
-    result := jsonb_set(result, '{service_categories}', service_categories_data);
+    result := jsonb_set(result, '{availability_schedules}', availability_schedules_data);
 
     -- Return the final JSON object.
     RETURN result;

@@ -113,7 +113,7 @@ export default function WeeklySlots({ scheduleId }: WeeklySlotsProps) {
   };
 
   return (
-    <div className="col-span-1 flex flex-col gap-y-2 p-1">
+    <div className="col-span-1 flex flex-col gap-y-1 p-1">
       <p className="font-medium text-muted-foreground">Weekly hours</p>
 
       {Object.keys(Day).map((day) => (

@@ -3,8 +3,10 @@ create table "public"."bookings" (
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
     "booker_id" uuid not null,
-    "service_event_id" uuid not null,
-    "service_event_start" timestamp with time zone not null,
+    "service_event_id" uuid, -- service_event_id is only be used for event based booking.
+    "availability_service_id" uuid, -- availability service id is only be used for availability based booking
+    "start" timestamp with time zone not null, 
+    "end" timestamp with time zone not null, 
     "business_id" uuid not null,
     "status" text not null default 'PENDING'::text,
     "chat_room_id" uuid not null
@@ -48,7 +50,8 @@ create table "public"."services_questions" (
 
 alter table "public"."services_questions" enable row level security;
 
-CREATE UNIQUE INDEX bookings_booker_id_service_event_id_service_event_start_key ON public.bookings USING btree (booker_id, service_event_id, service_event_start);
+-- same booker can't make multiple bookings that start at the same time.
+CREATE UNIQUE INDEX bookings_booker_id_start_key ON public.bookings USING btree (booker_id, start);
 
 CREATE UNIQUE INDEX bookings_pkey ON public.bookings USING btree (id);
 
@@ -70,7 +73,11 @@ alter table "public"."bookings" add constraint "bookings_booker_id_fkey" FOREIGN
 
 alter table "public"."bookings" validate constraint "bookings_booker_id_fkey";
 
-alter table "public"."bookings" add constraint "bookings_booker_id_service_event_id_service_event_start_key" UNIQUE using index "bookings_booker_id_service_event_id_service_event_start_key";
+alter table "public"."bookings" add constraint "bookings_availability_service_id_fkey" FOREIGN KEY (availability_service_id) REFERENCES services(id) ON DELETE SET NULL not valid;
+
+alter table "public"."bookings" validate constraint "bookings_availability_service_id_fkey";
+
+alter table "public"."bookings" add constraint "bookings_booker_id_start_key" UNIQUE using index "bookings_booker_id_start_key";
 
 alter table "public"."bookings" add constraint "bookings_chat_room_id_fkey" FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(id) ON DELETE SET NULL not valid;
 

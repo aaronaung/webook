@@ -40,8 +40,11 @@ export default function InputSelect(props: InputSelectProps) {
         {...(props.defaultValue ? { defaultValue: props.defaultValue } : {})}
         {...props}
       >
-        <SelectTrigger className={cn("w-full")}>
-          <SelectValue placeholder={props.inputProps?.placeholder} />
+        <SelectTrigger className={cn("w-full", props.className)}>
+          <SelectValue
+            defaultValue={props.defaultValue || undefined}
+            placeholder={props.inputProps?.placeholder}
+          />
         </SelectTrigger>
         <SelectContent className="max-h-[250px] overflow-scroll">
           <SelectGroup>

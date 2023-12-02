@@ -39,15 +39,17 @@ export default function SchedulePage() {
   );
   const { mutate: _saveServiceEvent } = useSupaMutation(saveServiceEvent, {
     // todo: potential optimization here: this is inefficient, we refetch the entire schedule.
-    invalidate: [["getBusinessScheduleByTimeRange", currentBusiness.handle]],
+    invalidate: [["getScheduledEventsInTimeRange", currentBusiness.handle]],
   });
 
   const openUpdateServiceEventDialog = (event: CalEvent, start: Date) => {
+    console.log(event);
     setSvcEventDialogState({
       isOpen: true,
       initFormValues: {
         id: event.id,
         start,
+        end: new Date(event.end),
         recurrence_count: event.recurrence_count ?? undefined,
         recurrence_interval: event.recurrence_interval ?? undefined,
         recurrence_start: event.recurrence_start
@@ -56,6 +58,7 @@ export default function SchedulePage() {
         service_id: event.service.id,
         staff_ids: event.staffs?.map((s) => s.id),
         live_stream: event.live_stream,
+        availability_schedule_id: event.availability_schedule_id ?? undefined,
       },
       isRecurrentEvent: event.isRecurrentEvent,
     });
@@ -114,10 +117,6 @@ export default function SchedulePage() {
     });
   }, []);
 
-  const handleOnServiceDrag = (draggedService: Tables<"services">) => {
-    draggedServiceRef.current = draggedService;
-  };
-
   if (isBusinessDataLoading) {
     // todo - add a loading state.
     return <>Loading...</>;
@@ -133,8 +132,14 @@ export default function SchedulePage() {
             isOpen: !svcEventDialogState.isOpen,
           })
         }
-        availableServices={businessData?.services || []}
+        availableServices={
+          businessData?.services.filter((s) => !s.availability_schedule_id) ||
+          []
+        }
         availableStaffs={businessData?.staffs || []}
+        availableAvailabilitySchedules={
+          businessData?.availability_schedules || []
+        }
       />
       <div className="mb-3 flex-shrink-0">
         {_.isEmpty(businessData?.services) ? (
@@ -151,26 +156,6 @@ export default function SchedulePage() {
               You can select a calendar slot to create an event or click on an
               existing event to edit it.
             </p>
-
-            {/* <p className="mb-2 text-sm text-muted-foreground">
-              You can drag and drop services onto the calendar to create an
-              event.
-            </p> */}
-            {/* <div className="mb-3 flex max-w-full flex-wrap gap-1 text-sm">
-              {(businessData?.services || []).map((svc) => (
-                <Badge
-                  draggable={true}
-                  className="cursor-pointer"
-                  style={{
-                    background: svc.color,
-                  }}
-                  key={svc.id}
-                  onDragStart={() => handleOnServiceDrag(svc)}
-                >
-                  {svc.title}
-                </Badge>
-              ))}
-            </div> */}
           </>
         )}
       </div>

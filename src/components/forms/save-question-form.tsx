@@ -14,9 +14,9 @@ import InputSwitch from "../ui/input/switch";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { saveQuestion } from "@/src/data/question";
 import InputMultiSelect from "../ui/input/multi-select";
-import { Service } from "@/types";
 import _ from "lodash";
 import { strListDiff } from "@/src/utils";
+import { GetServicesResponseSingle } from "@/src/data/service";
 
 const formSchema = z.object({
   question: z.string().min(1, { message: "Question is required." }),
@@ -31,7 +31,7 @@ export type SaveQuestionFormSchemaType = z.infer<typeof formSchema> & {
 
 type SaveQuestionFormProps = {
   defaultValues?: SaveQuestionFormSchemaType;
-  availableServices: Service[];
+  availableServices: GetServicesResponseSingle[];
   onSubmitted: () => void;
 };
 
@@ -61,7 +61,7 @@ export default function SaveQuestionForm({
   const { mutate: _saveQuestion, isPending } = useSupaMutation(saveQuestion, {
     invalidate: [
       ["getQuestions", currentBusiness.id],
-      ["getServiceCategoriesWithServices", currentBusiness.id],
+      ["getServices", currentBusiness.id],
     ],
     onSettled: () => {
       onSubmitted();
@@ -99,6 +99,21 @@ export default function SaveQuestionForm({
         }}
         error={errors.question?.message}
       />
+      {availableServices.length > 0 && (
+        <InputMultiSelect
+          rhfKey="service_ids"
+          options={(availableServices || []).map((s) => ({
+            label: s.title,
+            value: s.id,
+          }))}
+          control={control}
+          error={errors.service_ids?.message}
+          label="Services"
+          inputProps={{
+            placeholder: "Select services to attach question to",
+          }}
+        />
+      )}
       <InputSelect
         rhfKey="type"
         options={Object.keys(QUESTION_TYPE_LABELS).map((key) => ({
@@ -115,21 +130,7 @@ export default function SaveQuestionForm({
         label="Required"
         description="Turning this on will require customers to answer this question before booking."
       />
-      {availableServices.length > 0 && (
-        <InputMultiSelect
-          rhfKey="service_ids"
-          options={(availableServices || []).map((s) => ({
-            label: s.title,
-            value: s.id,
-          }))}
-          control={control}
-          error={errors.service_ids?.message}
-          label="Services"
-          inputProps={{
-            placeholder: "Select services to attach question to",
-          }}
-        />
-      )}
+
       <Button className="float-right mt-6" type="submit" disabled={isPending}>
         {isPending ? <Loader2 className="animate-spin" /> : "Save"}
       </Button>

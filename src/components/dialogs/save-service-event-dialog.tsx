@@ -16,6 +16,7 @@ export function SaveServiceEventDialog({
   isRecurrentEvent,
   availableServices,
   availableStaffs,
+  availableAvailabilitySchedules,
 }: {
   initFormValues?: Partial<SaveServiceEventFormSchemaType>;
   onClose: () => void;
@@ -23,6 +24,7 @@ export function SaveServiceEventDialog({
   isRecurrentEvent?: boolean;
   availableServices?: Tables<"services">[];
   availableStaffs?: Tables<"staffs">[];
+  availableAvailabilitySchedules?: Tables<"availability_schedules">[];
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -39,6 +41,7 @@ export function SaveServiceEventDialog({
           isRecurrentEvent={isRecurrentEvent}
           availableServices={availableServices}
           availableStaffs={availableStaffs}
+          availableAvailabilitySchedules={availableAvailabilitySchedules}
           onSubmitted={onClose}
         />
       </DialogContent>

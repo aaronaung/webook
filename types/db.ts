@@ -113,39 +113,51 @@ export interface Database {
       }
       bookings: {
         Row: {
+          availability_service_id: string | null
           booker_id: string
           business_id: string
           chat_room_id: string
           created_at: string | null
+          end: string
           id: string
-          service_event_id: string
-          service_event_start: string
+          service_event_id: string | null
+          start: string
           status: string
           updated_at: string | null
         }
         Insert: {
+          availability_service_id?: string | null
           booker_id: string
           business_id: string
           chat_room_id: string
           created_at?: string | null
+          end: string
           id?: string
-          service_event_id: string
-          service_event_start: string
+          service_event_id?: string | null
+          start: string
           status?: string
           updated_at?: string | null
         }
         Update: {
+          availability_service_id?: string | null
           booker_id?: string
           business_id?: string
           chat_room_id?: string
           created_at?: string | null
+          end?: string
           id?: string
-          service_event_id?: string
-          service_event_start?: string
+          service_event_id?: string | null
+          start?: string
           status?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_availability_service_id_fkey"
+            columns: ["availability_service_id"]
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_booker_id_fkey"
             columns: ["booker_id"]
@@ -423,46 +435,6 @@ export interface Database {
           }
         ]
       }
-      service_categories: {
-        Row: {
-          business_id: string
-          color: string
-          created_at: string | null
-          description: string | null
-          id: string
-          priority: number | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          business_id: string
-          color: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          priority?: number | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          business_id?: string
-          color?: string
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          priority?: number | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_categories_business_id_fkey"
-            columns: ["business_id"]
-            referencedRelation: "businesses"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
       service_event_live_streams: {
         Row: {
           created_at: string
@@ -505,7 +477,9 @@ export interface Database {
       }
       service_events: {
         Row: {
+          availability_schedule_id: string | null
           created_at: string | null
+          end: string
           id: string
           recurrence_count: number | null
           recurrence_interval: number | null
@@ -515,7 +489,9 @@ export interface Database {
           updated_at: string | null
         }
         Insert: {
+          availability_schedule_id?: string | null
           created_at?: string | null
+          end: string
           id?: string
           recurrence_count?: number | null
           recurrence_interval?: number | null
@@ -525,7 +501,9 @@ export interface Database {
           updated_at?: string | null
         }
         Update: {
+          availability_schedule_id?: string | null
           created_at?: string | null
+          end?: string
           id?: string
           recurrence_count?: number | null
           recurrence_interval?: number | null
@@ -535,6 +513,12 @@ export interface Database {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "service_events_availability_schedule_id_fkey"
+            columns: ["availability_schedule_id"]
+            referencedRelation: "availability_schedules"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_events_service_id_fkey"
             columns: ["service_id"]
@@ -575,36 +559,39 @@ export interface Database {
         Row: {
           availability_schedule_id: string | null
           booking_limit: number | null
+          business_id: string | null
+          color: string | null
           created_at: string | null
           description: string | null
           duration: number
           id: string
           price: number
-          service_category_id: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
           availability_schedule_id?: string | null
           booking_limit?: number | null
+          business_id?: string | null
+          color?: string | null
           created_at?: string | null
           description?: string | null
           duration: number
           id?: string
           price: number
-          service_category_id?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
           availability_schedule_id?: string | null
           booking_limit?: number | null
+          business_id?: string | null
+          color?: string | null
           created_at?: string | null
           description?: string | null
           duration?: number
           id?: string
           price?: number
-          service_category_id?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -616,9 +603,9 @@ export interface Database {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "services_service_category_id_fkey"
-            columns: ["service_category_id"]
-            referencedRelation: "service_categories"
+            foreignKeyName: "services_business_id_fkey"
+            columns: ["business_id"]
+            referencedRelation: "businesses"
             referencedColumns: ["id"]
           }
         ]
@@ -735,7 +722,7 @@ export interface Database {
         }
         Returns: Json
       }
-      get_business_schedule_in_range: {
+      get_scheduled_events_in_time_range: {
         Args: {
           business_handle: string
           start_time: string

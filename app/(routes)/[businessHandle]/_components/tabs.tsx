@@ -12,25 +12,32 @@ enum TabTypes {
 }
 export default function Tabs({ business }: { business: Tables<"businesses"> }) {
   const [selected, setSelected] = useState(TabTypes.BOOK_SERVICES);
-
   return (
     <>
       <div className="mb-[20px] mt-[38px] flex justify-center gap-x-3">
         <Button
-          onClick={() => setSelected(TabTypes.BOOK_SERVICES)}
+          onClick={() => {
+            if (selected !== TabTypes.BOOK_SERVICES) {
+              setSelected(TabTypes.BOOK_SERVICES);
+            }
+          }}
           variant={
             selected === TabTypes.BOOK_SERVICES ? "default" : "secondary"
           }
-          className="rounded-full"
+          className="rounded-full hover:bg-primary hover:text-secondary"
         >
           Book services
         </Button>
         <Button
-          onClick={() => setSelected(TabTypes.SCHEDULED_EVENTS)}
+          onClick={() => {
+            if (selected !== TabTypes.SCHEDULED_EVENTS) {
+              setSelected(TabTypes.SCHEDULED_EVENTS);
+            }
+          }}
           variant={
             selected === TabTypes.SCHEDULED_EVENTS ? "default" : "secondary"
           }
-          className="rounded-full"
+          className="rounded-full hover:bg-primary hover:text-secondary"
         >
           Scheduled events
         </Button>

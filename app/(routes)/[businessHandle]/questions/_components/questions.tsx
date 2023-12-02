@@ -43,7 +43,6 @@ export default function Questions({
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
 
   const isRequiredQuestionAnswered = (q: Tables<"questions">) => {
-    console.log(q, answers);
     return q.required && answers[q.id] !== undefined && answers[q.id] !== "";
   };
 
@@ -101,7 +100,11 @@ export default function Questions({
         booker_id: loggedInUser.id,
         business_id: currentViewingBusiness.id,
         service_event_id: serviceEvent.id,
-        service_event_start: serviceEventStart,
+        start: serviceEventStart,
+        end: new Date(
+          new Date(serviceEventStart).getTime() +
+            (serviceEvent.services?.duration || 0),
+        ).toISOString(),
         status: BOOKING_STATUS_PENDING,
         chat_room_id: room.id,
       });

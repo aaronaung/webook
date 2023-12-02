@@ -89,7 +89,7 @@ export const getServicesByQuestionId = async (
   return throwOrData(
     client
       .from("services")
-      .select("*, service_categories(*), question (*)")
+      .select("*, question (*)")
       .eq("question_id", questionId),
   );
 };

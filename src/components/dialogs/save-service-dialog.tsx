@@ -8,19 +8,24 @@ import SaveServiceForm, {
   SaveServiceFormSchemaType,
 } from "../forms/save-service-form";
 import { Tables } from "@/types/db.extension";
+import SaveAvailabilityBasedServiceForm from "../forms/save-availability-based-service-form";
 
+export enum ServiceType {
+  AvailabilityBased = "Availability based",
+  ScheduledEvent = "Scheduled event",
+}
 export function SaveServiceDialog({
   initFormValues,
   onClose,
   isOpen,
-  serviceCategoryId,
+  serviceType,
   availableQuestions,
   availableAvailabilitySchedules,
 }: {
-  initFormValues?: SaveServiceFormSchemaType;
+  initFormValues?: Partial<SaveServiceFormSchemaType>;
   onClose: () => void;
   isOpen: boolean;
-  serviceCategoryId?: string;
+  serviceType: ServiceType;
   availableQuestions?: Tables<"questions">[];
   availableAvailabilitySchedules?: Tables<"availability_schedules">[];
 }) {
@@ -28,15 +33,25 @@ export function SaveServiceDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{initFormValues ? "Edit" : "Add"} service</DialogTitle>
+          <DialogTitle>
+            {initFormValues?.id ? "Edit" : "Add"} service
+          </DialogTitle>
         </DialogHeader>
-        <SaveServiceForm
-          defaultValues={initFormValues}
-          onSubmitted={onClose}
-          serviceCategoryId={serviceCategoryId}
-          availableQuestions={availableQuestions}
-          availableAvailabilitySchedules={availableAvailabilitySchedules}
-        />
+        {serviceType === ServiceType.AvailabilityBased && (
+          <SaveAvailabilityBasedServiceForm
+            defaultValues={initFormValues}
+            onSubmitted={onClose}
+            availableQuestions={availableQuestions}
+            availableAvailabilitySchedules={availableAvailabilitySchedules}
+          />
+        )}
+        {serviceType === ServiceType.ScheduledEvent && (
+          <SaveServiceForm
+            defaultValues={initFormValues}
+            onSubmitted={onClose}
+            availableQuestions={availableQuestions}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

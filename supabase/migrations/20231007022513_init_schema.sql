@@ -23,32 +23,19 @@ alter table "public"."businesses" enable row level security;
 
 create table "public"."services" (
     "id" uuid not null default gen_random_uuid(),
-    "service_category_id" uuid,
+    "business_id" uuid,
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
     "title" text not null,
     "description" text,
     "booking_limit" bigint,
     "duration" bigint not null,
-    "price" bigint not null
+    "price" bigint not null,
+    "color" text
 );
 
 
 alter table "public"."services" enable row level security;
-
-create table "public"."service_categories" (
-    "id" uuid not null default gen_random_uuid(),
-    "created_at" timestamp with time zone default now(),
-    "updated_at" timestamp with time zone default now(),
-    "title" text not null,
-    "description" text,
-    "color" text not null,
-    "priority" integer,
-    "business_id" uuid not null
-);
-
-
-alter table "public"."service_categories" enable row level security;
 
 create table "public"."service_events" (
     "id" uuid not null default gen_random_uuid(),
@@ -56,6 +43,7 @@ create table "public"."service_events" (
     "updated_at" timestamp with time zone default now(),
     "service_id" uuid not null,
     "start" timestamp with time zone not null,
+    "end" timestamp with time zone not null,
     "recurrence_start" timestamp with time zone,
     "recurrence_interval" bigint,
     "recurrence_count" bigint
@@ -68,7 +56,6 @@ create table "public"."service_events_staffs" (
     "service_event_id" uuid not null,
     "staff_id" uuid not null
 );
-
 
 alter table "public"."service_events_staffs" enable row level security;
 
@@ -104,8 +91,6 @@ CREATE UNIQUE INDEX businesses_pkey ON public.businesses USING btree (id);
 
 CREATE UNIQUE INDEX businesses_handle_unique ON public.businesses USING btree (handle);
 
-CREATE UNIQUE INDEX service_categories_pkey ON public.service_categories USING btree (id);
-
 CREATE UNIQUE INDEX services_pkey ON public.services USING btree (id);
 
 CREATE UNIQUE INDEX service_events_pkey ON public.service_events USING btree (id);
@@ -120,8 +105,6 @@ alter table "public"."businesses" add constraint "businesses_pkey" PRIMARY KEY u
 
 alter table "public"."services" add constraint "services_pkey" PRIMARY KEY using index "services_pkey";
 
-alter table "public"."service_categories" add constraint "service_categories_pkey" PRIMARY KEY using index "service_categories_pkey";
-
 alter table "public"."service_events" add constraint "service_events_pkey" PRIMARY KEY using index "service_events_pkey";
 
 alter table "public"."service_events_staffs" add constraint "service_events_staffs_pkey" PRIMARY KEY using index "service_events_staffs_pkey";
@@ -134,13 +117,9 @@ alter table "public"."businesses" add constraint "businesses_owner_id_fkey" FORE
 
 alter table "public"."businesses" validate constraint "businesses_owner_id_fkey";
 
-alter table "public"."services" add constraint "services_service_category_id_fkey" FOREIGN KEY (service_category_id) REFERENCES service_categories(id) ON DELETE SET NULL not valid;
+alter table "public"."services" add constraint "services_business_id_fkey" FOREIGN KEY (business_id) REFERENCES businesses(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
-alter table "public"."services" validate constraint "services_service_category_id_fkey";
-
-alter table "public"."service_categories" add constraint "service_categories_business_id_fkey" FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE not valid;
-
-alter table "public"."service_categories" validate constraint "service_categories_business_id_fkey";
+alter table "public"."services" validate constraint "services_business_id_fkey";
 
 alter table "public"."service_events" add constraint "service_events_service_id_fkey" FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE CASCADE not valid;
 

@@ -13,6 +13,8 @@ import { useState } from "react";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { saveService } from "@/src/data/service";
 import { strListDiff } from "@/src/utils";
+import InputSelect from "../ui/input/select";
+import _ from "lodash";
 
 const formSchema = z.object({
   title: z
@@ -29,49 +31,46 @@ const formSchema = z.object({
       message: "Price must be a positive number.",
     })
     .transform((val) => val * 100),
-  duration: z
-    .number({ invalid_type_error: "Duration cannot be empty." })
-    .positive({
-      message: "Duration must be a positive number.",
-    })
-    .transform((val) => val * 60000),
-  booking_limit: z
-    .number({ invalid_type_error: "Booking limit cannot be empty." })
-    .step(1, "Booking limit must be a whole number.")
-    .positive({
-      message: "Booking limit must be a positive number.",
-    }),
+  pricing_interval: z.string(), // This is used only if service type is availability based.
+  availability_schedule_id: z.string(),
 });
+``;
+// We use string keys here, since we use this const in InputSelect.
+export const PRICING_INTERVALS: { [key: string]: string } = {
+  "60000": "/ min",
+  "3600000": "/ hour",
+};
 
-type SaveServiceFormProps = {
-  defaultValues?: Partial<SaveServiceFormSchemaType>;
+type SaveAvailabilityBasedServiceFormProps = {
+  defaultValues?: Partial<SaveAvailabilityBasedServiceFormSchemaType>;
   availableQuestions?: Tables<"questions">[];
   availableAvailabilitySchedules?: Tables<"availability_schedules">[];
   onSubmitted: () => void;
 };
 
-export type SaveServiceFormSchemaType = z.infer<typeof formSchema> & {
+export type SaveAvailabilityBasedServiceFormSchemaType = z.infer<
+  typeof formSchema
+> & {
   id?: string;
   question_ids?: string[];
 };
 
-export default function SaveServiceForm({
+export default function SaveAvailabilityBasedServiceForm({
   defaultValues,
   availableQuestions,
+  availableAvailabilitySchedules,
   onSubmitted,
-}: SaveServiceFormProps) {
+}: SaveAvailabilityBasedServiceFormProps) {
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
-  } = useForm<SaveServiceFormSchemaType>({
+  } = useForm<SaveAvailabilityBasedServiceFormSchemaType>({
     defaultValues: {
       ...defaultValues,
       price: defaultValues?.price ? defaultValues.price / 100 : undefined,
-      duration: defaultValues?.duration
-        ? defaultValues.duration / 60000
-        : undefined,
     },
     resolver: zodResolver(formSchema),
   });
@@ -88,17 +87,22 @@ export default function SaveServiceForm({
     defaultValues?.question_ids ?? [],
   );
 
-  const onFormSuccess = (formValues: SaveServiceFormSchemaType) => {
+  const availabilityScheduleId = watch("availability_schedule_id");
+
+  const onFormSuccess = (
+    formValues: SaveAvailabilityBasedServiceFormSchemaType,
+  ) => {
     const questionChanges = strListDiff(
       defaultValues?.question_ids ?? [],
       selectedQuestions,
     );
+
     _saveService({
       service: {
         ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
-        ...formValues,
+        ..._.omit(formValues, "pricing_interval"),
         business_id: currentBusiness.id,
-        availability_schedule_id: null,
+        duration: Number(formValues.pricing_interval),
       },
       questionIds: questionChanges,
     });
@@ -129,37 +133,59 @@ export default function SaveServiceForm({
         inputProps={{ placeholder: "Price", type: "number", step: "any" }}
         className="pr-0"
         prefix={<span className="mr-1 text-sm text-muted-foreground">$</span>}
+        suffix={
+          <InputSelect
+            className="w-[100px] rounded-bl-none rounded-tl-none"
+            control={control}
+            error={errors.pricing_interval?.message}
+            rhfKey="pricing_interval"
+            options={Object.keys(PRICING_INTERVALS).map((k: string) => ({
+              label: PRICING_INTERVALS[k],
+              value: k,
+            }))}
+          />
+        }
         label="Price"
       />
-      <InputText
-        rhfKey="duration"
-        register={register}
-        registerOptions={{ valueAsNumber: true }}
-        error={errors.duration?.message}
-        inputProps={{
-          placeholder: "Duration",
-          type: "number",
-          step: "any",
-        }}
-        suffix={
-          <span className="mr-1 text-sm text-muted-foreground">mins</span>
-        }
-        label="Duration"
-      />
-      <>
-        <InputText
-          rhfKey="booking_limit"
-          register={register}
-          registerOptions={{ valueAsNumber: true }}
-          error={errors.booking_limit?.message}
-          inputProps={{
-            placeholder: "Maximum number of bookings allowed",
-            type: "number",
-            step: "any",
-          }}
-          label="Booking Limit"
-        />
-      </>
+
+      <div>
+        {(availableAvailabilitySchedules || []).length === 0 ? (
+          <div className="flex flex-col gap-y-2">
+            <Label>Availability Schedule</Label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/app/business/availability");
+              }}
+            >
+              No schedule found. Start by creating one.
+            </Button>
+          </div>
+        ) : (
+          <InputSelect
+            control={control}
+            description="The service will be available for booking during the times specified in the schedule."
+            options={[
+              ...(availableAvailabilitySchedules || []).map((q) => ({
+                label: q.name,
+                value: q.id,
+              })),
+            ]}
+            inputProps={{
+              placeholder: "Select an availability schedule",
+            }}
+            rhfKey="availability_schedule_id"
+            label="Availability Schedule"
+          />
+        )}
+        {!availabilityScheduleId && (
+          <p className="mt-1.5 text-sm text-destructive">
+            Please select an availability schedule.
+          </p>
+        )}
+      </div>
 
       {(availableQuestions || []).length === 0 ? (
         <div className="flex flex-col gap-y-2">
@@ -193,7 +219,10 @@ export default function SaveServiceForm({
         />
       )}
 
-      <Button className="float-right mt-6" disabled={isPending}>
+      <Button
+        className="float-right mt-6"
+        disabled={isPending || !availabilityScheduleId}
+      >
         {isPending ? <Loader2 className="animate-spin" /> : "Save"}
       </Button>
     </form>

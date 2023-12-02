@@ -35,9 +35,11 @@ import { SaveAvailabilityScheduleFormSchemaType } from "@/src/components/forms/s
 import { useState } from "react";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import EmptyState from "@/src/components/shared/empty-state";
+import { useSearchParams } from "next/navigation";
 
 export default function Availability() {
   const { currentBusiness } = useCurrentBusinessContext();
+  const searchParams = useSearchParams();
   const {
     data: availabilitySchedules,
     isLoading: isLoadingAvailabilitySchedules,
@@ -104,7 +106,11 @@ export default function Availability() {
           }
         />
       ) : (
-        <Tabs defaultValue={availabilitySchedules?.[0]?.id}>
+        <Tabs
+          defaultValue={
+            searchParams.get("id") || availabilitySchedules?.[0]?.id
+          }
+        >
           <div className="mb-8 flex max-w-full items-center overflow-x-scroll">
             <TabsList className="relative overflow-visible">
               {(availabilitySchedules || []).map((schedule) => (

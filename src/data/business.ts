@@ -1,8 +1,17 @@
-import { BusinessData, BusinessSchedule } from "@/types";
 import { SupabaseOptions } from "./types";
 import { throwOrData, throwOrJsonData } from "./util";
+import { Tables } from "@/types/db.extension";
 
-export const getBusinessScheduleByTimeRange = async (
+export type GetScheduledEventsInTimeRangeResponseSingle =
+  Tables<"service_events"> & {
+    color: string;
+    staffs: Tables<"staffs">[];
+    service: Tables<"services"> & { questions: Tables<"questions"> };
+    live_stream?: Tables<"service_event_live_streams">;
+  };
+export type GetScheduledEventsInTimeRangeResponse =
+  GetScheduledEventsInTimeRangeResponseSingle[];
+export const getScheduledEventsInTimeRange = async (
   {
     businessHandle,
     start,
@@ -10,8 +19,8 @@ export const getBusinessScheduleByTimeRange = async (
   }: { businessHandle: string; start: Date; end: Date },
   { client }: SupabaseOptions,
 ) => {
-  return throwOrJsonData<BusinessSchedule>(
-    client.rpc("get_business_schedule_in_range", {
+  return throwOrJsonData<GetScheduledEventsInTimeRangeResponse>(
+    client.rpc("get_scheduled_events_in_time_range", {
       business_handle: businessHandle,
       start_time: start.toISOString(),
       end_time: end.toISOString(),
@@ -19,11 +28,16 @@ export const getBusinessScheduleByTimeRange = async (
   );
 };
 
+export type GetBusinessDataResponse = {
+  services: (Tables<"services"> & { questions: Tables<"questions"> })[];
+  staffs: Tables<"staffs">[];
+  availability_schedules: Tables<"availability_schedules">[];
+};
 export const getBusinessData = async (
   businessHandle: string,
   { client }: SupabaseOptions,
 ) => {
-  return throwOrJsonData<BusinessData>(
+  return throwOrJsonData<GetBusinessDataResponse>(
     client.rpc("get_business_data", {
       business_handle: businessHandle,
     }),
@@ -35,7 +49,11 @@ export const getBusinessByHandle = async (
   { client }: SupabaseOptions,
 ) => {
   return throwOrData(
-    client.from("businesses").select("*").eq("handle", businessHandle).single(),
+    client
+      .from("businesses")
+      .select("*")
+      .eq("handle", businessHandle)
+      .maybeSingle(),
   );
 };
 

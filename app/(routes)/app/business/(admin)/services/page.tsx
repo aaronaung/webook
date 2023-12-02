@@ -1,48 +1,46 @@
 "use client";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
-import {
-  PencilSquareIcon,
-  Square3Stack3DIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import _ from "lodash";
-import { SaveServiceCategoryDialog } from "@/src/components/dialogs/save-service-category-dialog";
 import { useCallback, useState } from "react";
+import ServicesTable from "@/src/components/tables/services-table";
+
+import { PlusIcon } from "lucide-react";
+import {
+  SaveServiceDialog,
+  ServiceType,
+} from "@/src/components/dialogs/save-service-dialog";
+import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
+import { Row } from "@tanstack/react-table";
+import { RowAction } from "@/src/components/tables/types";
+import EmptyState from "@/src/components/shared/empty-state";
+import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
+import {
+  GetServicesResponseSingle,
+  deleteService,
+  getServices,
+} from "@/src/data/service";
+import { getQuestions } from "@/src/data/question";
+import { getAvailabilitySchedules } from "@/src/data/availability";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/src/components/ui/tabs";
-import ServicesTable from "@/src/components/tables/services-table";
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuTrigger,
-} from "@/src/components/ui/context-menu";
+  PRICING_INTERVALS,
+  SaveAvailabilityBasedServiceFormSchemaType,
+} from "@/src/components/forms/save-availability-based-service-form";
 
-import { PlusIcon } from "lucide-react";
-import { SaveServiceDialog } from "@/src/components/dialogs/save-service-dialog";
-import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
-import { Row } from "@tanstack/react-table";
-import { Service, ServiceCategoryWithServices } from "@/types";
-import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
-import { RowAction } from "@/src/components/tables/types";
-import { SaveServiceCategoryFormSchemaType } from "@/src/components/forms/save-service-category-form";
-import EmptyState from "@/src/components/shared/empty-state";
-import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
-import {
-  deleteService,
-  deleteServiceCategory,
-  getServiceCategoriesWithServices,
-} from "@/src/data/service";
-import { getQuestions } from "@/src/data/question";
-import { getAvailabilitySchedules } from "@/src/data/availability";
+type ServiceDialogState = {
+  isOpen: boolean;
+  initFormValues?: Partial<
+    SaveServiceFormSchemaType | SaveAvailabilityBasedServiceFormSchemaType
+  >;
+  serviceType: ServiceType;
+};
 
 // TODO: IMPORTANT (the styling doesn't work perfect for a lot of service categories on mobile)
 export default function Services() {
@@ -56,10 +54,14 @@ export default function Services() {
     },
   );
 
-  const { data: serviceCategories, isLoading: isServiceCategoriesLoading } =
-    useSupaQuery(getServiceCategoriesWithServices, currentBusiness?.id, {
-      queryKey: ["getServiceCategoriesWithServices", currentBusiness.id],
-    });
+  const { data: services, isLoading: isServicesLoading } = useSupaQuery(
+    getServices,
+    currentBusiness.id,
+    {
+      queryKey: ["getServices", currentBusiness.id],
+    },
+  );
+
   const {
     data: availabilitySchedules,
     isLoading: isAvailabilitySchedulesLoading,
@@ -67,56 +69,51 @@ export default function Services() {
     queryKey: ["getAvailabilitySchedules", currentBusiness.id],
   });
 
-  const { mutate: _deleteServiceCategory, isPending: isDeleteSgPending } =
-    useSupaMutation(deleteServiceCategory, {
-      invalidate: [["getServiceCategoriesWithServices", currentBusiness.id]],
-    });
-
   const { mutate: _deleteService, isPending: isDeleteSvcPending } =
     useSupaMutation(deleteService, {
-      invalidate: [["getServiceCategoriesWithServices", currentBusiness.id]],
+      invalidate: [["getServices", currentBusiness.id]],
     });
 
-  const [sgDialogState, setSgDialogState] = useState<{
-    isOpen: boolean;
-    initFormValues?: SaveServiceCategoryFormSchemaType;
-  }>({
+  const [svcDialogState, setSvcDialogState] = useState<ServiceDialogState>({
     isOpen: false,
-  });
-
-  const [svcDialogState, setSvcDialogState] = useState<{
-    isOpen: boolean;
-    initFormValues?: SaveServiceFormSchemaType;
-    serviceCategoryId?: string;
-  }>({
-    isOpen: false,
-  });
-
-  const [confirmDeleteDialogState, setConfirmDeleteDialogState] = useState<{
-    isOpen: boolean;
-    serviceCategoryId?: string;
-  }>({
-    isOpen: false,
+    serviceType: ServiceType.AvailabilityBased,
   });
 
   const onSvcRowAction = useCallback(
-    (row: Row<Service>, action: RowAction) => {
-      console.log(row);
+    (row: Row<GetServicesResponseSingle>, action: RowAction) => {
       switch (action) {
         case RowAction.EDIT:
+          const serviceType = row.original.availability_schedule_id
+            ? ServiceType.AvailabilityBased
+            : ServiceType.ScheduledEvent;
+
+          const initFormValues =
+            serviceType === ServiceType.AvailabilityBased
+              ? {
+                  id: row.original.id,
+                  title: row.original.title,
+                  price: row.original.price ?? 0,
+                  pricing_interval:
+                    Object.keys(PRICING_INTERVALS).find(
+                      (k) => k === String(row.original.duration),
+                    ) || Object.keys(PRICING_INTERVALS)[1],
+                  question_ids: (row.original.questions ?? []).map((q) => q.id),
+                  availability_schedule_id:
+                    row.original.availability_schedule_id,
+                }
+              : {
+                  id: row.original.id,
+                  title: row.original.title,
+                  price: row.original.price ?? 0,
+                  duration: row.original.duration ?? 0,
+                  booking_limit: row.original.booking_limit ?? 0,
+                  question_ids: (row.original.questions ?? []).map((q) => q.id),
+                };
+          console.log(initFormValues);
           setSvcDialogState({
             isOpen: !svcDialogState.isOpen,
-            initFormValues: {
-              id: row.original.id,
-              title: row.original.title,
-              price: row.original.price ?? 0,
-              duration: row.original.duration ?? 0,
-              booking_limit: row.original.booking_limit ?? 0,
-              question_ids: (row.original.questions ?? []).map((q) => q.id),
-              availability_schedule_id:
-                row.original.availability_schedule_id ?? undefined,
-            },
-            serviceCategoryId: row.original.service_category_id ?? undefined,
+            initFormValues,
+            serviceType,
           });
           break;
         case RowAction.DELETE:
@@ -131,21 +128,8 @@ export default function Services() {
     [_deleteService, isDeleteSvcPending, svcDialogState.isOpen],
   );
 
-  function handleSgDelete(sg: ServiceCategoryWithServices) {
-    if (!_.isEmpty(sg.services)) {
-      setConfirmDeleteDialogState({
-        isOpen: true,
-        serviceCategoryId: sg.id,
-      });
-      return;
-    }
-    if (!isDeleteSgPending) {
-      _deleteServiceCategory(sg.id);
-    }
-  }
-
   if (
-    isServiceCategoriesLoading ||
+    isServicesLoading ||
     isQuestionsLoading ||
     isAvailabilitySchedulesLoading
   ) {
@@ -153,30 +137,10 @@ export default function Services() {
   }
   return (
     <div className="flex w-full justify-center">
-      <DeleteConfirmationDialog
-        label="Deleting service category will delete all services in it. Are you sure?"
-        isOpen={confirmDeleteDialogState.isOpen}
-        onClose={() =>
-          setConfirmDeleteDialogState({
-            ...confirmDeleteDialogState,
-            isOpen: !confirmDeleteDialogState.isOpen,
-          })
-        }
-        onDelete={() => {
-          _deleteServiceCategory(confirmDeleteDialogState.serviceCategoryId!);
-        }}
-      />
-      <SaveServiceCategoryDialog
-        isOpen={sgDialogState.isOpen}
-        initFormValues={sgDialogState.initFormValues}
-        onClose={() =>
-          setSgDialogState({ ...sgDialogState, isOpen: !sgDialogState.isOpen })
-        }
-      />
       <SaveServiceDialog
         isOpen={svcDialogState.isOpen}
+        serviceType={svcDialogState.serviceType}
         initFormValues={svcDialogState.initFormValues}
-        serviceCategoryId={svcDialogState.serviceCategoryId}
         availableQuestions={questions}
         availableAvailabilitySchedules={availabilitySchedules}
         onClose={() =>
@@ -186,120 +150,120 @@ export default function Services() {
           })
         }
       />
-      {_.isEmpty(serviceCategories) ? (
-        <EmptyState
-          Icon={Square3Stack3DIcon}
-          title="No service category found"
-          description="Service categories are used to group your services."
-          actionButtonText="Start by creating one"
-          onAction={() =>
-            setSgDialogState({
-              initFormValues: undefined,
-              isOpen: !sgDialogState.isOpen,
-            })
-          }
-        />
-      ) : (
-        <div className="w-full">
-          <Tabs defaultValue={serviceCategories?.[0].id}>
-            <div className="flex max-w-full items-center overflow-x-scroll">
-              <TabsList className="relative overflow-visible">
-                {(serviceCategories || []).map((sg) => (
-                  <ContextMenu key={sg.id}>
-                    <ContextMenuTrigger>
-                      <TabsTrigger key={sg.id} value={sg.id}>
-                        {sg.color && (
-                          <div
-                            className="mr-1.5 h-3 w-3 rounded !bg-cover !bg-center transition-all"
-                            style={{ background: sg.color }}
-                          ></div>
-                        )}
-                        {sg.title}
-                      </TabsTrigger>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="w-fit min-w-[200px]">
-                      <ContextMenuLabel inset>{sg.title}</ContextMenuLabel>
-                      <ContextMenuSeparator />
-                      <ContextMenuItem
-                        inset
-                        onClick={() =>
-                          setSgDialogState({
-                            initFormValues: sg,
-                            isOpen: !sgDialogState.isOpen,
-                          })
-                        }
-                      >
-                        Edit
-                        <ContextMenuShortcut>
-                          <PencilSquareIcon className="h-5 w-5" />
-                        </ContextMenuShortcut>
-                      </ContextMenuItem>
-                      <ContextMenuItem inset onClick={() => handleSgDelete(sg)}>
-                        Delete
-                        <ContextMenuShortcut>
-                          <TrashIcon className="h-5 w-5 text-destructive" />
-                        </ContextMenuShortcut>
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                ))}
-              </TabsList>
-              <Button
-                className="ml-2"
-                onClick={() =>
-                  setSgDialogState({
-                    initFormValues: undefined,
-                    isOpen: !sgDialogState.isOpen,
-                  })
-                }
-              >
-                <PlusIcon className="mr-1 h-5 w-5" /> New category
-              </Button>
-            </div>
 
-            {(serviceCategories || []).map((sg) => (
-              <TabsContent key={sg.id} value={sg.id}>
-                {_.isEmpty(sg.services) ? (
-                  <EmptyState
-                    Icon={Square3Stack3DIcon}
-                    title="No service found"
-                    description="Create services for your customers to start booking."
-                    actionButtonText="New service"
-                    onAction={() =>
-                      setSvcDialogState({
-                        isOpen: !svcDialogState.isOpen,
-                        initFormValues: undefined,
-                        serviceCategoryId: sg.id,
-                      })
-                    }
-                  />
-                ) : (
-                  <>
-                    <div className="mt-4 max-h-[600px] overflow-scroll ">
-                      <ServicesTable
-                        data={sg.services || []}
-                        onRowAction={onSvcRowAction}
-                      />
-                    </div>
-                    <Button
-                      className="float-right mt-2"
-                      onClick={() =>
-                        setSvcDialogState({
-                          isOpen: !svcDialogState.isOpen,
-                          initFormValues: undefined,
-                          serviceCategoryId: sg.id,
-                        })
-                      }
-                    >
-                      <PlusIcon className="mr-1 h-5 w-5" /> New service
-                    </Button>
-                  </>
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-      )}
+      <div className="w-full">
+        <Tabs defaultValue={ServiceType.AvailabilityBased}>
+          <TabsList>
+            <TabsTrigger
+              key={ServiceType.AvailabilityBased}
+              value={ServiceType.AvailabilityBased}
+            >
+              Availability based (Time flexible)
+            </TabsTrigger>
+            <TabsTrigger
+              key={ServiceType.ScheduledEvent}
+              value={ServiceType.ScheduledEvent}
+            >
+              Event based (Time specific)
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value={ServiceType.AvailabilityBased}>
+            <ServicesTabContent
+              serviceType={ServiceType.AvailabilityBased}
+              services={(services || []).filter((s) =>
+                Boolean(s.availability_schedule_id),
+              )}
+              onSvcRowAction={onSvcRowAction}
+              svcDialogState={svcDialogState}
+              setSvcDialogState={setSvcDialogState}
+            />
+          </TabsContent>
+          <TabsContent value={ServiceType.ScheduledEvent}>
+            <ServicesTabContent
+              serviceType={ServiceType.ScheduledEvent}
+              services={(services || []).filter(
+                (s) => !Boolean(s.availability_schedule_id),
+              )}
+              onSvcRowAction={onSvcRowAction}
+              svcDialogState={svcDialogState}
+              setSvcDialogState={setSvcDialogState}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
+  );
+}
+
+function ServicesTabContent({
+  serviceType,
+  services,
+  onSvcRowAction,
+  svcDialogState,
+  setSvcDialogState,
+}: {
+  serviceType: ServiceType;
+  services: GetServicesResponseSingle[];
+  onSvcRowAction: (
+    row: Row<GetServicesResponseSingle>,
+    action: RowAction,
+  ) => void;
+  svcDialogState: ServiceDialogState;
+  setSvcDialogState: React.Dispatch<React.SetStateAction<ServiceDialogState>>;
+}) {
+  return _.isEmpty(services) ? (
+    <EmptyState
+      Icon={Square3Stack3DIcon}
+      title="No service found"
+      description="Create services for your customers to start booking."
+      actionButtonText="New service"
+      onAction={() =>
+        setSvcDialogState({
+          isOpen: !svcDialogState.isOpen,
+          initFormValues: {
+            pricing_interval: Object.keys(PRICING_INTERVALS)[1], // hourly,
+          },
+          serviceType,
+        })
+      }
+    />
+  ) : (
+    <>
+      <div className="mt-4 max-h-[600px] overflow-scroll ">
+        <ServicesTable
+          data={services || []}
+          hiddenColumns={
+            serviceType === ServiceType.AvailabilityBased
+              ? {
+                  id: true,
+                  booking_limit: true,
+                  duration: true,
+                  questions: true,
+                }
+              : {
+                  id: true,
+                  questions: true,
+                  availability_schedules: true,
+                }
+          }
+          onRowAction={onSvcRowAction}
+        />
+      </div>
+      <Button
+        className="float-right mt-2"
+        onClick={() =>
+          setSvcDialogState({
+            isOpen: !svcDialogState.isOpen,
+            initFormValues: {
+              pricing_interval: Object.keys(PRICING_INTERVALS)[1], // hourly,
+            },
+            serviceType,
+          })
+        }
+      >
+        <PlusIcon className="mr-1 h-5 w-5" /> New service
+      </Button>
+    </>
   );
 }

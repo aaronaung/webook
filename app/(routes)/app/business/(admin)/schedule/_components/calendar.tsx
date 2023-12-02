@@ -1,11 +1,12 @@
 import DnDCalendar, { localizer } from "@/src/components/ui/dnd-calendar";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { getBusinessScheduleByTimeRange } from "@/src/data/business";
+import {
+  GetScheduledEventsInTimeRangeResponseSingle,
+  getScheduledEventsInTimeRange,
+} from "@/src/data/business";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
-import { ServiceEvent } from "@/types";
 import {
   add,
-  addMilliseconds,
   format,
   isBefore,
   millisecondsToHours,
@@ -19,7 +20,7 @@ import {
   EventInteractionArgs,
 } from "react-big-calendar/lib/addons/dragAndDrop";
 
-export type CalEvent = ServiceEvent & {
+export type CalEvent = GetScheduledEventsInTimeRangeResponseSingle & {
   isRecurrentEvent?: boolean;
 };
 
@@ -49,86 +50,84 @@ export default function ScheduleCalendar({
 
   // @todo (important) - right now we only fetch 6 month window of data, and we don't have a dynamic way of fetching more data as the user moves around the calendar.
   const { data, isLoading: isBusinessScheduleDataLoading } = useSupaQuery(
-    getBusinessScheduleByTimeRange,
+    getScheduledEventsInTimeRange,
     {
       businessHandle: currentBusiness.handle,
       start: add(firstDayCurrentMonth, { months: -3 }),
       end: add(firstDayCurrentMonth, { months: 3 }),
     },
     {
-      queryKey: ["getBusinessScheduleByTimeRange", currentBusiness.handle],
+      queryKey: ["getScheduledEventsInTimeRange", currentBusiness.handle],
     },
   );
 
   const serviceEvents =
     (data || [])
-      .map(
-        (sg) =>
-          sg.service_events?.map((se) => {
-            const baseEvent = {
-              ...se,
-              title: se.service.title,
-              duration: se.service.duration,
-              price: se.service.price,
-            };
+      .map((se) => {
+        const baseEvent = {
+          ...se,
+          title: se.service.title,
+          duration: se.service.duration,
+          price: se.service.price,
+        };
 
-            const recurringEvents = [];
-            if (
-              se.recurrence_start &&
-              se.recurrence_count &&
-              se.recurrence_interval
-            ) {
-              const eventStart = new Date(se.start);
-              let recurrenceStart = new Date(se.recurrence_start);
+        const recurringEvents = [];
+        if (
+          se.recurrence_start &&
+          se.recurrence_count &&
+          se.recurrence_interval
+        ) {
+          const eventStart = new Date(se.start);
+          let recurrenceStart = new Date(se.recurrence_start);
 
-              if (isBefore(recurrenceStart, eventStart)) {
-                recurrenceStart = eventStart;
-              }
+          if (isBefore(recurrenceStart, eventStart)) {
+            recurrenceStart = eventStart;
+          }
 
-              // Determine how many jumps we need to make to get to the first recurring event.
-              const numJumps =
-                Math.floor(
-                  (recurrenceStart.getTime() - eventStart.getTime()) /
-                    se.recurrence_interval,
-                ) + 1;
-              const firstRecurringStart = add(eventStart, {
-                hours: numJumps * millisecondsToHours(se.recurrence_interval),
-              });
-              const recurrenceEnd = add(firstRecurringStart, {
+          // Determine how many jumps we need to make to get to the first recurring event.
+          const numJumps =
+            Math.floor(
+              (recurrenceStart.getTime() - eventStart.getTime()) /
+                se.recurrence_interval,
+            ) + 1;
+          const firstRecurringStart = add(eventStart, {
+            hours: numJumps * millisecondsToHours(se.recurrence_interval),
+          });
+          const recurrenceEnd = add(firstRecurringStart, {
+            hours: millisecondsToHours(
+              se.recurrence_count * se.recurrence_interval,
+            ),
+          });
+
+          // Loop through all the recurring events and add them to the calendar.
+          for (
+            let i = firstRecurringStart;
+            i < recurrenceEnd;
+            i = add(i, {
+              hours: millisecondsToHours(se.recurrence_interval),
+            })
+          ) {
+            recurringEvents.push({
+              ...baseEvent,
+              start: i,
+              end: add(i, {
                 hours: millisecondsToHours(
-                  se.recurrence_count * se.recurrence_interval,
+                  new Date(se.end).getTime() - new Date(se.start).getTime(),
                 ),
-              });
-
-              // Loop through all the recurring events and add them to the calendar.
-              for (
-                let i = firstRecurringStart;
-                i < recurrenceEnd;
-                i = add(i, {
-                  hours: millisecondsToHours(se.recurrence_interval),
-                })
-              ) {
-                recurringEvents.push({
-                  ...baseEvent,
-                  start: i,
-                  end: addMilliseconds(i, se.service.duration),
-                  isRecurrentEvent: true,
-                });
-              }
-            }
-            return [
-              {
-                ...baseEvent,
-                start: new Date(se?.start || ""),
-                end: addMilliseconds(
-                  new Date(se?.start || ""),
-                  se.service.duration,
-                ),
-              },
-              ...recurringEvents,
-            ];
-          }),
-      )
+              }),
+              isRecurrentEvent: true,
+            });
+          }
+        }
+        return [
+          {
+            ...baseEvent,
+            start: new Date(se?.start || ""),
+            end: new Date(se?.end || ""),
+          },
+          ...recurringEvents,
+        ];
+      })
       ?.flat(2) || [];
 
   const onNavigate = useCallback(
