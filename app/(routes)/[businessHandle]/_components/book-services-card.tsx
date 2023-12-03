@@ -26,6 +26,7 @@ export default function BookServicesCard({
         <div className="flex flex-col  divide-y">
           {(services || []).map((service) => (
             <Link
+              key={service.id}
               href={`${business.handle}/availability/${service.availability_schedule_id}`}
             >
               <div
