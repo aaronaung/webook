@@ -305,7 +305,7 @@ export default function SaveServiceEventForm({
       {(availableAvailabilitySchedules || []).length > 0 && (
         <InputSelect
           control={control}
-          description="Assigning the event to an availability schedule ensures the event's time slot is blocked off for booking in said schedule."
+          description="Assigning a schedule to this event will block off the time slot in the schedule, and make it unavailable for booking."
           options={[
             {
               label: "None",

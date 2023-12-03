@@ -4,13 +4,20 @@ import { Button } from "@/src/components/ui/button";
 import { useState } from "react";
 import ScheduledEventsCard from "./scheduled-events-card";
 import BookServicesCard from "./book-services-card";
+import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
 
 enum TabTypes {
   BOOK_SERVICES,
   SCHEDULED_EVENTS,
 }
-export default function Tabs({ business }: { business: Tables<"businesses"> }) {
+export default function Tabs({
+  services,
+  business,
+}: {
+  services: GetServicesResponse;
+  business: Tables<"businesses">;
+}) {
   const [selected, setSelected] = useState(TabTypes.BOOK_SERVICES);
   return (
     <>
@@ -26,7 +33,7 @@ export default function Tabs({ business }: { business: Tables<"businesses"> }) {
           }
           className="rounded-full hover:bg-primary hover:text-secondary"
         >
-          Book services
+          Book now
         </Button>
         <Button
           onClick={() => {
@@ -43,7 +50,10 @@ export default function Tabs({ business }: { business: Tables<"businesses"> }) {
         </Button>
       </div>
       {selected === TabTypes.BOOK_SERVICES ? (
-        <BookServicesCard business={business} />
+        <BookServicesCard
+          business={business}
+          services={services.filter((s) => s.availability_schedule_id)}
+        />
       ) : (
         <ScheduledEventsCard business={business} />
       )}

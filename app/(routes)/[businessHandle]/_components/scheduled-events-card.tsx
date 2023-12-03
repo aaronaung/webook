@@ -22,6 +22,8 @@ export default function ScheduledEventsCard({
   business: Tables<"businesses">;
 }) {
   const router = useRouter();
+
+  // We make client side query here because we want the time to be relative to the user's timezone.
   const { data, isLoading } = useSupaQuery(
     getScheduledEventsInTimeRange,
     {

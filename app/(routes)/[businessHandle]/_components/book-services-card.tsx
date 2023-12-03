@@ -1,67 +1,62 @@
+import { PRICING_INTERVALS } from "@/src/components/forms/save-availability-based-service-form";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
+  CardTitle,
 } from "@/src/components/ui/card";
-import { getServicesWithAvailabilitySchedule } from "@/src/data/service";
-import { useSupaQuery } from "@/src/hooks/use-supabase";
+import PriceTag from "@/src/components/ui/price-tag";
+import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
+import Link from "next/link";
 
 export default function BookServicesCard({
   business,
+  services,
 }: {
   business: Tables<"businesses">;
+  services: GetServicesResponse;
 }) {
-  const { data, isLoading } = useSupaQuery(
-    getServicesWithAvailabilitySchedule,
-    business.id,
-    {
-      queryKey: ["getServicesWithAvailabilitySchedule", business.id],
-    },
-  );
-
-  if (isLoading) {
-    return <>Loading...</>;
-  }
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardDescription>
-          Click on each service to see its availability schedule
-        </CardDescription>
+        <CardTitle>Services</CardTitle>
       </CardHeader>
       <CardContent>
-        <ul role="list" className="space-y-2 divide-y divide-gray-100 text-sm">
-          {(data || []).map((service) => (
-            <div
-              key={service.id}
-              className="relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400"
+        <div className="flex flex-col  divide-y">
+          {(services || []).map((service) => (
+            <Link
+              href={`${business.handle}/availability/${service.availability_schedule_id}`}
             >
-              <div className="flex-shrink-0">
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src={`https://ui-avatars.com/api/?name=${service.title}`}
-                  alt=""
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <a href="#" className="focus:outline-none">
-                  <span className="absolute inset-0" aria-hidden="true" />
-                  <p className="text-sm font-medium text-gray-900">
+              <div
+                key={service.id}
+                className="flex cursor-pointer items-center gap-x-4 rounded-lg  px-6 py-5 hover:bg-secondary"
+              >
+                <div className="flex-shrink-0">
+                  <img
+                    className="h-10 w-10 rounded-full"
+                    src={`https://ui-avatars.com/api/?name=${service.title}`}
+                    alt=""
+                  />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-y-2">
+                  <p className="text-sm font-medium text-secondary-foreground">
                     {service.title}
                   </p>
-                  <p className="truncate text-sm text-gray-500">
-                    {service.description}
-                  </p>
-                  <p className="truncate text-sm text-gray-500">
-                    $100 per hour
-                  </p>
-                </a>
+                  {service.description && (
+                    <p className="truncate text-sm text-muted-foreground">
+                      {service.description}
+                    </p>
+                  )}
+                  <PriceTag
+                    price={service.price}
+                    suffix={PRICING_INTERVALS[service.duration]}
+                  />
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
-        </ul>
+        </div>
       </CardContent>
     </Card>
   );

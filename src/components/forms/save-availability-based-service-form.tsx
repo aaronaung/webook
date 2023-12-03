@@ -37,8 +37,8 @@ const formSchema = z.object({
 ``;
 // We use string keys here, since we use this const in InputSelect.
 export const PRICING_INTERVALS: { [key: string]: string } = {
-  "60000": "/ min",
-  "3600000": "/ hour",
+  "60000": "per min",
+  "3600000": "per hour",
 };
 
 type SaveAvailabilityBasedServiceFormProps = {

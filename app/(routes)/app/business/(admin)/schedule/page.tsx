@@ -43,7 +43,6 @@ export default function SchedulePage() {
   });
 
   const openUpdateServiceEventDialog = (event: CalEvent, start: Date) => {
-    console.log(event);
     setSvcEventDialogState({
       isOpen: true,
       initFormValues: {

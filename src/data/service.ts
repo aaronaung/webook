@@ -7,6 +7,7 @@ import {
   deleteLiveStreamForServiceEvent,
 } from "./live-stream";
 
+export type GetServicesResponse = GetServicesResponseSingle[];
 export type GetServicesResponseSingle = Awaited<
   ReturnType<typeof getServices>
 >[0];

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { FacebookIcon, InstagramIcon } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import Tabs from "./_components/tabs";
+import { getServices } from "@/src/data/service";
 
 export default async function ServiceProvider({
   params,
@@ -22,6 +23,7 @@ export default async function ServiceProvider({
     console.error(`Business not found for handle: ${params.businessHandle}`);
     redirect("/");
   }
+  const services = await getServices(business.id, supabaseOptions);
 
   return (
     <div>
@@ -47,7 +49,7 @@ export default async function ServiceProvider({
               <FacebookIcon />
             </Button>
           </div>
-          <Tabs business={business} />
+          <Tabs business={business} services={services} />
         </div>
       </div>
     </div>

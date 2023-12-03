@@ -109,7 +109,6 @@ export default function Services() {
                   booking_limit: row.original.booking_limit ?? 0,
                   question_ids: (row.original.questions ?? []).map((q) => q.id),
                 };
-          console.log(initFormValues);
           setSvcDialogState({
             isOpen: !svcDialogState.isOpen,
             initFormValues,
