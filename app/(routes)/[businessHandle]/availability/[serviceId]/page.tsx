@@ -1,9 +1,19 @@
 "use client";
 
+import HeaderWithAction from "@/src/components/shared/header-with-action";
+import { Button } from "@/src/components/ui/button";
 import CalendarV2 from "@/src/components/ui/calendar-v2";
 import { getAvailabilityForServiceOnDate } from "@/src/data/availability";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
-import { add, format, startOfDay, startOfToday } from "date-fns";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import {
+  add,
+  format,
+  millisecondsToMinutes,
+  minutesToMilliseconds,
+  startOfDay,
+  startOfToday,
+} from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Availability({
@@ -32,6 +42,8 @@ export default function Availability({
       ],
     },
   );
+  const service = data?.service;
+  const availability = data?.availability || [];
 
   const handleDaySelect = (newDate: Date) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -39,9 +51,37 @@ export default function Availability({
     router.replace(`${window.location.pathname}?${newParams.toString()}`);
   };
 
+  const getSlotStarts = () => {
+    if (availability.length === 0 || !service) return [];
+    const starts = [];
+
+    for (const availabilitySlot of availability) {
+      let start = availabilitySlot[0];
+      for (
+        let i = start;
+        i + service.duration <= availabilitySlot[1];
+        i += minutesToMilliseconds(30)
+      ) {
+        starts.push(i);
+      }
+    }
+    return starts;
+  };
+
   return (
     <div className="py-6">
       <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
+        <HeaderWithAction
+          title={`${service?.title || ""} (${millisecondsToMinutes(
+            service?.duration || 0,
+          )} 
+          minutes)`}
+          leftActionBtn={
+            <Button onClick={() => router.back()} variant="ghost">
+              <ArrowLeftIcon className="h-5 w-5" />
+            </Button>
+          }
+        />
         <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
           <div className="lg:pr-14">
             <CalendarV2
@@ -54,35 +94,27 @@ export default function Availability({
             <p className="text- my-4 text-sm font-semibold">
               {format(selectedDay, "MMMM dd")}
             </p>
+
             <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
               {isLoading ? (
                 <p>Loading...</p>
               ) : (
-                <>
-                  {(data || []).length > 0 ? (
-                    <>
-                      {data!.map((availability, index) => (
-                        <div key={`${availability[0]}-${index}`}>
-                          {format(
-                            add(startOfDay(selectedDay), {
-                              seconds: availability[0] / 1000,
-                            }),
-                            "h:mm a",
-                          )}
-                          -
-                          {format(
-                            add(startOfDay(selectedDay), {
-                              seconds: availability[1] / 1000,
-                            }),
-                            "h:mm a",
-                          )}
-                        </div>
-                      ))}
-                    </>
-                  ) : (
-                    <p>Nothing for today.</p>
-                  )}
-                </>
+                <div className="flex flex-wrap gap-x-3 gap-y-5">
+                  {getSlotStarts().length === 0 && <p>Nothing for this day.</p>}
+                  {getSlotStarts().map((s) => (
+                    <div
+                      key={s}
+                      className="no-shrink flex h-12 w-28 items-center justify-center rounded-full bg-primary text-secondary"
+                    >
+                      {format(
+                        add(startOfDay(selectedDay), {
+                          seconds: s / 1000,
+                        }),
+                        "h:mm a",
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
             </ol>
           </section>

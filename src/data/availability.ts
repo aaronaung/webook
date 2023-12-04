@@ -124,24 +124,32 @@ export const getAvailabilitySlotOverridesBySchedule = async (
 export const getAvailabilityForServiceOnDate = async (
   { serviceId, date }: { serviceId: string; date: Date },
   { client }: SupabaseOptions,
-): Promise<number[][]> => {
-  const { availability_schedule_id: scheduleId, business } = await throwOrData(
+): Promise<{
+  service:
+    | (Tables<"services"> & { business: Tables<"businesses"> | null })
+    | null;
+  availability: number[][];
+}> => {
+  const service = await throwOrData(
     client
       .from("services")
-      .select("availability_schedule_id, business:businesses(handle, id)")
+      .select("*, business:businesses(*)")
       .eq("id", serviceId)
       .single(),
   );
-  if (!scheduleId || !business) {
+  if (!service.availability_schedule_id || !service.business) {
     // If there's no availability schedule or business attached to the service, return empty array.
-    return [];
+    return {
+      service,
+      availability: [],
+    };
   }
   let availabilitySlots: number[][] = [];
   const overrides = await throwOrData(
     client
       .from("availability_slot_overrides")
       .select("*")
-      .eq("availability_schedule_id", scheduleId)
+      .eq("availability_schedule_id", service.availability_schedule_id)
       .eq("date", date.toISOString()),
   );
   if (overrides.length > 0) {
@@ -155,7 +163,7 @@ export const getAvailabilityForServiceOnDate = async (
       client
         .from("availability_weekly_slots")
         .select("*")
-        .eq("availability_schedule_id", scheduleId)
+        .eq("availability_schedule_id", service.availability_schedule_id)
         .eq("day", Object.keys(Day)[date.getDay()]),
     );
     availabilitySlots = weeklySlots.map((slot) => [
@@ -167,10 +175,10 @@ export const getAvailabilityForServiceOnDate = async (
   const [eventsOnDate, bookingsOnDate] = await Promise.all([
     getScheduledEventsInTimeRange(
       {
-        businessHandle: business.handle,
+        businessHandle: service.business.handle,
         start: startOfDay(date),
         end: endOfDay(date),
-        availabilityScheduleId: scheduleId,
+        availabilityScheduleId: service.availability_schedule_id,
       },
       { client },
     )
@@ -214,13 +222,21 @@ export const getAvailabilityForServiceOnDate = async (
   console.log("available", availabilitySlots);
   console.log("unavailable", unavailableSlots);
   if (unavailableSlots.length === 0) {
-    return availabilitySlots;
+    return {
+      service,
+      availability: availabilitySlots.sort((a, b) => a[0] - b[0]),
+    };
   }
   console.log(
     "findFreeIntervalsInLeft",
     findFreeIntervalsInLeft(availabilitySlots, unavailableSlots),
   );
-  return findFreeIntervalsInLeft(availabilitySlots, unavailableSlots);
+  return {
+    service,
+    availability: flattenIntervals(
+      findFreeIntervalsInLeft(availabilitySlots, unavailableSlots),
+    ),
+  };
 };
 
 // findFreeIntervalsInLeft finds the free intervals in the left array, given the busy intervals in the right array.

@@ -138,7 +138,7 @@ export default function ServiceEventCalendar({
               />
             ))
           ) : (
-            <p>Nothing for today.</p>
+            <p>Nothing for this day.</p>
           )}
         </ol>
       </section>
