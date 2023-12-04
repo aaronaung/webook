@@ -272,6 +272,12 @@ const findFreeIntervalsInLeft = (left: number[][], right: number[][]) => {
         result.push([start, busyStart]);
         continue;
       }
+      if (busyStart > start && busyEnd < end) {
+        // busy interval is completely inside current interval
+        result.push([start, busyStart]);
+        result.push([busyEnd, end]);
+        continue;
+      }
     }
     return result;
   }
