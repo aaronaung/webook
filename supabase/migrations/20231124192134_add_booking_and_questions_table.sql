@@ -73,9 +73,9 @@ alter table "public"."bookings" add constraint "bookings_booker_id_fkey" FOREIGN
 
 alter table "public"."bookings" validate constraint "bookings_booker_id_fkey";
 
-alter table "public"."bookings" add constraint "bookings_availability_service_id_fkey" FOREIGN KEY (availability_service_id) REFERENCES services(id) ON DELETE SET NULL not valid;
+alter table "public"."bookings" add constraint "bookings_availability_based_service_id_fkey" FOREIGN KEY (availability_based_service_id) REFERENCES services(id) ON DELETE SET NULL not valid;
 
-alter table "public"."bookings" validate constraint "bookings_availability_service_id_fkey";
+alter table "public"."bookings" validate constraint "bookings_availability_based_service_id_fkey";
 
 alter table "public"."bookings" add constraint "bookings_booker_id_start_key" UNIQUE using index "bookings_booker_id_start_key";
 

@@ -59,8 +59,8 @@ export default function Availability({
             <>
               {(data || []).length > 0 ? (
                 <>
-                  {data!.map((availability) => (
-                    <div>
+                  {data!.map((availability, index) => (
+                    <div key={`${availability[0]}-${index}`}>
                       {format(
                         add(startOfDay(selectedDay), {
                           seconds: availability[0] / 1000,
