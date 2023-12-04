@@ -40,50 +40,54 @@ export default function Availability({
   };
 
   return (
-    <>
-      <div className="lg:pr-14">
-        <CalendarV2
-          defaultSelectedDay={selectedDay}
-          onDateSelect={(newDate) => handleDaySelect(newDate)}
-        />
-      </div>
+    <div className="py-6">
+      <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
+        <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
+          <div className="lg:pr-14">
+            <CalendarV2
+              defaultSelectedDay={selectedDay}
+              onDateSelect={(newDate) => handleDaySelect(newDate)}
+            />
+          </div>
 
-      <section className="mt-4 w-full lg:mt-0 lg:pl-14">
-        <p className="text- my-4 text-sm font-semibold">
-          {format(selectedDay, "MMMM dd")}
-        </p>
-        <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
-          {isLoading ? (
-            <p>Loading...</p>
-          ) : (
-            <>
-              {(data || []).length > 0 ? (
-                <>
-                  {data!.map((availability, index) => (
-                    <div key={`${availability[0]}-${index}`}>
-                      {format(
-                        add(startOfDay(selectedDay), {
-                          seconds: availability[0] / 1000,
-                        }),
-                        "h:mm a",
-                      )}
-                      -
-                      {format(
-                        add(startOfDay(selectedDay), {
-                          seconds: availability[1] / 1000,
-                        }),
-                        "h:mm a",
-                      )}
-                    </div>
-                  ))}
-                </>
+          <section className="mt-4 w-full lg:mt-0 lg:pl-14">
+            <p className="text- my-4 text-sm font-semibold">
+              {format(selectedDay, "MMMM dd")}
+            </p>
+            <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
+              {isLoading ? (
+                <p>Loading...</p>
               ) : (
-                <p>Nothing for today.</p>
+                <>
+                  {(data || []).length > 0 ? (
+                    <>
+                      {data!.map((availability, index) => (
+                        <div key={`${availability[0]}-${index}`}>
+                          {format(
+                            add(startOfDay(selectedDay), {
+                              seconds: availability[0] / 1000,
+                            }),
+                            "h:mm a",
+                          )}
+                          -
+                          {format(
+                            add(startOfDay(selectedDay), {
+                              seconds: availability[1] / 1000,
+                            }),
+                            "h:mm a",
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <p>Nothing for today.</p>
+                  )}
+                </>
               )}
-            </>
-          )}
-        </ol>
-      </section>
-    </>
+            </ol>
+          </section>
+        </div>
+      </div>
+    </div>
   );
 }
