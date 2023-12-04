@@ -27,7 +27,7 @@ export default function BookServicesCard({
           {(services || []).map((service) => (
             <Link
               key={service.id}
-              href={`${business.handle}/availability/${service.availability_schedule_id}`}
+              href={`${business.handle}/availability/${service.id}`}
             >
               <div
                 key={service.id}

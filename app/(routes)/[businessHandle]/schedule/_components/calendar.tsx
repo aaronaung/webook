@@ -18,8 +18,6 @@ import {
 
 type ServiceEventCalendarProps = {
   data: GetScheduledEventsInTimeRangeResponse;
-  calendarClassName?: string;
-  serviceEventsClassName?: string;
   onServiceEventClick: (
     serviceEvent: GetScheduledEventsInTimeRangeResponseSingle,
   ) => void;
@@ -27,8 +25,6 @@ type ServiceEventCalendarProps = {
 
 export default function ServiceEventCalendar({
   data,
-  calendarClassName,
-  serviceEventsClassName,
   onServiceEventClick,
 }: ServiceEventCalendarProps) {
   const today = startOfToday();
@@ -119,14 +115,14 @@ export default function ServiceEventCalendar({
 
   return (
     <>
-      <div className={calendarClassName}>
+      <div className="lg:pr-14">
         <CalendarV2
           defaultSelectedDay={selectedDay}
           onDateSelect={(newDate) => handleDaySelect(newDate)}
         />
       </div>
 
-      <section className={serviceEventsClassName}>
+      <section className="mt-4 w-full lg:mt-0 lg:pl-14">
         <p className="text- my-4 text-sm font-semibold">
           {format(selectedDay, "MMMM dd")}
         </p>

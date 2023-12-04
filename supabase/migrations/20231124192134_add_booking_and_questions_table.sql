@@ -4,7 +4,7 @@ create table "public"."bookings" (
     "updated_at" timestamp with time zone default now(),
     "booker_id" uuid not null,
     "service_event_id" uuid, -- service_event_id is only be used for event based booking.
-    "availability_service_id" uuid, -- availability service id is only be used for availability based booking
+    "availability_based_service_id" uuid, -- availability based service id is only be used for availability based booking
     "start" timestamp with time zone not null, 
     "end" timestamp with time zone not null, 
     "business_id" uuid not null,

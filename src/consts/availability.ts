@@ -1,7 +1,7 @@
 export enum Day {
   SUN = "SUN",
   MON = "MON",
-  TUE = "TUES",
+  TUES = "TUES",
   WED = "WED",
   THURS = "THURS",
   FRI = "FRI",

@@ -16,7 +16,13 @@ export const getScheduledEventsInTimeRange = async (
     businessHandle,
     start,
     end,
-  }: { businessHandle: string; start: Date; end: Date },
+    availabilityScheduleId,
+  }: {
+    businessHandle: string;
+    start: Date;
+    end: Date;
+    availabilityScheduleId?: string;
+  },
   { client }: SupabaseOptions,
 ) => {
   return throwOrJsonData<GetScheduledEventsInTimeRangeResponse>(
@@ -24,6 +30,7 @@ export const getScheduledEventsInTimeRange = async (
       business_handle: businessHandle,
       start_time: start.toISOString(),
       end_time: end.toISOString(),
+      availability_schedule_id_arg: availabilityScheduleId,
     }),
   );
 };

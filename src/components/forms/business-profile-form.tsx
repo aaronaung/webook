@@ -20,7 +20,7 @@ import { useDebounce } from "usehooks-ts";
 import { PostgrestError } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { FileRejection } from "react-dropzone";
-import { UNIQUE_CONSTRAINT_VIOLATION } from "@/src/consts/postgres_errors";
+import { UNIQUE_CONSTRAINT_VIOLATION } from "@/src/consts/postgres-errors";
 
 const formSchema = z.object({
   handle: z

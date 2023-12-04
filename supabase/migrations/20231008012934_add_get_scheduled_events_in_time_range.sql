@@ -3,7 +3,8 @@ set check_function_bodies = off;
 CREATE OR REPLACE FUNCTION public.get_scheduled_events_in_time_range(
     business_handle text,
     start_time timestamptz,
-    end_time timestamptz
+    end_time timestamptz,
+    availability_schedule_id_arg uuid DEFAULT NULL
 )
 RETURNS jsonb
 LANGUAGE plpgsql
@@ -27,7 +28,7 @@ BEGIN
             'recurrence_interval', ss.recurrence_interval,
             'recurrence_count', ss.recurrence_count,
             'color', s.color,
-            'availability_schedule_id', ss.availability_schedule_id,
+            'availability_schedule_id', ss.availability_schedule_id, -- if service event has availability schedule, it means the event's time slot will be blocked off from the availability schedule.
             'service', jsonb_build_object(
                 'availabiltiy_schedule_id', s.availability_schedule_id,
                 'color', s.color,
@@ -77,7 +78,8 @@ BEGIN
         JOIN public.service_events AS ss ON s.id = ss.service_id
         WHERE s.business_id = (
             SELECT id FROM public.businesses WHERE handle = business_handle
-        ) AND s.availability_schedule_id IS NULL
+        ) AND s.availability_schedule_id IS NULL -- ignore availability based services. 
+        AND (availability_schedule_id_arg IS NULL OR ss.availability_schedule_id = availability_schedule_id_arg)
         AND (
             -- Include slots within the specified timestamp range
             (ss.start >= start_time AND ss.start <= end_time)

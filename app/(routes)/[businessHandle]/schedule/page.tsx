@@ -47,8 +47,6 @@ export default function SchedulePage({
         <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
           <ServiceEventCalendar
             data={data || []}
-            serviceEventsClassName="mt-4 w-full lg:mt-0 lg:pl-14"
-            calendarClassName="lg:pr-14"
             onServiceEventClick={(event) => {
               if (!user) {
                 const returnPath = encodeURIComponent(
