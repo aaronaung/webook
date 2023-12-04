@@ -127,6 +127,7 @@ const dateToCalendarDateTime = (date: Date): CalendarDateTime => {
 
 type DatePickerProps = {
   value?: { date?: Date | null; hasTime: boolean };
+  button?: React.ReactNode;
   onChange: (value: { date: Date; hasTime: boolean }) => void;
   isDisabled?: boolean;
   className?: string;
@@ -173,22 +174,24 @@ const DateTimePicker = (props: DatePickerProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen} aria-label="Date Time Picker">
       <PopoverTrigger asChild>
-        <Button
-          variant={props.variant || "outline"}
-          className={cn(
-            "h-12 w-full min-w-[240px] justify-start text-left",
-            !props.value && "text-muted-foreground",
-            props.className,
-          )}
-          disabled={props.isDisabled}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {props.value?.date ? (
-            format(props.value.date, dateDisplayFormat)
-          ) : (
-            <span>{props.placeholder || "Pick a date"}</span>
-          )}
-        </Button>
+        {props.button || (
+          <Button
+            variant={props.variant || "outline"}
+            className={cn(
+              "h-12 w-full min-w-[240px] justify-start text-left",
+              !props.value && "text-muted-foreground",
+              props.className,
+            )}
+            disabled={props.isDisabled}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {props.value?.date ? (
+              format(props.value.date, dateDisplayFormat)
+            ) : (
+              <span>{props.placeholder || "Pick a date"}</span>
+            )}
+          </Button>
+        )}
       </PopoverTrigger>
       <PopoverContent ref={contentRef} className="w-auto" align="start">
         <Calendar

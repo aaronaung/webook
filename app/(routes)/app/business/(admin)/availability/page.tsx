@@ -170,7 +170,7 @@ export default function Availability() {
 
           {(availabilitySchedules || []).map((schedule) => (
             <TabsContent key={schedule.id} value={schedule.id}>
-              <div className="grid w-full grid-cols-2 gap-x-4">
+              <div className="grid w-full grid-cols-5 gap-x-6">
                 <WeeklySlots scheduleId={schedule.id} />
                 <SlotOverrides scheduleId={schedule.id} />
               </div>

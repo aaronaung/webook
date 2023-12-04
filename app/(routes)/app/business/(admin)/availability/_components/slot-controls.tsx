@@ -2,7 +2,7 @@ import { Button } from "@/src/components/ui/button";
 import InputSelect from "@/src/components/ui/input/select";
 import { toast } from "@/src/components/ui/use-toast";
 import { Tables } from "@/types/db.extension";
-import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { add, format, startOfDay } from "date-fns";
 
 export const validateSlotChange = (
@@ -56,8 +56,8 @@ export const formatOffsetFromDayStart = (offset: number) => {
 };
 
 export const timeSlotOptions = Array.from(
-  { length: 48 },
-  (_, i) => i * 30 * 60 * 1000,
+  { length: 48 }, // 48 half hour slots in a day
+  (_, i) => i * 30 * 60 * 1000, // 30 minutes in milliseconds
 ).map((time) => {
   return {
     label: `${formatOffsetFromDayStart(time)}`,
@@ -75,14 +75,17 @@ export const constructNewSlot = (
       maxEnd = slot.end;
     }
   }
+  let latestTimeSlot = timeSlotOptions[timeSlotOptions.length - 1].value;
 
   let newStart = maxEnd + 60 * 60 * 1000;
-  newStart =
-    newStart > timeSlotOptions[timeSlotOptions.length - 1].value ? 0 : newStart;
+  newStart = newStart > latestTimeSlot ? newStart - latestTimeSlot : newStart;
+
+  let newEnd = newStart + 60 * 60 * 1000;
+  newEnd = newEnd > latestTimeSlot ? newEnd - latestTimeSlot : newEnd;
 
   return {
     start: newStart,
-    end: newStart + 60 * 60 * 1000,
+    end: newEnd,
   };
 };
 
@@ -144,21 +147,6 @@ export default function SlotControls({
             </Button>
           </div>
         ))}
-      </div>
-      <div className="shrink-0">
-        <Button
-          disabled={disabled}
-          onClick={() => {
-            onSlotAdd(day);
-          }}
-          variant="ghost"
-          className="px-3 py-1"
-        >
-          <PlusIcon className="h-4 w-4" />
-        </Button>
-        {/* <Button onClick={} variant="ghost" className="px-3 py-1">
-    <CopyIcon className="h-4 w-4" />
-  </Button> */}
       </div>
     </div>
   );

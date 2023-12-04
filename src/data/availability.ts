@@ -19,31 +19,25 @@ export const saveAvailabilitySchedule = (
   );
 };
 
-export const saveWeeklyAvailabilitySlot = async (
-  slot: Partial<Tables<"availability_weekly_slots">>,
+export const saveWeeklyAvailabilitySlots = async (
+  slots: Partial<Tables<"availability_weekly_slots">>[],
   { client }: SupabaseOptions,
 ) => {
   return throwOrData(
     client
       .from("availability_weekly_slots")
-      .upsert({ ...(slot as Tables<"availability_weekly_slots">) })
-      .select("id")
-      .limit(1)
-      .single(),
+      .upsert(slots as Tables<"availability_weekly_slots">[]),
   );
 };
 
-export const saveAvailabilitySlotOverride = async (
-  slot: Partial<Tables<"availability_slot_overrides">>,
+export const saveAvailabilitySlotOverrides = async (
+  slots: Partial<Tables<"availability_slot_overrides">>[],
   { client }: SupabaseOptions,
 ) => {
   return throwOrData(
     client
       .from("availability_slot_overrides")
-      .upsert({ ...(slot as Tables<"availability_slot_overrides">) })
-      .select("id")
-      .limit(1)
-      .single(),
+      .upsert(slots as Tables<"availability_slot_overrides">[]),
   );
 };
 
