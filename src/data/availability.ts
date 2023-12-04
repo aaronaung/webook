@@ -217,9 +217,15 @@ export const getAvailabilityForServiceOnDate = async (
     ...eventsOnDate,
     ...bookingsOnDate,
   ]);
+  console.log("available", availabilitySlots);
+  console.log("unavailable", unavailableSlots);
   if (unavailableSlots.length === 0) {
     return availabilitySlots;
   }
+  console.log(
+    "findFreeIntervalsInLeft",
+    findFreeIntervalsInLeft(availabilitySlots, unavailableSlots),
+  );
   return findFreeIntervalsInLeft(availabilitySlots, unavailableSlots);
 };
 

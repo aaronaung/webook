@@ -66,7 +66,7 @@ export default function Availability({
                           seconds: availability[0] / 1000,
                         }),
                         "h:mm a",
-                      )}{" "}
+                      )}
                       -
                       {format(
                         add(startOfDay(selectedDay), {
