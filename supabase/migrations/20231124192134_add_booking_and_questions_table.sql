@@ -3,8 +3,8 @@ create table "public"."bookings" (
     "created_at" timestamp with time zone default now(),
     "updated_at" timestamp with time zone default now(),
     "booker_id" uuid not null,
-    "service_event_id" uuid, -- service_event_id is only be used for event based booking.
-    "availability_based_service_id" uuid, -- availability based service id is only be used for availability based booking
+    "service_event_id" uuid, -- if service event id is null, then it's an availability based booking
+    "service_id" uuid not null, -- service id is always present. 
     "start" timestamp with time zone not null, 
     "end" timestamp with time zone not null, 
     "business_id" uuid not null,
@@ -73,9 +73,9 @@ alter table "public"."bookings" add constraint "bookings_booker_id_fkey" FOREIGN
 
 alter table "public"."bookings" validate constraint "bookings_booker_id_fkey";
 
-alter table "public"."bookings" add constraint "bookings_availability_based_service_id_fkey" FOREIGN KEY (availability_based_service_id) REFERENCES services(id) ON DELETE SET NULL not valid;
+alter table "public"."bookings" add constraint "bookings_service_id_fkey" FOREIGN KEY (service_id) REFERENCES services(id) ON DELETE SET NULL not valid;
 
-alter table "public"."bookings" validate constraint "bookings_availability_based_service_id_fkey";
+alter table "public"."bookings" validate constraint "bookings_service_id_fkey";
 
 alter table "public"."bookings" add constraint "bookings_booker_id_start_key" UNIQUE using index "bookings_booker_id_start_key";
 

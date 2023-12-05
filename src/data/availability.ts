@@ -124,16 +124,11 @@ export const getAvailabilitySlotOverridesBySchedule = async (
 export const getAvailabilityForServiceOnDate = async (
   { serviceId, date }: { serviceId: string; date: Date },
   { client }: SupabaseOptions,
-): Promise<{
-  service:
-    | (Tables<"services"> & { business: Tables<"businesses"> | null })
-    | null;
-  availability: number[][];
-}> => {
+) => {
   const service = await throwOrData(
     client
       .from("services")
-      .select("*, business:businesses(*)")
+      .select("*, business:businesses(*), questions(*)")
       .eq("id", serviceId)
       .single(),
   );
@@ -194,11 +189,12 @@ export const getAvailabilityForServiceOnDate = async (
         }),
       )
       .catch((e) => []),
+    // get candidate slots on the date.
     throwOrData(
       client
         .from("bookings")
         .select("*")
-        .eq("availability_based_service_id", serviceId)
+        .eq("service_id", serviceId)
         .gte("start", startOfDay(date).toISOString())
         .lte("end", endOfDay(date).toISOString()),
     )
@@ -239,7 +235,7 @@ export const getAvailabilityForServiceOnDate = async (
   };
 };
 
-// findFreeIntervalsInLeft finds the free intervals in the left array, given the busy intervals in the right array.
+// findFreeIntervalsInLeft finds the free intervals in the left array, given the candidate intervals in the right array.
 // For example: findFreeIntervalsInLeft(
 //     [
 //       [1, 5],
@@ -261,31 +257,31 @@ const findFreeIntervalsInLeft = (left: number[][], right: number[][]) => {
   }
   const result = [];
   if (right.length === 1) {
-    const [busyStart, busyEnd] = right[0];
+    const [candidateStart, candidateEnd] = right[0];
     for (const interval of left) {
       const [start, end] = interval;
-      if (busyStart >= end) {
+      if (candidateStart >= end) {
         result.push(interval);
         continue;
       }
-      if (busyStart <= start && busyEnd >= end) {
-        // current interval is completely inside busy interval
+      if (candidateStart <= start && candidateEnd >= end) {
+        // current interval is completely inside candidate interval
         continue;
       }
-      if (busyStart <= start && busyEnd < end) {
-        // busy interval overlaps with the start of current interval
-        result.push([busyEnd, end]);
+      if (candidateStart <= start && candidateEnd < end) {
+        // candidate interval overlaps with the start of current interval
+        result.push([candidateEnd, end]);
         continue;
       }
-      if (busyStart > start && busyEnd >= end) {
-        // busy interval overlaps with the end of current interval
-        result.push([start, busyStart]);
+      if (candidateStart > start && candidateEnd >= end) {
+        // candidate interval overlaps with the end of current interval
+        result.push([start, candidateStart]);
         continue;
       }
-      if (busyStart > start && busyEnd < end) {
-        // busy interval is completely inside current interval
-        result.push([start, busyStart]);
-        result.push([busyEnd, end]);
+      if (candidateStart > start && candidateEnd < end) {
+        // candidate interval is completely inside current interval
+        result.push([start, candidateStart]);
+        result.push([candidateEnd, end]);
         continue;
       }
     }
@@ -303,6 +299,12 @@ const findFreeIntervalsInLeft = (left: number[][], right: number[][]) => {
       }
     }
   }
+  // findFreeIntervals only finds the free intervals in the right array.
+  // We need to check the boundary conditions that are not covered by findFreeIntervals.
+  // This includes the intervals that are completely outside the right array.
+  // for example: assume the folowing:
+  // available: [1, 10], [20, 30]
+  // unavailable: [5, 15], [23, 27]
 
   return result;
 };
@@ -357,4 +359,35 @@ function flattenIntervals(intervals: number[][]) {
   }
   flattened.push(current);
   return flattened;
+}
+
+//Todo: important - ideally this should be done in the database right before a booking is made to ensure no double booking ever occurs.
+function isIntervalAvailable(
+  candidateInterval: number[],
+  busyIntervals: number[][],
+) {
+  for (const interval of busyIntervals) {
+    const [busyStart, busyEnd] = interval;
+    const [candidateStart, candidateEnd] = candidateInterval;
+    if (candidateStart >= busyEnd || candidateEnd <= busyStart) {
+      continue;
+    }
+    if (candidateStart <= busyStart && candidateEnd >= busyEnd) {
+      // current busy interval is completely inside candidate interval
+      return false;
+    }
+    if (candidateStart <= busyStart && candidateEnd < busyEnd) {
+      // candidate interval overlaps with the busyStart of current interval
+      return false;
+    }
+    if (candidateStart > busyStart && candidateEnd >= busyEnd) {
+      // candidate interval overlaps with the busyEnd of current interval
+      return false;
+    }
+    if (candidateStart > busyStart && candidateEnd < busyEnd) {
+      // candidate interval is completely inside current interval
+      return false;
+    }
+  }
+  return false;
 }

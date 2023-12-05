@@ -18,9 +18,27 @@ export const getServices = async (
   return await throwOrData(
     client
       .from("services")
-      .select("*, questions (*), availability_schedules(*)")
+      .select(
+        "*, questions (*), availability_schedule:availability_schedules(*)",
+      )
       .eq("business_id", businessId)
       .order("id"), // just so there's a consistent order
+  );
+};
+
+export type GetServiceResponse = Awaited<ReturnType<typeof getService>>;
+export const getService = async (
+  serviceId: string,
+  { client }: SupabaseOptions,
+) => {
+  return await throwOrData(
+    client
+      .from("services")
+      .select(
+        "*, business:businesses(*), questions (*), availability_schedule:availability_schedules(*)",
+      )
+      .eq("id", serviceId)
+      .single(),
   );
 };
 
@@ -171,6 +189,9 @@ export const deleteServiceEvent = async (
   );
 };
 
+export type GetDetailedServiceEventResponse = Awaited<
+  ReturnType<typeof getDetailedServiceEvent>
+>;
 export const getDetailedServiceEvent = async (
   serviceEventId: string,
   { client }: SupabaseOptions,
@@ -178,7 +199,7 @@ export const getDetailedServiceEvent = async (
   return await throwOrData(
     client
       .from("service_events")
-      .select("*, services(* , questions(*))")
+      .select("*, service:services(* , questions(*))")
       .eq("id", serviceEventId)
       .single(),
   );

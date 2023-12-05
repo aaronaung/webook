@@ -6,7 +6,7 @@ export type GetScheduledEventsInTimeRangeResponseSingle =
   Tables<"service_events"> & {
     color: string;
     staffs: Tables<"staffs">[];
-    service: Tables<"services"> & { questions: Tables<"questions"> };
+    service: Tables<"services"> & { questions?: Tables<"questions">[] };
     live_stream?: Tables<"service_event_live_streams">;
   };
 export type GetScheduledEventsInTimeRangeResponse =

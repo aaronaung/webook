@@ -49,12 +49,27 @@ export const getBookingForServiceEventByUser = async (
       .from("bookings")
       .select()
       .eq("service_event_id", serviceEventId)
-      .eq("service_event_start", serviceEventStart)
+      .eq("start", serviceEventStart)
       .eq("booker_id", userId)
       .limit(1)
       .maybeSingle(),
   );
 };
+
+export const getBookingForAvailabilityBasedServiceByUser = async (
+  {
+    availabilityBasedServiceId,
+    start,
+    end,
+    userId,
+  }: {
+    availabilityBasedServiceId: string;
+    start: string;
+    end: string;
+    userId: string;
+  },
+  { client }: SupabaseOptions,
+) => {};
 
 export const getBookingByChatRoom = async (
   chatRoomId: string,

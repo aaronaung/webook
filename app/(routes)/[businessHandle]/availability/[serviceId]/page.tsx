@@ -3,7 +3,10 @@
 import HeaderWithAction from "@/src/components/shared/header-with-action";
 import { Button } from "@/src/components/ui/button";
 import CalendarV2 from "@/src/components/ui/calendar-v2";
+import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { getAvailabilityForServiceOnDate } from "@/src/data/availability";
+import { getAuthUser } from "@/src/data/user";
+import useBooking from "@/src/hooks/use-booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import {
@@ -27,7 +30,10 @@ export default function Availability({
   const selectedDay = new Date(
     parseInt(searchParams.get("date_millis") || "") || today.getTime(),
   );
+  const { currentViewingBusiness } = useCurrentViewingBusinessContext();
+  const { checkPrereqsAndRedirectBookingRequest } = useBooking();
 
+  const { data: user, isLoading: isLoadingUser } = useSupaQuery(getAuthUser);
   const { data, isLoading } = useSupaQuery(
     getAvailabilityForServiceOnDate,
     {
@@ -42,8 +48,8 @@ export default function Availability({
       ],
     },
   );
-  const service = data?.service;
   const availability = data?.availability || [];
+  const service = data?.service;
 
   const handleDaySelect = (newDate: Date) => {
     const newParams = new URLSearchParams(searchParams.toString());
@@ -51,10 +57,12 @@ export default function Availability({
     router.replace(`${window.location.pathname}?${newParams.toString()}`);
   };
 
-  const getSlotStarts = () => {
-    if (availability.length === 0 || !service) return [];
-    const starts = [];
+  const getAvailabilityOffsetsFromDayStart = () => {
+    if (availability.length === 0 || !service) {
+      return [];
+    }
 
+    const starts = [];
     for (const availabilitySlot of availability) {
       let start = availabilitySlot[0];
       for (
@@ -68,58 +76,85 @@ export default function Availability({
     return starts;
   };
 
+  const renderSlotStart = (offsetFromDayStart: number) => {
+    const start = add(startOfDay(selectedDay), {
+      seconds: offsetFromDayStart / 1000,
+    });
+    return (
+      <div
+        onClick={() => {
+          checkPrereqsAndRedirectBookingRequest({
+            user: user ?? undefined,
+            businessHandle: currentViewingBusiness.handle,
+            bookingRequest: {
+              service_id: params.serviceId,
+              start: new Date(start).toISOString(),
+              end: new Date(
+                start.getTime() + (service?.duration || 0),
+              ).toISOString(),
+            },
+            hasPreRequisiteQuestions: (service?.questions || []).length > 0,
+          });
+        }}
+        key={offsetFromDayStart}
+        className="no-shrink flex h-12 w-28 cursor-pointer items-center justify-center rounded-full font-semibold text-primary ring-1 ring-offset-primary-foreground hover:bg-secondary"
+      >
+        {format(start, "h:mm a")}
+      </div>
+    );
+  };
+
+  if (isLoadingUser) {
+    return <>Loading...</>;
+  }
+
   return (
-    <div className="py-6">
-      <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
-        <HeaderWithAction
-          title={`${service?.title || ""} (${millisecondsToMinutes(
-            service?.duration || 0,
-          )} 
+    <>
+      <HeaderWithAction
+        title={`${service?.title || ""} (${millisecondsToMinutes(
+          service?.duration || 0,
+        )} 
           minutes)`}
-          leftActionBtn={
-            <Button onClick={() => router.back()} variant="ghost">
-              <ArrowLeftIcon className="h-5 w-5" />
-            </Button>
-          }
-        />
-        <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-          <div className="lg:pr-14">
-            <CalendarV2
-              defaultSelectedDay={selectedDay}
-              onDateSelect={(newDate) => handleDaySelect(newDate)}
-            />
+        leftActionBtn={
+          <Button onClick={() => router.back()} variant="ghost">
+            <ArrowLeftIcon className="h-5 w-5" />
+          </Button>
+        }
+      />
+      <div className="py-4">
+        <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
+          <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
+            <div className="lg:pr-14">
+              <CalendarV2
+                defaultSelectedDay={selectedDay}
+                onDateSelect={(newDate) => handleDaySelect(newDate)}
+              />
+            </div>
+
+            <section className="mt-4 w-full lg:mt-0 lg:pl-14">
+              <p className="text- my-4 text-sm font-semibold">
+                {format(selectedDay, "MMMM dd")}
+              </p>
+
+              <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
+                {isLoading ? (
+                  <p>Loading...</p>
+                ) : (
+                  <div className="flex flex-wrap gap-x-3 gap-y-5">
+                    {getAvailabilityOffsetsFromDayStart().length === 0 && (
+                      <p>Nothing for this day.</p>
+                    )}
+                    {getAvailabilityOffsetsFromDayStart().map(
+                      (offsetFromDayStart) =>
+                        renderSlotStart(offsetFromDayStart),
+                    )}
+                  </div>
+                )}
+              </ol>
+            </section>
           </div>
-
-          <section className="mt-4 w-full lg:mt-0 lg:pl-14">
-            <p className="text- my-4 text-sm font-semibold">
-              {format(selectedDay, "MMMM dd")}
-            </p>
-
-            <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
-              {isLoading ? (
-                <p>Loading...</p>
-              ) : (
-                <div className="flex flex-wrap gap-x-3 gap-y-5">
-                  {getSlotStarts().length === 0 && <p>Nothing for this day.</p>}
-                  {getSlotStarts().map((s) => (
-                    <div
-                      key={s}
-                      className="no-shrink flex h-12 w-28 items-center justify-center rounded-full bg-primary text-secondary"
-                    >
-                      {format(
-                        add(startOfDay(selectedDay), {
-                          seconds: s / 1000,
-                        }),
-                        "h:mm a",
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </ol>
-          </section>
         </div>
       </div>
-    </div>
+    </>
   );
 }

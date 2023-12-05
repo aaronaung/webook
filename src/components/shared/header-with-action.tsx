@@ -17,7 +17,7 @@ export default function HeaderWithAction({
   className,
 }: HeaderWithActionProps) {
   return (
-    <div className={cn("mb-2 flex items-center px-4 py-2", className)}>
+    <div className={cn("flex items-center px-4 py-2", className)}>
       {leftActionBtn || <></>}
       <div className="w-full text-center">
         <p className="font-medium">{title}</p>

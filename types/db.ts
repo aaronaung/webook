@@ -113,7 +113,6 @@ export interface Database {
       }
       bookings: {
         Row: {
-          availability_based_service_id: string | null
           booker_id: string
           business_id: string
           chat_room_id: string
@@ -121,12 +120,12 @@ export interface Database {
           end: string
           id: string
           service_event_id: string | null
+          service_id: string
           start: string
           status: string
           updated_at: string | null
         }
         Insert: {
-          availability_based_service_id?: string | null
           booker_id: string
           business_id: string
           chat_room_id: string
@@ -134,12 +133,12 @@ export interface Database {
           end: string
           id?: string
           service_event_id?: string | null
+          service_id: string
           start: string
           status?: string
           updated_at?: string | null
         }
         Update: {
-          availability_based_service_id?: string | null
           booker_id?: string
           business_id?: string
           chat_room_id?: string
@@ -147,17 +146,12 @@ export interface Database {
           end?: string
           id?: string
           service_event_id?: string | null
+          service_id?: string
           start?: string
           status?: string
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "bookings_availability_based_service_id_fkey"
-            columns: ["availability_based_service_id"]
-            referencedRelation: "services"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "bookings_booker_id_fkey"
             columns: ["booker_id"]
@@ -174,6 +168,12 @@ export interface Database {
             foreignKeyName: "bookings_service_event_id_fkey"
             columns: ["service_event_id"]
             referencedRelation: "service_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_service_id_fkey"
+            columns: ["service_id"]
+            referencedRelation: "services"
             referencedColumns: ["id"]
           }
         ]

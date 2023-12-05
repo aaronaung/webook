@@ -35,11 +35,11 @@ export default function ServicesTable({
         header: "",
         enableHiding: true,
       }),
-      columnHelper.accessor("availability_schedules", {
+      columnHelper.accessor("availability_schedule", {
         header: "Availability schedule",
         enableHiding: true,
         cell: ({ row }) => {
-          const schedule = row.original.availability_schedules;
+          const schedule = row.original.availability_schedule;
           if (schedule) {
             return (
               <Link href={`/app/business/availability?id=${schedule.id}`}>
@@ -126,7 +126,7 @@ export default function ServicesTable({
         columnVisibility: {
           id: !hiddenColumns.id,
           questions: !hiddenColumns.questions,
-          availability_schedules: !hiddenColumns.availability_schedules,
+          availability_schedules: !hiddenColumns.availability_schedule,
           title: !hiddenColumns.title,
           price: !hiddenColumns.price,
           duration: !hiddenColumns.duration,

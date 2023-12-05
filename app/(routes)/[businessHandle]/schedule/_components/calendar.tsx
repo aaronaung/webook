@@ -37,7 +37,6 @@ export default function ServiceEventCalendar({
       ),
     [searchParams, today],
   );
-  const selectedCategory = searchParams.get("category") || data?.[0]?.id;
 
   const handleDaySelect = (newDate: Date) => {
     const newParams = new URLSearchParams(searchParams.toString());

@@ -14,6 +14,8 @@ import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing
 import { saveBooking } from "@/src/data/booking";
 import { createBookingChatRoom, saveChatMessage } from "@/src/data/chat";
 import { saveQuestionAnswers } from "@/src/data/question";
+import { GetServiceResponse } from "@/src/data/service";
+import { BookingRequest } from "@/src/hooks/use-booking";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
@@ -22,18 +24,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Questions({
-  serviceEvent,
-  serviceEventStart,
+  service,
+  bookingRequest,
   loggedInUser,
 }: {
-  serviceEvent: Tables<"service_events"> & {
-    services:
-      | (Tables<"services"> & {
-          questions: Tables<"questions">[];
-        })
-      | null;
-  };
-  serviceEventStart: string;
+  service: GetServiceResponse;
+  bookingRequest: BookingRequest;
   loggedInUser: Tables<"users">;
 }) {
   const { currentViewingBusiness } = useCurrentViewingBusinessContext();
@@ -56,7 +52,7 @@ export default function Questions({
   const prettifyAnswers = () => {
     let prettifiedAnswers = "";
     for (const [qId, ans] of Object.entries(answers)) {
-      const q = (serviceEvent.services?.questions || []).find(
+      const q = (service.questions || []).find(
         (q: Tables<"questions">) => q.id === qId,
       );
       if (q) {
@@ -71,7 +67,7 @@ export default function Questions({
   };
 
   const handleContinue = async () => {
-    for (const q of serviceEvent.services?.questions || []) {
+    for (const q of service.questions || []) {
       if (q.required && !isRequiredQuestionAnswered(q)) {
         return;
       }
@@ -79,11 +75,13 @@ export default function Questions({
 
     try {
       setIsProcessingBooking(true);
-      // todo - consider wrapping all of this in a postgres function for atomicity.
+      // todo (VERY IMPORTANT) - consider wrapping all of this in a postgres function for atomicity.
+      // For availability based booking, check if there's conflict with other ACCEPTED bookings. Note: we may want to let the user book even if there's
+      // conflict with other NON-ACCEPTED bookings.
       const room = await _createBookingChatRoom({
         name:
-          `${serviceEvent.services?.title} - ${format(
-            new Date(serviceEventStart),
+          `${service.title} - ${format(
+            new Date(bookingRequest.start),
             "MM/dd/yyyy h:mm a",
           )}` || "",
         bookerId: loggedInUser.id,
@@ -99,18 +97,13 @@ export default function Questions({
       const booking = await _saveBooking({
         booker_id: loggedInUser.id,
         business_id: currentViewingBusiness.id,
-        service_event_id: serviceEvent.id,
-        start: serviceEventStart,
-        end: new Date(
-          new Date(serviceEventStart).getTime() +
-            (serviceEvent.services?.duration || 0),
-        ).toISOString(),
         status: BOOKING_STATUS_PENDING,
         chat_room_id: room.id,
+        ...bookingRequest,
       });
 
       const questionAnswers: Partial<Tables<"question_answers">>[] = (
-        serviceEvent.services?.questions || []
+        service?.questions || []
       ).map((q: Tables<"questions">) => ({
         booking_id: booking.id,
         question_id: q.id,
@@ -118,7 +111,9 @@ export default function Questions({
         text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
       }));
       await _saveQandA(questionAnswers);
-      router.refresh();
+      router.replace(
+        `/${currentViewingBusiness.handle}/chat?room_id=${room.id}`,
+      );
     } catch (err) {
       toast({
         title: "It's on us",
@@ -199,14 +194,10 @@ export default function Questions({
       <div className="relative">
         <div className="flex flex-col gap-5 p-6 lg:p-10">
           <p className="text-sm text-muted-foreground">
-            Please answer the following questions before booking
-            {serviceEvent.services?.title ? (
-              <> &quot;{serviceEvent.services.title}&quot;.</>
-            ) : (
-              "."
-            )}
+            Please answer the following questions before booking &quot;
+            {service.title}&quot;.
           </p>
-          {(serviceEvent.services?.questions || []).map((q) => (
+          {(service?.questions || []).map((q) => (
             <div className="" key={q.id}>
               {renderQuestion(q)}
             </div>
@@ -218,7 +209,7 @@ export default function Questions({
             onClick={handleContinue}
             disabled={
               isProcessingBooking ||
-              (serviceEvent.services?.questions || [])
+              (service.questions || [])
                 .map(
                   (q: Tables<"questions">) =>
                     q.required && !isRequiredQuestionAnswered(q),

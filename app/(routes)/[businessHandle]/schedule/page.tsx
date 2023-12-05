@@ -2,11 +2,10 @@
 
 import { add, format, parse, startOfToday } from "date-fns";
 import ServiceEventCalendar from "./_components/calendar";
-import { useRouter } from "next/navigation";
-import { toast } from "@/src/components/ui/use-toast";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { getScheduledEventsInTimeRange } from "@/src/data/business";
 import { getAuthUser } from "@/src/data/user";
+import useBooking from "@/src/hooks/use-booking";
 
 export default function SchedulePage({
   params,
@@ -14,8 +13,8 @@ export default function SchedulePage({
   params: { businessHandle: string };
 }) {
   const { data: user, isLoading: userIsLoading } = useSupaQuery(getAuthUser);
+  const { checkPrereqsAndRedirectBookingRequest } = useBooking();
 
-  const router = useRouter();
   const today = startOfToday();
   const firstDayCurrentMonth = parse(
     format(today, "MMM-yyyy"),
@@ -48,28 +47,18 @@ export default function SchedulePage({
           <ServiceEventCalendar
             data={data || []}
             onServiceEventClick={(event) => {
-              if (!user) {
-                const returnPath = encodeURIComponent(
-                  `/${params.businessHandle}/schedule${window.location.search}`,
-                );
-                toast({
-                  title: "Please login to continue.",
-                  description:
-                    "You need to be logged in to continue with booking.",
-                  variant: "default",
-                });
-                router.replace(`/login?return_path=${returnPath}`);
-                return;
-              }
-              if (event.service.questions) {
-                router.push(
-                  `/${params.businessHandle}/questions?event_id=${event.id}&event_start=${event.start}`,
-                );
-              } else {
-                router.push(
-                  `/${params.businessHandle}/booking/confirmation?event_id=${event.id}`,
-                );
-              }
+              checkPrereqsAndRedirectBookingRequest({
+                user: user ?? undefined,
+                businessHandle: params.businessHandle,
+                bookingRequest: {
+                  service_id: event.service_id,
+                  service_event_id: event.id,
+                  start: event.start,
+                  end: event.end,
+                },
+                hasPreRequisiteQuestions:
+                  (event.service?.questions || []).length > 0,
+              });
             }}
           />
         </div>

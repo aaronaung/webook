@@ -243,7 +243,7 @@ function ServicesTabContent({
               : {
                   id: true,
                   questions: true,
-                  availability_schedules: true,
+                  availability_schedule: true,
                 }
           }
           onRowAction={onSvcRowAction}
