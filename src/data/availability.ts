@@ -251,93 +251,98 @@ export const getAvailabilityForServiceOnDate = async (
 //     ],
 //   ),
 // returns [[2, 3], [12, 14]]
-const findFreeIntervalsInLeft = (left: number[][], right: number[][]) => {
-  if (right.length === 0) {
+const findFreeIntervalsInLeft = (
+  left: number[][],
+  right: number[][],
+  logSteps = false,
+) => {
+  if (left.length <= 0) {
+    return [];
+  }
+  if (right.length <= 0) {
     return left;
   }
+
+  let lPtr = 0;
+  let rPtr = 0;
+  let candidateInterval: number[] = left[lPtr];
+  let step = 0;
   const result = [];
-  if (right.length === 1) {
-    const [candidateStart, candidateEnd] = right[0];
-    for (const interval of left) {
-      const [start, end] = interval;
-      if (candidateStart >= end) {
-        result.push(interval);
-        continue;
-      }
-      if (candidateStart <= start && candidateEnd >= end) {
-        // current interval is completely inside candidate interval
-        continue;
-      }
-      if (candidateStart <= start && candidateEnd < end) {
-        // candidate interval overlaps with the start of current interval
-        result.push([candidateEnd, end]);
-        continue;
-      }
-      if (candidateStart > start && candidateEnd >= end) {
-        // candidate interval overlaps with the end of current interval
-        result.push([start, candidateStart]);
-        continue;
-      }
-      if (candidateStart > start && candidateEnd < end) {
-        // candidate interval is completely inside current interval
-        result.push([start, candidateStart]);
-        result.push([candidateEnd, end]);
-        continue;
-      }
+  while (rPtr < right.length && lPtr < left.length) {
+    step++;
+    // until everthing in right has been checked.
+    const [lStart, lEnd] = left[lPtr];
+
+    const [rStart, rEnd] = right[rPtr];
+    if (logSteps) {
+      console.log("");
+      console.log("step", step);
+      console.log("candidate", candidateInterval);
+      console.log("left: ", left[lPtr]);
+      console.log("right: ", right[rPtr]);
     }
-    return result;
-  }
 
-  const freeIntervals = findFreeIntervals(right);
-
-  for (const freeInterval of freeIntervals) {
-    for (const interval of left) {
-      const [start, end] = interval;
-      const [freeStart, freeEnd] = freeInterval;
-      if (freeStart >= start && freeEnd <= end) {
-        result.push(freeInterval);
+    if (rStart >= lEnd) {
+      if (
+        candidateInterval.length > 0 &&
+        candidateInterval[1] > candidateInterval[0]
+      ) {
+        result.push(candidateInterval);
       }
+      lPtr++;
+      candidateInterval = left[lPtr];
+    } else if (rEnd <= lStart) {
+      if (
+        candidateInterval.length > 0 &&
+        candidateInterval[1] > candidateInterval[0]
+      ) {
+        result.push(candidateInterval);
+      }
+      lPtr++;
+      rPtr++;
+      candidateInterval = left[lPtr];
+    } else if (rStart <= lStart && rEnd < lEnd) {
+      // free interval in left is established, but more intervals in right could overlap
+      candidateInterval = [rEnd, lEnd];
+      rPtr++;
+    } else if (rStart > lStart && rEnd >= lEnd) {
+      result.push([lStart, rStart]);
+
+      // rEnd could be farther out to cover more left intervals so we simply move lPtr
+      lPtr++;
+      candidateInterval = left[lPtr];
+    } else if (lStart >= rStart && lEnd <= rEnd) {
+      // left is engulfed, nothing to add to result set
+      lPtr++;
+      candidateInterval = left[lPtr];
+    } else if (rStart > lStart && rEnd < lEnd) {
+      // left is split into two intervals, keep checking right
+      result.push([lStart, rStart]);
+      candidateInterval = [rEnd, lEnd];
+      rPtr++;
+    } else {
+      lPtr++;
+      candidateInterval = left[lPtr];
+    }
+    if (logSteps) {
+      console.log("result", result);
     }
   }
-  // findFreeIntervals only finds the free intervals in the right array.
-  // We need to check the boundary conditions that are not covered by findFreeIntervals.
-  // This includes the intervals that are completely outside the right array.
-  // for example: assume the folowing:
-  // available: [1, 10], [20, 30]
-  // unavailable: [5, 15], [23, 27]
-
+  if (
+    (candidateInterval || []).length > 0 &&
+    candidateInterval[1] > candidateInterval[0]
+  ) {
+    result.push(candidateInterval);
+    lPtr++;
+  }
+  for (let i = lPtr; i < left.length; i++) {
+    result.push(left[i]);
+  }
   return result;
 };
 
-function findFreeIntervals(intervals: number[][]) {
-  if (intervals.length <= 0) {
-    return [];
-  }
-
-  const result = [];
-
-  // Sort the given interval based on the first number.
-  intervals.sort((a, b) => a[0] - b[0]);
-
-  // Iterate over all the intervals
-  for (let i = 1; i < intervals.length; i++) {
-    // Previous interval end
-    let prevEnd = intervals[i - 1][1];
-
-    // Current interval start
-    let currStart = intervals[i][0];
-
-    // If prev end is less than curr start, then it is free interval
-    if (prevEnd < currStart) {
-      result.push([prevEnd, currStart]);
-    }
-  }
-
-  return result;
-}
-
 // Flatten intervals flattens the intervals and merges the overlapping intervals. For example: [[0, 3], [3, 11], [7, 12], [14, 19], [18, 30]] will be flattened to [[0, 12], [14, 30]]
-function flattenIntervals(intervals: number[][]) {
+export function flattenIntervals(intervals: number[][]) {
   if (intervals.length === 0) {
     return [];
   }
