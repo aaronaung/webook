@@ -10,6 +10,7 @@ import { toast } from "@/src/components/ui/use-toast";
 import InputText from "@/src/components/ui/input/text";
 import InputShowHide from "@/src/components/ui/input/show-hide";
 import { Button } from "../ui/button";
+import { sidebarNavigation } from "@/app/(routes)/app/business/navigation";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -20,7 +21,7 @@ export type FormSchemaType = z.infer<typeof formSchema>;
 
 // todo - implement forgot password + remember me.
 export default function UserAuthForm({
-  returnPath = "/app/business/schedule",
+  returnPath = sidebarNavigation[0].href,
 }: {
   returnPath?: string;
 }) {

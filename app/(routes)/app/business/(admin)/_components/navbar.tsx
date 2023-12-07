@@ -1,5 +1,5 @@
 "use client";
-import { navigation } from "@/app/(routes)/app/business/navigation";
+import { sidebarNavigation } from "@/app/(routes)/app/business/navigation";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -36,7 +36,7 @@ export default function Navbar({
           role="list"
           className="flex items-center gap-x-3 gap-y-1 whitespace-nowrap lg:h-full lg:flex-col"
         >
-          {navigation.map((item) => (
+          {sidebarNavigation.map((item) => (
             <li key={item.name} className="lg:w-48">
               <Link
                 key={item.name}

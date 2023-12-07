@@ -21,6 +21,7 @@ import { PostgrestError } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import { FileRejection } from "react-dropzone";
 import { UNIQUE_CONSTRAINT_VIOLATION } from "@/src/consts/postgres-errors";
+import { sidebarNavigation } from "@/app/(routes)/app/business/navigation";
 
 const formSchema = z.object({
   handle: z
@@ -63,7 +64,6 @@ export default function BusinessProfileForm({
   const {
     register,
     handleSubmit,
-    reset,
     setValue,
     setError,
     clearErrors,
@@ -102,7 +102,7 @@ export default function BusinessProfileForm({
       clearErrors("handle");
       setHandleExists(false);
     }
-  }, [debouncedHandleValue]);
+  }, [clearErrors, debouncedHandleValue, setError]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -476,7 +476,7 @@ export default function BusinessProfileForm({
             if (onBack) {
               onBack();
             } else {
-              router.replace("/app/business/schedule");
+              router.replace(sidebarNavigation[0].href);
             }
           }}
         >

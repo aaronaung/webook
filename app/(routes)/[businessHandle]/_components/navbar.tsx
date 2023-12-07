@@ -8,6 +8,7 @@ import { Button } from "../../../../src/components/ui/button";
 import { useRouter } from "next/navigation";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
+import { sidebarNavigation } from "../../app/business/navigation";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -88,7 +89,7 @@ export default function Navbar({
             <div className="flex gap-2">
               <Button
                 size="sm"
-                onClick={() => router.push("/app/business/schedule")}
+                onClick={() => router.push(sidebarNavigation[0].href)}
                 className="rounded-lg"
               >
                 Dashboard

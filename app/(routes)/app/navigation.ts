@@ -1,5 +1,7 @@
+import { sidebarNavigation } from "./business/navigation";
+
 export const navigation = [
-  { name: "Business", href: "/app/business/schedule" },
+  { name: "Business", href: sidebarNavigation[0].href },
   { name: "Personal", href: "/app/personal" },
 ];
 

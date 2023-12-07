@@ -1,16 +1,16 @@
 import {
   CalendarIcon,
-  ChatBubbleOvalLeftIcon,
+  ClipboardDocumentCheckIcon,
   ClockIcon,
   QuestionMarkCircleIcon,
   Square3Stack3DIcon,
   UsersIcon,
 } from "@heroicons/react/24/outline";
 
-export const navigation = [
+export const sidebarNavigation = [
   {
     name: "Bookings",
-    icon: ChatBubbleOvalLeftIcon,
+    icon: ClipboardDocumentCheckIcon,
     href: "/app/business/bookings",
   },
   {

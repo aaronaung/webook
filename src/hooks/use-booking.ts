@@ -47,7 +47,7 @@ export default function useBooking() {
     }
     url.pathname = hasPreRequisiteQuestions
       ? `/${businessHandle}/questions`
-      : `/${businessHandle}/booking/confirmation`;
+      : `/${businessHandle}/bookings`;
     router.push(url.toString());
   };
 

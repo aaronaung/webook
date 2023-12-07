@@ -6,6 +6,7 @@ import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { sidebarNavigation } from "../(routes)/app/business/navigation";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -73,7 +74,7 @@ export default function Navbar({ user }: { user?: Tables<"users"> }) {
             <div className="flex gap-2">
               <Button
                 size="sm"
-                onClick={() => router.push("/app/business/schedule")}
+                onClick={() => router.push(sidebarNavigation[0].href)}
                 className="rounded-lg"
               >
                 Dashboard
@@ -139,7 +140,7 @@ export default function Navbar({ user }: { user?: Tables<"users"> }) {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => router.push("/app/business/schedule")}
+                      onClick={() => router.push(sidebarNavigation[0].href)}
                       className=" rounded-lg"
                     >
                       Dashboard
