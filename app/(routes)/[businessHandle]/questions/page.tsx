@@ -55,7 +55,7 @@ export default async function QuestionsPage({
     );
     if (existingBooking) {
       redirect(
-        `/${params.businessHandle}/chat?room_id=${existingBooking.chat_room_id}`,
+        `/${params.businessHandle}/bookings?booking_id=${existingBooking.id}`,
       );
     }
   }

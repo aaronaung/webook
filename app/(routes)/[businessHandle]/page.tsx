@@ -6,7 +6,7 @@ import { FacebookIcon, InstagramIcon } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import Tabs from "./_components/tabs";
 import { getServices } from "@/src/data/service";
-import { getBusinessLogoUrl } from "@/src/utils";
+import BusinessLogo from "./_components/business-logo";
 
 export default async function ServiceProvider({
   params,
@@ -33,10 +33,7 @@ export default async function ServiceProvider({
 
       <div className="m-auto flex max-w-3xl flex-col gap-y-4 p-4">
         <div className="flex h-full flex-col items-center justify-center rounded-lg bg-secondary p-4 sm:p-8">
-          <img
-            className="mb-2 mt-[44px] h-12 w-12 rounded-full"
-            src={getBusinessLogoUrl(business.handle)}
-          ></img>
+          <BusinessLogo business={business}></BusinessLogo>
           <div className="w-[90%] text-center">
             <p className="mb-2 text-[38px] font-bold">{business.title}</p>
             {/** @ts-ignore */}

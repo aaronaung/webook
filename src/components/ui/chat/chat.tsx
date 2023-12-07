@@ -4,14 +4,10 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import HeaderWithAction from "../../shared/header-with-action";
 import { cn } from "@/src/utils";
 import { Send } from "lucide-react";
-import {
-  BOOKING_STATUS_CANCELED,
-  BOOKING_STATUS_CONFIRMED,
-  BOOKING_STATUS_LABELS,
-  BOOKING_STATUS_PENDING,
-  BookingStatus,
-} from "@/src/consts/booking";
+import { BOOKING_STATUS_LABELS, BookingStatus } from "@/src/consts/booking";
 import InputSelect from "../input/select";
+import { isMobile } from "react-device-detect";
+import { getBookingStatusIcon } from "../../shared/bookings/booking-list";
 
 type ChatContainerProps = {
   className?: string;
@@ -41,7 +37,7 @@ export function ChatHeader({
 }: ChatHeaderProps) {
   return (
     <HeaderWithAction
-      className="mb-4"
+      className="mb-4 px-0"
       title={title}
       subtitle={subtitle}
       leftActionBtn={
@@ -51,6 +47,7 @@ export function ChatHeader({
           </Button>
         )
       }
+      hideBackBtn={!onBack}
       rightActionBtn={actionBtn}
     />
   );
@@ -133,18 +130,6 @@ export function ChatInput({
   onBookingStatusChange,
 }: ChatInputProps) {
   const [message, setMessage] = useState("");
-  const getBookingStatusIcon = (status: BookingStatus) => {
-    switch (status) {
-      case BOOKING_STATUS_CONFIRMED:
-        return "✅";
-      case BOOKING_STATUS_CANCELED:
-        return "❌";
-      case BOOKING_STATUS_PENDING:
-        return "🕒";
-      default:
-        return "🕒";
-    }
-  };
 
   return (
     <div className="w-full p-4 lg:px-8">
@@ -169,11 +154,11 @@ export function ChatInput({
         {bookingStatus && onBookingStatusChange && (
           <InputSelect
             selectLabel="Booking Status"
-            className="w-36"
+            className="w-[60px] sm:w-36"
             value={bookingStatus}
             options={Object.keys(BOOKING_STATUS_LABELS).map((key) => ({
-              label: `${getBookingStatusIcon(key as BookingStatus)}  ${
-                BOOKING_STATUS_LABELS[key as BookingStatus]
+              label: `${getBookingStatusIcon(key as BookingStatus)} ${
+                isMobile ? "" : BOOKING_STATUS_LABELS[key as BookingStatus]
               }`,
               value: key,
             }))}

@@ -19,12 +19,17 @@ import { Button } from "@/src/components/ui/button";
 import { isSameDay } from "date-fns";
 import { CopyIcon, PlusIcon } from "lucide-react";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { cn } from "@/src/utils";
 
 type SlotOverridesProps = {
   scheduleId: string;
+  className?: string;
 };
 
-export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
+export default function SlotOverrides({
+  scheduleId,
+  className,
+}: SlotOverridesProps) {
   const { data, isLoading } = useSupaQuery(
     getAvailabilitySlotOverridesBySchedule,
     scheduleId,
@@ -142,7 +147,7 @@ export default function SlotOverrides({ scheduleId }: SlotOverridesProps) {
   const slotOverrides = _.groupBy(data, "date");
 
   return (
-    <div className="col-span-2">
+    <div className={cn(className)}>
       <p className="font-medium text-muted-foreground">Date specific hours</p>
       <p className="text-sm text-muted-foreground">
         Override your availability for particular dates when your hours deviate

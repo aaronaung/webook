@@ -170,9 +170,16 @@ export default function Availability() {
 
           {(availabilitySchedules || []).map((schedule) => (
             <TabsContent key={schedule.id} value={schedule.id}>
-              <div className="grid w-full grid-cols-5 gap-x-6">
-                <WeeklySlots scheduleId={schedule.id} />
-                <SlotOverrides scheduleId={schedule.id} />
+              {/** todo - (not important) for mobile, show weekly slots and slot overrides in tabs */}
+              <div className="grid w-full grid-cols-1 gap-x-6 sm:grid-cols-5">
+                <WeeklySlots
+                  className="col-span-1 mb-8 sm:col-span-3"
+                  scheduleId={schedule.id}
+                />
+                <SlotOverrides
+                  className="col-span-1 sm:col-span-2"
+                  scheduleId={schedule.id}
+                />
               </div>
             </TabsContent>
           ))}

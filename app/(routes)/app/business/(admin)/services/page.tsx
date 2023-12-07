@@ -149,7 +149,6 @@ export default function Services() {
           })
         }
       />
-
       <div className="w-full">
         <Tabs defaultValue={ServiceType.AvailabilityBased}>
           <TabsList>

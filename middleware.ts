@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { match } from "path-to-regexp";
 
 const protectedRoutes = [
-  "/:businessHandle/chat",
+  "/:businessHandle/bookings",
   "/:businessHandle/questions",
   "/app/:path*",
 ];

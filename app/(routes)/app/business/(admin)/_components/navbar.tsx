@@ -31,7 +31,7 @@ export default function Navbar({
 
   return (
     <aside className="flex overflow-x-auto pb-4 lg:block lg:h-full lg:w-64 lg:flex-none">
-      <nav className="flex-none px-4 sm:px-6 lg:h-full lg:px-0">
+      <nav className="flex-none sm:px-6 lg:h-full lg:px-0">
         <ul
           role="list"
           className="flex items-center gap-x-3 gap-y-1 whitespace-nowrap lg:h-full lg:flex-col"
@@ -70,7 +70,8 @@ export default function Navbar({
                       <Image
                         src={getBusinessLogoUrl(currentBusiness.handle)}
                         alt="Logo"
-                        className="h-10 w-10 rounded-full object-cover"
+                        fallbackSrc={`https://ui-avatars.com/api/?name=${currentBusiness?.title}}`}
+                        className="h-6 w-6 rounded-full object-cover sm:h-10 sm:w-10"
                       />
                       <p className="ml-1 overflow-hidden text-ellipsis text-sm">
                         {currentBusiness?.title}

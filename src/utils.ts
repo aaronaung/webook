@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { BUCKETS, STORAGE_DIR_PATHS } from "./consts/storage";
 import { Message } from "./components/ui/chat/chat";
 import { Tables } from "@/types/db.extension";
+import { format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -123,6 +124,13 @@ export const strListDiff = (originalList: string[], newList: string[]) => {
     added,
     removed,
   };
+};
+
+export const userFriendlyDate = (date: Date | number | string) => {
+  if (typeof date === "string") {
+    return `${format(new Date(date), "MMM dd yyyy h:mm a")}`;
+  }
+  return `${format(date, "MMM dd yyyy h:mm a")}`;
 };
 
 export const chatMessagesToChatRoomMessages = (

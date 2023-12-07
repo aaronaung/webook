@@ -263,6 +263,9 @@ const findFreeIntervalsInLeft = (
     return left;
   }
 
+  left.sort((a, b) => a[0] - b[0]);
+  right.sort((a, b) => a[0] - b[0]);
+
   let lPtr = 0;
   let rPtr = 0;
   let candidateInterval: number[] = left[lPtr];

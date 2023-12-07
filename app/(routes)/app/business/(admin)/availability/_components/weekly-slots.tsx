@@ -26,11 +26,16 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { CopyIcon, PlusIcon } from "lucide-react";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { cn } from "@/src/utils";
 
 type WeeklySlotsProps = {
   scheduleId: string;
+  className?: string;
 };
-export default function WeeklySlots({ scheduleId }: WeeklySlotsProps) {
+export default function WeeklySlots({
+  scheduleId,
+  className,
+}: WeeklySlotsProps) {
   const { data, isLoading } = useSupaQuery(
     getWeeklyAvailabilitySlotsBySchedule,
     scheduleId,
@@ -143,7 +148,7 @@ export default function WeeklySlots({ scheduleId }: WeeklySlotsProps) {
   };
 
   return (
-    <div className="col-span-3 flex flex-col gap-y-1 p-1">
+    <div className={cn("flex flex-col gap-y-1 p-1", className)}>
       <p className="font-medium text-muted-foreground">Weekly hours</p>
 
       {Object.keys(Day).map((day) => (

@@ -9,6 +9,11 @@ import {
 
 export const navigation = [
   {
+    name: "Bookings",
+    icon: ChatBubbleOvalLeftIcon,
+    href: "/app/business/bookings",
+  },
+  {
     name: "Availability",
     icon: ClockIcon,
     href: "/app/business/availability",
@@ -29,5 +34,4 @@ export const navigation = [
     icon: QuestionMarkCircleIcon,
     href: "/app/business/questions",
   },
-  { name: "Chat", icon: ChatBubbleOvalLeftIcon, href: "/app/business/chat" },
 ];

@@ -18,7 +18,6 @@ import { GetServiceResponse } from "@/src/data/service";
 import { BookingRequest } from "@/src/hooks/use-booking";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -112,7 +111,7 @@ export default function Questions({
       }));
       await _saveQandA(questionAnswers);
       router.replace(
-        `/${currentViewingBusiness.handle}/chat?room_id=${room.id}`,
+        `/${currentViewingBusiness.handle}/booking?booking_id=${booking.id}`,
       );
     } catch (err) {
       toast({
@@ -178,19 +177,7 @@ export default function Questions({
 
   return (
     <div>
-      <HeaderWithAction
-        title="Almost there"
-        leftActionBtn={
-          <Button
-            onClick={() => {
-              router.back();
-            }}
-            variant="ghost"
-          >
-            <ArrowLeftIcon className="h-5 w-5" />
-          </Button>
-        }
-      />
+      <HeaderWithAction title="Almost there" />
       <div className="relative">
         <div className="flex flex-col gap-5 p-6 lg:p-10">
           <p className="text-sm text-muted-foreground">

@@ -23,17 +23,28 @@ export const deleteBooking = async (
   return throwOrData(client.from("bookings").delete().eq("id", bookingId));
 };
 
-export const getBookings = async (
-  { businessId, userId }: { businessId: string; userId: string },
+export type GetBookingsForBusinessResponse = Awaited<
+  ReturnType<typeof getBookingsForBusiness>
+>;
+export type GetBookingsForBusinessResponseSingle =
+  GetBookingsForBusinessResponse[0];
+export const getBookingsForBusiness = async (
+  { businessId, userId }: { businessId: string; userId?: string },
   { client }: SupabaseOptions,
 ) => {
-  return throwOrData(
-    client
-      .from("bookings")
-      .select()
-      .eq("business_id", businessId)
-      .eq("booker_id", userId),
-  );
+  let query = client
+    .from("bookings")
+    .select(
+      "*, service_event:service_events(*, service:services(*)), service:services(*), chat_room:chat_rooms(*), booker:users(*)",
+    )
+    .eq("business_id", businessId)
+    .order("created_at", { ascending: false });
+
+  if (userId) {
+    query = query.eq("booker_id", userId);
+  }
+
+  return throwOrData(query);
 };
 
 export const getBookingForServiceEventByUser = async (

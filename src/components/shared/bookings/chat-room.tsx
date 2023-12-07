@@ -6,19 +6,24 @@ import {
   ChatInput,
   ChatMessage,
 } from "@/src/components/ui/chat/chat";
-import { getBookingByChatRoom, saveBooking } from "@/src/data/booking";
+import {
+  GetBookingsForBusinessResponseSingle,
+  saveBooking,
+} from "@/src/data/booking";
 import { listChatMessagesInRoom, saveChatMessage } from "@/src/data/chat";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
-import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
-import { chatMessagesToChatRoomMessages } from "@/src/utils";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { chatMessagesToChatRoomMessages, userFriendlyDate } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { flushSync } from "react-dom";
 import { BOOKING_STATUS_LABELS, BookingStatus } from "@/src/consts/booking";
+import { bookingTitle } from "./booking-list";
 
-type RoomProps = {
+type ChatRoomProps = {
   room: Tables<"chat_rooms">;
+  booking: GetBookingsForBusinessResponseSingle;
   loggedInUser?: Tables<"users">;
   business?: Tables<"businesses">;
   onBack?: () => void;
@@ -27,20 +32,20 @@ type RoomProps = {
 // Note: Either loggedInUser or business must be provided.
 // If business is provided then the chat room is a business chat room.
 // If loggedInUser is provided then the chat room is a user chat room.
-export default function Room({
+export default function ChatRoom({
   room,
+  booking,
   loggedInUser,
   business,
   onBack,
-}: RoomProps) {
+}: ChatRoomProps) {
   const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const { mutate: sendMessage } = useSupaMutation(saveChatMessage);
   const { mutate: _saveBooking } = useSupaMutation(saveBooking, {
-    invalidate: [["getBookingByChatRoom", room.id]],
-  });
-  const { data: booking } = useSupaQuery(getBookingByChatRoom, room.id, {
-    queryKey: ["getBookingByChatRoom", room.id],
+    invalidate: [
+      ["getBookingsForBusiness", business?.id || loggedInUser?.id || ""],
+    ],
   });
   const [bookingStatus, setBookingStatus] = useState(booking?.status);
 
@@ -103,8 +108,16 @@ export default function Room({
   const handleBookingStatusChange = (newStatus: BookingStatus) => {
     setBookingStatus(newStatus);
     if (booking && business) {
+      // TODO - turn this into RPC
       _saveBooking({
-        ...booking,
+        id: booking.id,
+        booker_id: booking.booker_id,
+        business_id: booking.business_id,
+        service_id: booking.service_id,
+        service_event_id: booking.service_event_id,
+        start: booking.start,
+        end: booking.end,
+        chat_room_id: booking.chat_room_id,
         status: newStatus,
       });
 
@@ -121,10 +134,10 @@ export default function Room({
   return (
     <ChatContainer>
       <ChatHeader
-        title={room.name || `Room ${room.id}`}
+        title={bookingTitle(booking)}
         subtitle={
-          room.created_at
-            ? `Created: ${new Date(room.created_at).toISOString()}`
+          booking.created_at
+            ? `Booking initiated: ${userFriendlyDate(booking.created_at)}`
             : ""
         }
         onBack={isMobile ? onBack : undefined}

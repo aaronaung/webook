@@ -6,6 +6,7 @@ import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { getScheduledEventsInTimeRange } from "@/src/data/business";
 import { getAuthUser } from "@/src/data/user";
 import useBooking from "@/src/hooks/use-booking";
+import HeaderWithAction from "@/src/components/shared/header-with-action";
 
 export default function SchedulePage({
   params,
@@ -41,8 +42,9 @@ export default function SchedulePage({
   }
 
   return (
-    <div className="py-6">
-      <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
+    <div className="mx-auto  max-w-4xl py-4">
+      <HeaderWithAction />
+      <div className="mx-auto mt-2 max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
         <div className="lg:grid lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
           <ServiceEventCalendar
             data={data || []}

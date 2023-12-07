@@ -1,14 +1,12 @@
 "use client";
 
 import HeaderWithAction from "@/src/components/shared/header-with-action";
-import { Button } from "@/src/components/ui/button";
 import CalendarV2 from "@/src/components/ui/calendar-v2";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { getAvailabilityForServiceOnDate } from "@/src/data/availability";
 import { getAuthUser } from "@/src/data/user";
 import useBooking from "@/src/hooks/use-booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import {
   add,
   format,
@@ -109,17 +107,12 @@ export default function Availability({
   }
 
   return (
-    <>
+    <div className="mx-auto  max-w-4xl py-4">
       <HeaderWithAction
         title={`${service?.title || ""} (${millisecondsToMinutes(
           service?.duration || 0,
         )} 
           minutes)`}
-        leftActionBtn={
-          <Button onClick={() => router.back()} variant="ghost">
-            <ArrowLeftIcon className="h-5 w-5" />
-          </Button>
-        }
       />
       <div className="py-4">
         <div className="mx-auto max-w-lg px-4 sm:px-7 lg:max-w-4xl lg:px-6">
@@ -155,6 +148,6 @@ export default function Availability({
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

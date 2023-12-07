@@ -1,3 +1,4 @@
+"use client";
 import useImageWithRetry from "@/src/hooks/use-image-with-retry";
 import { cn } from "@/src/utils";
 import { ImgHTMLAttributes, useRef } from "react";
