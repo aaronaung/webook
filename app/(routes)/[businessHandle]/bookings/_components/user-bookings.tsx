@@ -1,6 +1,8 @@
 "use client";
 
-import BookingList from "@/src/components/shared/bookings/booking-list";
+import BookingList, {
+  ViewMode,
+} from "@/src/components/shared/bookings/booking-list";
 import { getBookingsForBusiness } from "@/src/data/booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
@@ -30,8 +32,9 @@ export default function UserBookings({
   return (
     <BookingList
       bookings={bookings || []}
-      business={business}
       loggedInUser={loggedInUser}
+      business={business}
+      viewMode={ViewMode.User}
     />
   );
 }

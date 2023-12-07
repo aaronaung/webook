@@ -39,6 +39,7 @@ export default function ChatRoom({
   business,
   onBack,
 }: ChatRoomProps) {
+  console.log("business", business);
   const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const { mutate: sendMessage } = useSupaMutation(saveChatMessage);

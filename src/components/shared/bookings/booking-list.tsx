@@ -44,18 +44,26 @@ export const getBookingStatusIcon = (status: BookingStatus) => {
   }
 };
 
+export enum ViewMode {
+  Business,
+  User,
+}
+
 // If only business is passed, it's a business view. If both business and loggedInUser are passed, it's a user view.
 export default function BookingList({
   loggedInUser,
   business,
   bookings,
   hideBackBtn,
+  viewMode,
 }: {
   loggedInUser?: Tables<"users">;
   business: Tables<"businesses">;
   bookings: GetBookingsForBusinessResponse;
   hideBackBtn?: boolean;
+  viewMode: ViewMode;
 }) {
+  console.log(viewMode);
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentBookingId =
@@ -81,7 +89,11 @@ export default function BookingList({
         )}
       >
         <HeaderWithAction
-          title={"Bookings"}
+          title={
+            viewMode === ViewMode.Business
+              ? "Bookings"
+              : `Bookings with ${business.title}`
+          }
           subtitle={"Select a booking to see the details."}
           hideBackBtn={hideBackBtn}
         />
@@ -97,7 +109,7 @@ export default function BookingList({
               setShowSideBar(false);
             }}
           >
-            {business && booking.booker && (
+            {booking.booker && (
               <div className="flex items-center gap-x-4">
                 <Image
                   className="h-8 w-8 rounded-full"
@@ -106,12 +118,14 @@ export default function BookingList({
                     `https://ui-avatars.com/api/?name=${booking.booker?.first_name}+${booking.booker?.last_name}`
                   }
                 />
-                <div>
+                <div className="flex-1">
                   <p>{bookingTitle(booking)}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {booking.booker?.first_name} {booking.booker?.last_name} (
-                    {booking.booker?.email})
-                  </p>
+                  {viewMode === ViewMode.Business && (
+                    <p className="text-sm text-muted-foreground">
+                      {booking.booker?.first_name} {booking.booker?.last_name} (
+                      {booking.booker?.email})
+                    </p>
+                  )}
                 </div>
                 <Tooltip>
                   <TooltipTrigger>
@@ -146,7 +160,7 @@ export default function BookingList({
             room={currentBooking.chat_room}
             booking={currentBooking}
             loggedInUser={loggedInUser}
-            business={business}
+            business={viewMode === ViewMode.Business ? business : undefined}
             onBack={() => {
               setShowSideBar(true);
             }}

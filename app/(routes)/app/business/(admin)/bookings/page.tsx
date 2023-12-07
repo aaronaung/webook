@@ -1,5 +1,7 @@
 "use client";
-import BookingList from "@/src/components/shared/bookings/booking-list";
+import BookingList, {
+  ViewMode,
+} from "@/src/components/shared/bookings/booking-list";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { getBookingsForBusiness } from "@/src/data/booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
@@ -25,6 +27,7 @@ export default function BusinessBookings() {
       hideBackBtn
       bookings={bookings || []}
       business={currentBusiness}
+      viewMode={ViewMode.Business}
     />
   );
 }
