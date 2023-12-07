@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/src/components/ui/button";
 import _ from "lodash";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import saveFile from "file-saver";
 import * as XLSX from "xlsx";
 
@@ -14,22 +14,26 @@ type MappedRow = {
 
 export default function Honey() {
   const [worksheets, setWorksheets] = useState<Row[][]>([[]]);
-  const [totaledSheets, setTotaledSheets] = useState<MappedRow[]>([]);
+  const [totaledSheets, setTotaledSheets] = useState<{
+    [type: string]: MappedRow;
+  }>({});
   const [name1Column, setName1Column] = useState<string>();
   const [amount1Column, setAmount1Column] = useState<string>();
   const [name2Column, setName2Column] = useState<string>();
   const [amount2Column, setAmount2Column] = useState<string>();
+  const uploadRef = useRef<HTMLInputElement | null>(null);
 
   const [diffed, setDiffed] = useState<{ [name: string]: number }>();
 
   const calculateTotals = (rows: Row[], nameCol: string, amountCol: string) => {
     const totaled: MappedRow = {};
-    console.log(rows, nameCol, amountCol);
+
     for (const row of rows) {
-      if (totaled[row[nameCol]]) {
-        totaled[row[nameCol]] += Number(row[amountCol]);
+      if (!row[nameCol]) continue;
+      if (totaled[row[nameCol]?.toLowerCase()]) {
+        totaled[row[nameCol]?.toLowerCase()] += Number(row[amountCol]);
       } else {
-        totaled[row[nameCol]] = Number(row[amountCol]);
+        totaled[row[nameCol]?.toLowerCase()] = Number(row[amountCol]);
       }
     }
     return totaled;
@@ -37,8 +41,8 @@ export default function Honey() {
 
   const calculateDiff = (left: MappedRow, right: MappedRow) => {
     const diff: MappedRow = {};
-    const leftKeys = Object.keys(left);
-    const rightKeys = Object.keys(right);
+    const leftKeys = Object.keys(left).map((k) => k.trim().toLowerCase());
+    const rightKeys = Object.keys(right).map((k) => k.trim().toLowerCase());
 
     for (const key of leftKeys) {
       if (rightKeys.includes(key)) {
@@ -87,7 +91,10 @@ export default function Honey() {
       console.log("diff", diff);
 
       setWorksheets([data1, data2] as Row[][]);
-      setTotaledSheets([totaled1, totaled2, diff] as MappedRow[]);
+      setTotaledSheets({
+        Invoice: totaled1,
+        Melita: totaled2,
+      });
       setDiffed(diff);
     };
   };
@@ -97,9 +104,19 @@ export default function Honey() {
 
     const diffedData = _.map(diffed, (amount, name) => ({
       Name: name,
-      Amount: amount,
+      Delta: amount,
     }));
-    console.log("before download: diffedData", diffedData);
+    for (const [sheetName, totaled] of Object.entries(totaledSheets)) {
+      for (const [name, amount] of Object.entries(totaled)) {
+        for (const d of diffedData) {
+          if (d.Name === name) {
+            // @ts-ignore
+            d[sheetName] = amount;
+          }
+        }
+      }
+    }
+
     const diffedWs = XLSX.utils.json_to_sheet(diffedData);
 
     XLSX.utils.book_append_sheet(wb, diffedWs, "Recon");
@@ -116,18 +133,6 @@ export default function Honey() {
   return (
     <div className="flex flex-col gap-y-4 p-8">
       <p className="text-lg font-bold">Hi Honey</p>
-      <div>
-        <input
-          disabled={
-            !name1Column || !name2Column || !amount1Column || !amount2Column
-          }
-          type="file"
-          onChange={readExcel}
-        />
-        {(!name1Column || !name2Column || !amount1Column || !amount2Column) && (
-          <p className="text-destructive">Enter your columns first</p>
-        )}
-      </div>
       <div>
         <label className="mr-2" htmlFor="name1">
           Name column of sheet 1
@@ -171,6 +176,28 @@ export default function Honey() {
           value={amount2Column}
           onChange={(e) => setAmount2Column(e.target.value)}
         />
+      </div>
+      <div>
+        <input
+          disabled={
+            !name1Column || !name2Column || !amount1Column || !amount2Column
+          }
+          type="file"
+          ref={uploadRef}
+          onChange={readExcel}
+        />
+        <Button
+          onClick={() => {
+            if (uploadRef?.current) {
+              uploadRef.current.value = "";
+            }
+          }}
+        >
+          Clear
+        </Button>
+        {(!name1Column || !name2Column || !amount1Column || !amount2Column) && (
+          <p className="text-destructive">Enter your columns first</p>
+        )}
       </div>
       {/* <div className="flex gap-x-10">
         {worksheets.map((ws, index) => (
