@@ -8,45 +8,45 @@ import * as XLSX from "xlsx";
 type Row = {
   [name: string]: string;
 };
-type MappedRow = {
-  [name: string]: number;
-};
 
 export default function Honey() {
   const [worksheets, setWorksheets] = useState<Row[][]>([[]]);
   const [totaledSheets, setTotaledSheets] = useState<{
-    [type: string]: MappedRow;
+    [type: string]: Row;
   }>({});
-  const [name1Column, setName1Column] = useState<string>();
-  const [amount1Column, setAmount1Column] = useState<string>();
-  const [name2Column, setName2Column] = useState<string>();
-  const [amount2Column, setAmount2Column] = useState<string>();
+  const [name1Column, setName1Column] = useState<string>("");
+  const [amount1Column, setAmount1Column] = useState<string>("");
+  const [name2Column, setName2Column] = useState<string>("");
+  const [amount2Column, setAmount2Column] = useState<string>("");
+  const [departmentColumn, setDepartmentColumn] = useState<string>("");
+
   const uploadRef = useRef<HTMLInputElement | null>(null);
 
-  const [diffed, setDiffed] = useState<{ [name: string]: number }>();
+  const [downloadData, setDownloadData] =
+    useState<{ [name: string]: string }[]>();
 
   const calculateTotals = (rows: Row[], nameCol: string, amountCol: string) => {
-    const totaled: MappedRow = {};
+    const totaled: Row = {};
 
     for (const row of rows) {
       if (!row[nameCol]) continue;
       if (totaled[row[nameCol]?.toLowerCase()]) {
         totaled[row[nameCol]?.toLowerCase()] += Number(row[amountCol]);
       } else {
-        totaled[row[nameCol]?.toLowerCase()] = Number(row[amountCol]);
+        totaled[row[nameCol]?.toLowerCase()] = row[amountCol];
       }
     }
     return totaled;
   };
 
-  const calculateDiff = (left: MappedRow, right: MappedRow) => {
-    const diff: MappedRow = {};
+  const calculateDiff = (left: Row, right: Row) => {
+    const diff: Row = {};
     const leftKeys = Object.keys(left).map((k) => k.trim().toLowerCase());
     const rightKeys = Object.keys(right).map((k) => k.trim().toLowerCase());
 
     for (const key of leftKeys) {
       if (rightKeys.includes(key)) {
-        diff[key] = left[key] - right[key];
+        diff[key] = String(Number(left[key]) - Number(right[key]));
       } else {
         diff[key] = left[key];
       }
@@ -75,49 +75,66 @@ export default function Honey() {
 
       const ws1 = wb.Sheets[wsname1];
       const ws2 = wb.Sheets[wsname2];
-
       const data1: Row[] = XLSX.utils.sheet_to_json(ws1);
-      const totaled1 = calculateTotals(data1, name1Column!, amount1Column!);
-
       const data2: Row[] = XLSX.utils.sheet_to_json(ws2);
+
+      const totaled1 = calculateTotals(data1, name1Column!, amount1Column!);
       const totaled2 = calculateTotals(data2, name2Column!, amount2Column!);
+      const departments: Row = {};
+      for (const row of data2) {
+        const name = row[name2Column].toLowerCase();
+        const currDepartment = departments[name];
+        const candidateDepartment = row[departmentColumn];
+
+        if (!candidateDepartment) continue;
+        if (currDepartment && candidateDepartment !== currDepartment) {
+          departments[name] = `${currDepartment}, ${candidateDepartment}`;
+        } else {
+          departments[name] = candidateDepartment;
+        }
+      }
 
       const diff = calculateDiff(totaled1, totaled2);
 
+      const dataPerColumn = {
+        Department: departments,
+        Invoice: totaled1,
+        Melita: totaled2,
+        Delta: diff,
+      };
+
+      const downloadData = _.map(diff, (amount, name) => ({
+        Name: name,
+      }));
+      for (const [colName, data] of Object.entries(dataPerColumn)) {
+        for (const [name, amount] of Object.entries(data)) {
+          for (const d of downloadData) {
+            if (d.Name === name) {
+              // @ts-ignore
+              d[colName] = amount;
+            }
+          }
+        }
+      }
       console.log("data1", data1);
       console.log("data2", data2);
       console.log("totaled1", totaled1);
       console.log("totaled2", totaled2);
-      console.log("diff", diff);
+      console.log("departments", departments);
+      console.log("downloadData", downloadData);
 
       setWorksheets([data1, data2] as Row[][]);
-      setTotaledSheets({
-        Invoice: totaled1,
-        Melita: totaled2,
-      });
-      setDiffed(diff);
+      setDownloadData(downloadData);
     };
   };
 
   const handleDownload = () => {
+    if (!downloadData) {
+      return;
+    }
     const wb = XLSX.utils.book_new();
 
-    const diffedData = _.map(diffed, (amount, name) => ({
-      Name: name,
-      Delta: amount,
-    }));
-    for (const [sheetName, totaled] of Object.entries(totaledSheets)) {
-      for (const [name, amount] of Object.entries(totaled)) {
-        for (const d of diffedData) {
-          if (d.Name === name) {
-            // @ts-ignore
-            d[sheetName] = amount;
-          }
-        }
-      }
-    }
-
-    const diffedWs = XLSX.utils.json_to_sheet(diffedData);
+    const diffedWs = XLSX.utils.json_to_sheet(downloadData);
 
     XLSX.utils.book_append_sheet(wb, diffedWs, "Recon");
     // Convert the workbook to an array buffer
@@ -134,53 +151,73 @@ export default function Honey() {
     <div className="flex flex-col gap-y-4 p-8">
       <p className="text-lg font-bold">Hi Honey</p>
       <div>
-        <label className="mr-2" htmlFor="name1">
-          Name column of sheet 1
-        </label>
-        <input
-          id="name1"
-          type="text"
-          value={name1Column}
-          onChange={(e) => setName1Column(e.target.value)}
-        />
+        <div>
+          <label className="mr-2" htmlFor="name1">
+            Name column of sheet 1
+          </label>
+          <input
+            id="name1"
+            type="text"
+            value={name1Column}
+            onChange={(e) => setName1Column(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="mr-2" htmlFor="amount1">
+            Amount column of sheet 1
+          </label>
+          <input
+            id="amount1"
+            type="text"
+            value={amount1Column}
+            onChange={(e) => setAmount1Column(e.target.value)}
+          />
+        </div>
       </div>
       <div>
-        <label className="mr-2" htmlFor="name2">
-          Name column of sheet 2
-        </label>
-        <input
-          id="name2"
-          type="text"
-          value={name2Column}
-          onChange={(e) => setName2Column(e.target.value)}
-        />
-      </div>
-      <div>
-        <label className="mr-2" htmlFor="amount1">
-          Amount column of sheet 1
-        </label>
-        <input
-          id="amount1"
-          type="text"
-          value={amount1Column}
-          onChange={(e) => setAmount1Column(e.target.value)}
-        />
-      </div>
-      <div>
-        <label className="mr-2" htmlFor="amount2">
-          Amount column of sheet 2
-        </label>
-        <input
-          id="amount2"
-          type="text"
-          value={amount2Column}
-          onChange={(e) => setAmount2Column(e.target.value)}
-        />
+        <div>
+          <label className="mr-2" htmlFor="name2">
+            Name column of sheet 2
+          </label>
+          <input
+            id="name2"
+            type="text"
+            value={name2Column}
+            onChange={(e) => setName2Column(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mr-2" htmlFor="amount2">
+            Amount column of sheet 2
+          </label>
+          <input
+            id="amount2"
+            type="text"
+            value={amount2Column}
+            onChange={(e) => setAmount2Column(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="mr-2" htmlFor="amount2">
+            Department column of sheet 2
+          </label>
+          <input
+            id="amount2"
+            type="text"
+            value={departmentColumn}
+            onChange={(e) => setDepartmentColumn(e.target.value)}
+          />
+        </div>
       </div>
       <div>
         <input
           disabled={
-            !name1Column || !name2Column || !amount1Column || !amount2Column
+            !name1Column ||
+            !name2Column ||
+            !amount1Column ||
+            !amount2Column ||
+            !departmentColumn
           }
           type="file"
           ref={uploadRef}
@@ -195,7 +232,11 @@ export default function Honey() {
         >
           Clear
         </Button>
-        {(!name1Column || !name2Column || !amount1Column || !amount2Column) && (
+        {(!name1Column ||
+          !name2Column ||
+          !amount1Column ||
+          !amount2Column ||
+          !departmentColumn) && (
           <p className="text-destructive">Enter your columns first</p>
         )}
       </div>
@@ -240,27 +281,33 @@ export default function Honey() {
           </table>
         ))}
       </div> */}
-      {diffed && (
+      <Button
+        className="w-40"
+        disabled={!downloadData}
+        onClick={handleDownload}
+      >
+        Download
+      </Button>
+      {downloadData && (
         <table className="mt-4 max-w-md">
           <thead>
             <tr>
-              <td>Name</td>
-              <td>Amount</td>
+              {Object.keys(downloadData[0] || {}).map((key, index: number) => (
+                <th key={index}>{key}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {Object.keys(diffed || []).map((key: string, index: number) => (
+            {downloadData.map((row, index: number) => (
               <tr key={index}>
-                <td>{key}</td>
-                <td>{diffed?.[key]}</td>
+                {Object.values(row).map((val, index) => (
+                  <td key={index}>{val}</td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
       )}
-      <Button className="w-40" disabled={!diffed} onClick={handleDownload}>
-        Download
-      </Button>
     </div>
   );
 }
