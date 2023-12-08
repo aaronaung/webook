@@ -24,11 +24,28 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/src/components/ui/tooltip";
+import { format } from "date-fns";
 
-export const bookingTitle = (booking: GetBookingsForBusinessResponseSingle) => {
+export const bookingTitle = (
+  booking: Pick<
+    GetBookingsForBusinessResponseSingle,
+    "service" | "service_event" | "id"
+  >,
+) => {
   return `${
-    booking.service?.title || booking.service_event?.service?.title || ""
-  } (${userFriendlyDate(booking.start)})`;
+    booking.service?.title ||
+    booking.service_event?.service?.title ||
+    booking.id
+  } `;
+};
+
+export const bookingTime = (
+  booking: Pick<GetBookingsForBusinessResponseSingle, "start" | "end">,
+) => {
+  return `${userFriendlyDate(booking.start)} - ${format(
+    new Date(booking.end),
+    "h:mma",
+  )}`;
 };
 
 export const getBookingStatusIcon = (status: BookingStatus) => {
@@ -63,7 +80,6 @@ export default function BookingList({
   hideBackBtn?: boolean;
   viewMode: ViewMode;
 }) {
-  console.log(viewMode);
   const searchParams = useSearchParams();
   const router = useRouter();
   const currentBookingId =
@@ -94,7 +110,7 @@ export default function BookingList({
               ? "Bookings"
               : `Bookings with ${business.title}`
           }
-          subtitle={"Select a booking to see the details."}
+          subtitle1={"Select a booking to see the details."}
           hideBackBtn={hideBackBtn}
         />
         {(bookings || []).map((booking) => (
@@ -119,7 +135,13 @@ export default function BookingList({
                   }
                 />
                 <div className="flex-1">
-                  <p>{bookingTitle(booking)}</p>
+                  <p className="font-medium">
+                    {booking.service?.title ||
+                      booking.service_event?.service?.title ||
+                      booking.id}
+                  </p>
+                  <p className="text-sm">{bookingTime(booking)}</p>
+
                   {viewMode === ViewMode.Business && (
                     <p className="text-sm text-muted-foreground">
                       {booking.booker?.first_name} {booking.booker?.last_name} (

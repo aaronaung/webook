@@ -38,7 +38,7 @@ export const getBookingsForBusiness = async (
       "*, service_event:service_events(*, service:services(*)), service:services(*), chat_room:chat_rooms(*), booker:users(*)",
     )
     .eq("business_id", businessId)
-    .order("created_at", { ascending: false });
+    .order("start", { ascending: false });
 
   if (userId) {
     query = query.eq("booker_id", userId);

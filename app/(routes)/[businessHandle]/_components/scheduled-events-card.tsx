@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { getScheduledEventsInTimeRange } from "@/src/data/business";
+import useBooking from "@/src/hooks/use-booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
 import { endOfDay, startOfDay } from "date-fns";
@@ -17,11 +18,14 @@ import { Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ScheduledEventsCard({
+  user,
   business,
 }: {
+  user?: Tables<"users">;
   business: Tables<"businesses">;
 }) {
   const router = useRouter();
+  const { checkPrereqsAndRedirectBookingRequest } = useBooking();
 
   // We make client side query here because we want the time to be relative to the user's timezone.
   const { data, isLoading } = useSupaQuery(
@@ -58,9 +62,18 @@ export default function ScheduledEventsCard({
               event={event}
               className="py-3"
               onClick={() => {
-                router.push(
-                  `/${business.handle}/booking/confirmation?event_id=${event.id}`,
-                );
+                checkPrereqsAndRedirectBookingRequest({
+                  user,
+                  businessHandle: business.handle,
+                  bookingRequest: {
+                    service_id: event.service.id,
+                    service_event_id: event.id,
+                    start: event.start,
+                    end: event.end,
+                  },
+                  hasPreRequisiteQuestions:
+                    (event.service?.questions || []).length > 0,
+                });
               }}
             />
           ))}

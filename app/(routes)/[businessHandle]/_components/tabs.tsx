@@ -12,9 +12,11 @@ enum TabTypes {
   SCHEDULED_EVENTS,
 }
 export default function Tabs({
+  user,
   services,
   business,
 }: {
+  user?: Tables<"users">;
   services: GetServicesResponse;
   business: Tables<"businesses">;
 }) {
@@ -55,7 +57,7 @@ export default function Tabs({
           services={services.filter((s) => s.availability_schedule_id)}
         />
       ) : (
-        <ScheduledEventsCard business={business} />
+        <ScheduledEventsCard user={user} business={business} />
       )}
     </>
   );

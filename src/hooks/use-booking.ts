@@ -35,7 +35,8 @@ export default function useBooking() {
       router.replace(`/login?return_path=${returnPath}`);
       return;
     }
-
+    console.log("hasPreRequisiteQuestions", hasPreRequisiteQuestions);
+    console.log("bookingRequest", bookingRequest);
     const url = new URL(window.location.origin);
     url.searchParams.set("start", bookingRequest.start);
     url.searchParams.set("end", bookingRequest.end);
@@ -47,7 +48,7 @@ export default function useBooking() {
     }
     url.pathname = hasPreRequisiteQuestions
       ? `/${businessHandle}/questions`
-      : `/${businessHandle}/bookings`;
+      : `/${businessHandle}/bookings/confirm`;
     router.push(url.toString());
   };
 

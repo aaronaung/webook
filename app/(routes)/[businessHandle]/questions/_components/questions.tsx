@@ -1,4 +1,5 @@
 "use client";
+import { bookingTime } from "@/src/components/shared/bookings/booking-list";
 import HeaderWithAction from "@/src/components/shared/header-with-action";
 import { Button } from "@/src/components/ui/button";
 import InputTextArea from "@/src/components/ui/input/textarea";
@@ -50,17 +51,24 @@ export default function Questions({
 
   const prettifyAnswers = () => {
     let prettifiedAnswers = "";
+    let qNumber = 1;
     for (const [qId, ans] of Object.entries(answers)) {
       const q = (service.questions || []).find(
         (q: Tables<"questions">) => q.id === qId,
       );
       if (q) {
         if (q.type === QUESTION_TYPE_BOOLEAN) {
-          prettifiedAnswers += `${q.question}:\n ${ans ? "Yes" : "No"}\n`;
+          prettifiedAnswers += `${qNumber}. ${q.question}\n \t- ${
+            ans ? "Yes" : "No"
+          }\n`;
         } else {
-          prettifiedAnswers += `${q.question}:\n ${ans}\n`;
+          prettifiedAnswers += `${qNumber}. ${q.question}\n \t- ${ans}\n`;
         }
       }
+      if (qNumber !== Object.keys(answers).length) {
+        prettifiedAnswers += "\n";
+      }
+      qNumber++;
     }
     return prettifiedAnswers;
   };
@@ -110,8 +118,13 @@ export default function Questions({
         text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
       }));
       await _saveQandA(questionAnswers);
+      toast({
+        title: "Booking requested",
+        description: `We've created a chat room for you and ${currentViewingBusiness.title} to go over the details before confirming booking.`,
+        variant: "success",
+      });
       router.replace(
-        `/${currentViewingBusiness.handle}/booking?booking_id=${booking.id}`,
+        `/${currentViewingBusiness.handle}/bookings?booking_id=${booking.id}`,
       );
     } catch (err) {
       toast({
@@ -176,37 +189,41 @@ export default function Questions({
   };
 
   return (
-    <div>
-      <HeaderWithAction title="Almost there" />
-      <div className="relative">
-        <div className="flex flex-col gap-5 p-6 lg:p-10">
-          <p className="text-sm text-muted-foreground">
-            Please answer the following questions before booking &quot;
-            {service.title}&quot;.
-          </p>
-          {(service?.questions || []).map((q) => (
-            <div className="" key={q.id}>
-              {renderQuestion(q)}
-            </div>
-          ))}
-        </div>
-        <div className="fixed bottom-0 w-full border-t-2  bg-secondary">
-          <Button
-            className="float-right m-4"
-            onClick={handleContinue}
-            disabled={
-              isProcessingBooking ||
-              (service.questions || [])
-                .map(
-                  (q: Tables<"questions">) =>
-                    q.required && !isRequiredQuestionAnswered(q),
-                )
-                .includes(true)
-            }
-          >
-            Continue
-          </Button>
-        </div>
+    <div className="mx-auto flex h-full max-w-4xl flex-col pt-4">
+      <HeaderWithAction
+        title={service.title}
+        subtitle={bookingTime({
+          start: bookingRequest.start,
+          end: bookingRequest.end,
+        })}
+      />
+      <div className="flex flex-1 flex-col gap-5 overflow-scroll px-4 py-3 lg:p-4">
+        <p className="text-sm text-muted-foreground">
+          Please answer the following questions before booking.
+        </p>
+        {([...service?.questions] || []).map((q) => (
+          <div className="" key={q.id}>
+            {renderQuestion(q)}
+          </div>
+        ))}
+      </div>
+
+      <div className="w-full border-t-2 bg-secondary">
+        <Button
+          className="float-right m-4"
+          onClick={handleContinue}
+          disabled={
+            isProcessingBooking ||
+            (service.questions || [])
+              .map(
+                (q: Tables<"questions">) =>
+                  q.required && !isRequiredQuestionAnswered(q),
+              )
+              .includes(true)
+          }
+        >
+          Continue
+        </Button>
       </div>
     </div>
   );

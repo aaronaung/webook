@@ -11,6 +11,7 @@ type HeaderWithActionProps = {
   rightActionBtn?: React.ReactNode;
   title?: string;
   subtitle?: string;
+  subtitle1?: string;
   className?: string;
 };
 
@@ -20,6 +21,7 @@ export default function HeaderWithAction({
   rightActionBtn,
   title,
   subtitle,
+  subtitle1,
   className,
 }: HeaderWithActionProps) {
   const router = useRouter();
@@ -36,9 +38,10 @@ export default function HeaderWithAction({
     <div className={cn("flex items-center py-2", className)}>
       {leftButton}
       <div className="w-full text-center">
-        {title && <p className="font-medium">{title}</p>}
-        {subtitle && (
-          <p className="text-xs text-muted-foreground ">{subtitle}</p>
+        {title && <p className="font-semibold">{title}</p>}
+        {subtitle && <p className="text-sm">{subtitle}</p>}
+        {subtitle1 && (
+          <p className="text-xs text-muted-foreground ">{subtitle1}</p>
         )}
       </div>
       {rightActionBtn || (

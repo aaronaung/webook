@@ -21,6 +21,9 @@ const findFreeIntervalsInLeft = (
   right: number[][],
   logSteps = false,
 ) => {
+  left.sort((a, b) => a[0] - b[0]);
+  right.sort((a, b) => a[0] - b[0]);
+
   if (left.length <= 0) {
     return [];
   }
@@ -36,14 +39,13 @@ const findFreeIntervalsInLeft = (
   while (rPtr < right.length && lPtr < left.length) {
     step++;
     // until everthing in right has been checked.
-    const [lStart, lEnd] = left[lPtr];
-
+    const [lStart, lEnd] = candidateInterval;
     const [rStart, rEnd] = right[rPtr];
     if (logSteps) {
       console.log("");
       console.log("step", step);
       console.log("candidate", candidateInterval);
-      console.log("left: ", left[lPtr]);
+      console.log("left: ", [lStart, lEnd]);
       console.log("right: ", right[rPtr]);
     }
 
@@ -71,9 +73,8 @@ const findFreeIntervalsInLeft = (
       candidateInterval = [rEnd, lEnd];
       rPtr++;
     } else if (rStart > lStart && rEnd >= lEnd) {
-      result.push([lStart, rStart]);
-
       // rEnd could be farther out to cover more left intervals so we simply move lPtr
+      result.push([lStart, rStart]);
       lPtr++;
       candidateInterval = left[lPtr];
     } else if (lStart >= rStart && lEnd <= rEnd) {
@@ -166,4 +167,15 @@ const right5: number[][] = [
   [220, 250],
 ];
 console.log("case 5", findFreeIntervalsInLeft(left5, right5));
+
+const left6: number[][] = [
+  [324, 612],
+  [648, 684],
+];
+const right6: number[][] = [
+  [324, 360],
+  [450, 486],
+  [504, 666],
+];
+console.log("case 6", findFreeIntervalsInLeft(left6, right6, true));
 // Expected output: [[0, 50], [80, 100], [160, 200], [300, 400]]

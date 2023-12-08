@@ -31,7 +31,7 @@ export default async function ServiceProvider({
     <div>
       {/** <Hero business={business} /> */}
 
-      <div className="m-auto flex max-w-3xl flex-col gap-y-4 p-4">
+      <div className="m-auto flex max-w-4xl flex-col gap-y-4 p-4">
         <div className="flex h-full flex-col rounded-lg bg-secondary p-4 sm:p-8">
           <Navbar business={business} user={user ?? undefined} />
 
@@ -49,7 +49,11 @@ export default async function ServiceProvider({
               </Button>
             </div>
           </div>
-          <Tabs business={business} services={services} />
+          <Tabs
+            user={user ?? undefined}
+            business={business}
+            services={services}
+          />
         </div>
       </div>
     </div>

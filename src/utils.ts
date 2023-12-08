@@ -128,9 +128,9 @@ export const strListDiff = (originalList: string[], newList: string[]) => {
 
 export const userFriendlyDate = (date: Date | number | string) => {
   if (typeof date === "string") {
-    return `${format(new Date(date), "MMM dd yyyy h:mm a")}`;
+    return `${format(new Date(date), "MMM do yyyy h:mma")}`;
   }
-  return `${format(date, "MMM dd yyyy h:mm a")}`;
+  return `${format(date, "MMM do yyyy h:mma")}`;
 };
 
 export const chatMessagesToChatRoomMessages = (

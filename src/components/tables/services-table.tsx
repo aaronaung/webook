@@ -126,7 +126,7 @@ export default function ServicesTable({
         columnVisibility: {
           id: !hiddenColumns.id,
           questions: !hiddenColumns.questions,
-          availability_schedules: !hiddenColumns.availability_schedule,
+          availability_schedule: !hiddenColumns.availability_schedule,
           title: !hiddenColumns.title,
           price: !hiddenColumns.price,
           duration: !hiddenColumns.duration,

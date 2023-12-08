@@ -25,13 +25,15 @@ export function ChatContainer({
 
 type ChatHeaderProps = {
   title: string;
-  subtitle: string;
+  subtitle?: string;
+  subtitle1?: string;
   onBack?: () => void;
   actionBtn?: React.ReactNode;
 };
 export function ChatHeader({
   title,
   subtitle,
+  subtitle1,
   onBack,
   actionBtn,
 }: ChatHeaderProps) {
@@ -40,6 +42,7 @@ export function ChatHeader({
       className="mb-4 px-0"
       title={title}
       subtitle={subtitle}
+      subtitle1={subtitle1}
       leftActionBtn={
         onBack && (
           <Button onClick={onBack} variant="ghost">
@@ -110,6 +113,7 @@ export function ChatMessage({ chatMessage }: ChatMessageProps) {
           : "bg-secondary",
         "my-1 max-w-[75%] rounded-xl p-2",
         determineRoundedCorners(),
+        "whitespace-pre-wrap",
       )}
     >
       {chatMessage.content}

@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { flushSync } from "react-dom";
 import { BOOKING_STATUS_LABELS, BookingStatus } from "@/src/consts/booking";
-import { bookingTitle } from "./booking-list";
+import { bookingTime, bookingTitle } from "./booking-list";
 
 type ChatRoomProps = {
   room: Tables<"chat_rooms">;
@@ -48,7 +48,6 @@ export default function ChatRoom({
       ["getBookingsForBusiness", business?.id || loggedInUser?.id || ""],
     ],
   });
-  const [bookingStatus, setBookingStatus] = useState(booking?.status);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -107,7 +106,6 @@ export default function ChatRoom({
   };
 
   const handleBookingStatusChange = (newStatus: BookingStatus) => {
-    setBookingStatus(newStatus);
     if (booking && business) {
       // TODO - turn this into RPC
       _saveBooking({
@@ -136,7 +134,8 @@ export default function ChatRoom({
     <ChatContainer>
       <ChatHeader
         title={bookingTitle(booking)}
-        subtitle={
+        subtitle={bookingTime(booking)}
+        subtitle1={
           booking.created_at
             ? `Booking initiated: ${userFriendlyDate(booking.created_at)}`
             : ""
@@ -156,7 +155,7 @@ export default function ChatRoom({
       <div className="flex items-center ">
         <ChatInput
           onSend={handleNewMessage}
-          bookingStatus={(bookingStatus || booking?.status) as BookingStatus}
+          bookingStatus={booking.status as BookingStatus}
           onBookingStatusChange={
             business
               ? (newStatus) => {
