@@ -8,7 +8,6 @@ import {
 import { DataTable } from "../ui/data-table";
 import { useMemo } from "react";
 import { RowAction } from "./types";
-import { QUESTION_TYPE_LABELS } from "@/src/consts/questions";
 
 const columnHelper = createColumnHelper<Tables<"questions">>();
 
@@ -36,8 +35,7 @@ export default function QuestionsTable({
       }),
       columnHelper.accessor("type", {
         header: "Type",
-        cell: ({ row }) =>
-          QUESTION_TYPE_LABELS[row.getValue("type") as number] || "Unknown",
+        cell: ({ row }) => row.getValue("type") || "Unknown",
       }),
       columnHelper.display({
         id: "actions",

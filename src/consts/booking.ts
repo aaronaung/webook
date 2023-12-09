@@ -1,10 +1,5 @@
-export const BOOKING_STATUS_PENDING = "PENDING";
-export const BOOKING_STATUS_CONFIRMED = "CONFIRMED";
-export const BOOKING_STATUS_CANCELED = "CANCELED";
-export const BOOKING_STATUS_LABELS = {
-  [BOOKING_STATUS_PENDING]: "Pending",
-  [BOOKING_STATUS_CONFIRMED]: "Confirmed",
-  [BOOKING_STATUS_CANCELED]: "Canceled",
-};
-
-export type BookingStatus = keyof typeof BOOKING_STATUS_LABELS;
+export enum BookingStatus {
+  Confirmed = "Confirmed",
+  Canceled = "Canceled",
+  Pending = "Pending",
+}

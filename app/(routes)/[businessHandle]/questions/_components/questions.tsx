@@ -6,11 +6,8 @@ import InputTextArea from "@/src/components/ui/input/textarea";
 import { Label } from "@/src/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/src/components/ui/radio-group";
 import { toast } from "@/src/components/ui/use-toast";
-import { BOOKING_STATUS_PENDING } from "@/src/consts/booking";
-import {
-  QUESTION_TYPE_BOOLEAN,
-  QUESTION_TYPE_TEXT,
-} from "@/src/consts/questions";
+import { BookingStatus } from "@/src/consts/booking";
+import { QuestionTypes } from "@/src/consts/questions";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { saveBooking } from "@/src/data/booking";
 import { createBookingChatRoom, saveChatMessage } from "@/src/data/chat";
@@ -57,7 +54,7 @@ export default function Questions({
         (q: Tables<"questions">) => q.id === qId,
       );
       if (q) {
-        if (q.type === QUESTION_TYPE_BOOLEAN) {
+        if (q.type === QuestionTypes.Boolean) {
           prettifiedAnswers += `${qNumber}. ${q.question}\n \t- ${
             ans ? "Yes" : "No"
           }\n`;
@@ -104,7 +101,7 @@ export default function Questions({
       const booking = await _saveBooking({
         booker_id: loggedInUser.id,
         business_id: currentViewingBusiness.id,
-        status: BOOKING_STATUS_PENDING,
+        status: BookingStatus.Pending,
         chat_room_id: room.id,
         ...bookingRequest,
       });
@@ -114,8 +111,8 @@ export default function Questions({
       ).map((q: Tables<"questions">) => ({
         booking_id: booking.id,
         question_id: q.id,
-        bool_answer: q.type === QUESTION_TYPE_BOOLEAN ? answers[q.id] : null,
-        text_answer: q.type === QUESTION_TYPE_TEXT ? answers[q.id] : null,
+        bool_answer: q.type === QuestionTypes.Boolean ? answers[q.id] : null,
+        text_answer: q.type === QuestionTypes.Text ? answers[q.id] : null,
       }));
       await _saveQandA(questionAnswers);
       toast({
@@ -140,7 +137,7 @@ export default function Questions({
   const renderQuestion = (q: Tables<"questions">) => {
     let answerBox = <></>;
     switch (q.type) {
-      case QUESTION_TYPE_TEXT:
+      case QuestionTypes.Text:
         answerBox = (
           <InputTextArea
             onChange={(e) =>
@@ -154,7 +151,7 @@ export default function Questions({
           />
         );
         break;
-      case QUESTION_TYPE_BOOLEAN:
+      case QuestionTypes.Boolean:
         answerBox = (
           <RadioGroup
             onValueChange={(value) =>

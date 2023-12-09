@@ -18,8 +18,14 @@ import { Tables } from "@/types/db.extension";
 import { useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import { flushSync } from "react-dom";
-import { BOOKING_STATUS_LABELS, BookingStatus } from "@/src/consts/booking";
-import { bookingTime, bookingTitle } from "./booking-list";
+import { BookingStatus } from "@/src/consts/booking";
+import {
+  bookingTime,
+  bookingTitle,
+  getBookingStatusIcon,
+} from "./booking-list";
+import InputSelect from "../../ui/input/select";
+import { Button } from "../../ui/button";
 
 type ChatRoomProps = {
   room: Tables<"chat_rooms">;
@@ -39,7 +45,6 @@ export default function ChatRoom({
   business,
   onBack,
 }: ChatRoomProps) {
-  console.log("business", business);
   const [messages, setMessages] = useState<Tables<"chat_messages">[]>([]);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const { mutate: sendMessage } = useSupaMutation(saveChatMessage);
@@ -48,6 +53,27 @@ export default function ChatRoom({
       ["getBookingsForBusiness", business?.id || loggedInUser?.id || ""],
     ],
   });
+
+  const getBookingStatusUpdateMessage = (newStatus: BookingStatus) => {
+    // todo important: normalize user name if first and last name doesn't exist fallback to email
+    const senderName = `${loggedInUser?.email}` || business?.title || "";
+    switch (newStatus) {
+      case BookingStatus.Confirmed:
+        return `${getBookingStatusIcon(
+          BookingStatus.Confirmed,
+        )} ${senderName} has confirmed the booking.`;
+      case BookingStatus.Canceled:
+        return `${getBookingStatusIcon(
+          BookingStatus.Canceled,
+        )} ${senderName} canceled the booking.`;
+      case BookingStatus.Pending:
+        return `${getBookingStatusIcon(
+          BookingStatus.Pending,
+        )} ${senderName} set the booking status to pending.`;
+      default:
+        return `${senderName} updated the booking status from '${booking.status}' to '${newStatus}'.`;
+    }
+  };
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -106,12 +132,13 @@ export default function ChatRoom({
   };
 
   const handleBookingStatusChange = (newStatus: BookingStatus) => {
-    if (booking && business) {
+    if (booking) {
       // TODO - turn this into RPC
       _saveBooking({
         id: booking.id,
         booker_id: booking.booker_id,
         business_id: booking.business_id,
+        updated_at: new Date().toISOString(),
         service_id: booking.service_id,
         service_event_id: booking.service_event_id,
         start: booking.start,
@@ -122,10 +149,9 @@ export default function ChatRoom({
 
       sendMessage({
         room_id: room.id,
-        content: `${business.title} updated the booking status from '${
-          BOOKING_STATUS_LABELS[booking.status as BookingStatus]
-        }' to '${BOOKING_STATUS_LABELS[newStatus]}'.`,
+        content: getBookingStatusUpdateMessage(newStatus),
         ...(business ? { sender_business_id: business.id } : {}),
+        ...(loggedInUser ? { sender_user_id: loggedInUser.id } : {}),
       });
     }
   };
@@ -152,18 +178,34 @@ export default function ChatRoom({
         ))}
       </ChatBody>
 
-      <div className="flex items-center ">
-        <ChatInput
-          onSend={handleNewMessage}
-          bookingStatus={booking.status as BookingStatus}
-          onBookingStatusChange={
-            business
-              ? (newStatus) => {
-                  handleBookingStatusChange(newStatus);
-                }
-              : undefined
-          }
-        />
+      <div className="flex items-center">
+        <ChatInput className="pr-2 lg:pr-2" onSend={handleNewMessage} />
+        <div className="pr-1">
+          {business && (
+            <InputSelect
+              selectLabel="Booking Status"
+              className="w-[60px] sm:w-36"
+              value={booking.status}
+              options={Object.keys(BookingStatus).map((key) => ({
+                label: `${getBookingStatusIcon(
+                  BookingStatus[key as BookingStatus],
+                )} ${isMobile ? "" : BookingStatus[key as BookingStatus]}`,
+                value: BookingStatus[key as BookingStatus],
+              }))}
+              onChange={(newStatus) => {
+                handleBookingStatusChange?.(newStatus);
+              }}
+            />
+          )}
+          {loggedInUser && booking.status === BookingStatus.Confirmed && (
+            <Button
+              variant="destructive"
+              onClick={() => handleBookingStatusChange(BookingStatus.Canceled)}
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </div>
     </ChatContainer>
   );

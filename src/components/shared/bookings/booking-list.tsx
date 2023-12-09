@@ -12,13 +12,7 @@ import {
   GetBookingsForBusinessResponseSingle,
 } from "@/src/data/booking";
 import Image from "../../ui/image";
-import {
-  BOOKING_STATUS_CANCELED,
-  BOOKING_STATUS_CONFIRMED,
-  BOOKING_STATUS_LABELS,
-  BOOKING_STATUS_PENDING,
-  BookingStatus,
-} from "@/src/consts/booking";
+import { BookingStatus } from "@/src/consts/booking";
 import {
   Tooltip,
   TooltipContent,
@@ -50,11 +44,11 @@ export const bookingTime = (
 
 export const getBookingStatusIcon = (status: BookingStatus) => {
   switch (status) {
-    case BOOKING_STATUS_CONFIRMED:
+    case BookingStatus.Confirmed:
       return "✅";
-    case BOOKING_STATUS_CANCELED:
+    case BookingStatus.Canceled:
       return "❌";
-    case BOOKING_STATUS_PENDING:
+    case BookingStatus.Pending:
       return "🕒";
     default:
       return "🕒";
@@ -160,9 +154,7 @@ export default function BookingList({
                     </div>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>
-                      {BOOKING_STATUS_LABELS[booking.status as BookingStatus]}
-                    </p>
+                    <p>{booking.status}</p>
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -187,11 +179,6 @@ export default function BookingList({
               setShowSideBar(true);
             }}
           />
-        )}
-        {currentBooking && !currentBooking.chat_room && (
-          <>
-            Booking details go here: <pre>{JSON.stringify(currentBooking)}</pre>
-          </>
         )}
       </div>
     </div>
