@@ -41,8 +41,8 @@ export default function Honey() {
 
   const calculateDiff = (left: Row, right: Row) => {
     const diff: Row = {};
-    const leftKeys = Object.keys(left).map((k) => k.trim().toLowerCase());
-    const rightKeys = Object.keys(right).map((k) => k.trim().toLowerCase());
+    const leftKeys = Object.keys(left).map((k) => k.trim()?.toLowerCase());
+    const rightKeys = Object.keys(right).map((k) => k.trim()?.toLowerCase());
 
     for (const key of leftKeys) {
       if (rightKeys.includes(key)) {
@@ -82,7 +82,7 @@ export default function Honey() {
       const totaled2 = calculateTotals(data2, name2Column!, amount2Column!);
       const departments: Row = {};
       for (const row of data2) {
-        const name = row[name2Column].toLowerCase();
+        const name = row[name2Column]?.toLowerCase();
         const currDepartment = departments[name];
         const candidateDepartment = row[departmentColumn];
 
