@@ -101,6 +101,8 @@ export default function SaveServiceForm({
         availability_schedule_id: null,
       },
       questionIds: questionChanges,
+      priceChanged: defaultValues?.price !== formValues.price,
+      titleChanged: defaultValues?.title !== formValues.title,
     });
   };
 

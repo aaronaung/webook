@@ -1,11 +1,13 @@
 import { SupabaseOptions } from "./types";
 import { Tables } from "@/types/db.extension";
 import { throwOrData } from "./util";
-import { CreateLiveStreamMeetingRequest } from "../api/schemas/meeting";
+import { CreateLiveStreamMeetingRequest } from "../../app/api/live-stream/meeting/dto/create-live-stream-meeting.dto";
 import {
   createLiveStreamForServiceEvent,
   deleteLiveStreamForServiceEvent,
 } from "./live-stream";
+import { UpsertStripeProductRequest } from "@/app/api/stripe/products/dto/upsert-product.dto";
+import { upsertStripeProduct } from "./stripe";
 
 export type GetServicesResponse = GetServicesResponseSingle[];
 export type GetServicesResponseSingle = Awaited<
@@ -46,23 +48,58 @@ export const saveService = async (
   {
     service,
     questionIds,
+    priceChanged,
+    titleChanged,
   }: {
     service: Partial<Tables<"services">>;
     questionIds?: {
       added: string[];
       removed: string[];
     };
+    priceChanged: boolean;
+    titleChanged: boolean;
   },
   { client }: SupabaseOptions,
 ) => {
-  const saved = await throwOrData(
+  let saved = await throwOrData(
     client
       .from("services")
       .upsert({ ...(service as Tables<"services">) })
+      .select("*")
+      .limit(1)
+      .single(),
+  );
+
+  let upsertProductResp;
+  if (titleChanged || priceChanged) {
+    const upsertStripeProductReq: UpsertStripeProductRequest = {
+      id: saved.stripe_product_id,
+      serviceId: saved.id,
+      name: saved.title,
+      description: saved.description,
+      priceData: priceChanged
+        ? {
+            id: saved.stripe_price_id,
+            unitAmount: saved.price,
+          }
+        : null,
+    };
+    upsertProductResp = await upsertStripeProduct(upsertStripeProductReq);
+  }
+
+  saved = await throwOrData(
+    client
+      .from("services")
+      .upsert({
+        ...(saved as Tables<"services">),
+        stripe_product_id: upsertProductResp?.id,
+        stripe_price_id: upsertProductResp?.default_price?.toString(),
+      })
       .select("id")
       .limit(1)
       .single(),
   );
+
   if (questionIds) {
     await saveServiceQuestion(saved.id, questionIds, { client });
   }
@@ -94,6 +131,11 @@ export const saveServiceEvent = async (
   },
   { client }: SupabaseOptions,
 ) => {
+  const resp = await fetch("/api/live-stream/meeting", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+
   const saved = await throwOrData(
     client
       .from("service_events")

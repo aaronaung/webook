@@ -72,6 +72,7 @@
     "react-places-autocomplete": "^7.3.0",
     "react-stately": "^3.27.1",
     "react-window": "^1.8.9",
+    "stripe": "^14.19.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^2.9.1",

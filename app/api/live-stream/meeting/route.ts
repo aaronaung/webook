@@ -4,7 +4,7 @@ import { env } from "@/env.mjs";
 import { NextRequest } from "next/server";
 import { meetingTemplate } from "./template";
 import { generatePassword } from "@/src/utils";
-import { CreateLiveStreamMeetingRequestSchema } from "@/src/api/schemas/meeting";
+import { CreateLiveStreamMeetingRequestSchema } from "@/app/api/live-stream/meeting/dto/create-live-stream-meeting.dto";
 
 export async function POST(req: NextRequest) {
   const accessToken = await getZoomAccessToken({

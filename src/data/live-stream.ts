@@ -1,4 +1,4 @@
-import { CreateLiveStreamMeetingRequest } from "../api/schemas/meeting";
+import { CreateLiveStreamMeetingRequest } from "../../app/api/live-stream/meeting/dto/create-live-stream-meeting.dto";
 import { SupabaseOptions } from "./types";
 import { throwOrData } from "./util";
 

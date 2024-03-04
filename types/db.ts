@@ -6,7 +6,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       availability_schedules: {
@@ -35,9 +35,10 @@ export interface Database {
           {
             foreignKeyName: "availability_schedules_business_id_fkey"
             columns: ["business_id"]
+            isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       availability_slot_overrides: {
@@ -69,9 +70,10 @@ export interface Database {
           {
             foreignKeyName: "availability_slot_overrides_availability_schedule_id_fkey"
             columns: ["availability_schedule_id"]
+            isOneToOne: false
             referencedRelation: "availability_schedules"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       availability_weekly_slots: {
@@ -106,9 +108,10 @@ export interface Database {
           {
             foreignKeyName: "availability_weekly_slots_availability_schedule_id_fkey"
             columns: ["availability_schedule_id"]
+            isOneToOne: false
             referencedRelation: "availability_schedules"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       bookings: {
@@ -155,27 +158,31 @@ export interface Database {
           {
             foreignKeyName: "bookings_booker_id_fkey"
             columns: ["booker_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "bookings_chat_room_id_fkey"
             columns: ["chat_room_id"]
+            isOneToOne: false
             referencedRelation: "chat_rooms"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "bookings_service_event_id_fkey"
             columns: ["service_event_id"]
+            isOneToOne: false
             referencedRelation: "service_events"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "bookings_service_id_fkey"
             columns: ["service_id"]
+            isOneToOne: false
             referencedRelation: "services"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       businesses: {
@@ -240,9 +247,10 @@ export interface Database {
           {
             foreignKeyName: "businesses_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       chat_messages: {
@@ -274,21 +282,24 @@ export interface Database {
           {
             foreignKeyName: "chat_messages_room_id_fkey"
             columns: ["room_id"]
+            isOneToOne: false
             referencedRelation: "chat_rooms"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "chat_messages_sender_business_id_fkey"
             columns: ["sender_business_id"]
+            isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "chat_messages_sender_user_id_fkey"
             columns: ["sender_user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       chat_room_participants: {
@@ -314,21 +325,24 @@ export interface Database {
           {
             foreignKeyName: "chat_room_participants_business_id_fkey"
             columns: ["business_id"]
+            isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "chat_room_participants_room_id_fkey"
             columns: ["room_id"]
+            isOneToOne: false
             referencedRelation: "chat_rooms"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "chat_room_participants_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       chat_rooms: {
@@ -384,15 +398,17 @@ export interface Database {
           {
             foreignKeyName: "question_answers_booking_id_fkey"
             columns: ["booking_id"]
+            isOneToOne: false
             referencedRelation: "bookings"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "question_answers_question_id_fkey"
             columns: ["question_id"]
+            isOneToOne: false
             referencedRelation: "questions"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       questions: {
@@ -430,9 +446,10 @@ export interface Database {
           {
             foreignKeyName: "questions_business_id_fkey"
             columns: ["business_id"]
+            isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       service_event_live_streams: {
@@ -470,9 +487,10 @@ export interface Database {
           {
             foreignKeyName: "service_event_live_streams_service_event_id_fkey"
             columns: ["service_event_id"]
+            isOneToOne: false
             referencedRelation: "service_events"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       service_events: {
@@ -516,15 +534,17 @@ export interface Database {
           {
             foreignKeyName: "service_events_availability_schedule_id_fkey"
             columns: ["availability_schedule_id"]
+            isOneToOne: false
             referencedRelation: "availability_schedules"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "service_events_service_id_fkey"
             columns: ["service_id"]
+            isOneToOne: false
             referencedRelation: "services"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       service_events_staffs: {
@@ -544,15 +564,17 @@ export interface Database {
           {
             foreignKeyName: "service_events_staffs_service_event_id_fkey"
             columns: ["service_event_id"]
+            isOneToOne: false
             referencedRelation: "service_events"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "service_events_staffs_staff_id_fkey"
             columns: ["staff_id"]
+            isOneToOne: false
             referencedRelation: "staffs"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       services: {
@@ -566,6 +588,8 @@ export interface Database {
           duration: number
           id: string
           price: number
+          stripe_price_id: string | null
+          stripe_product_id: string | null
           title: string
           updated_at: string | null
         }
@@ -579,6 +603,8 @@ export interface Database {
           duration: number
           id?: string
           price: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           title: string
           updated_at?: string | null
         }
@@ -592,6 +618,8 @@ export interface Database {
           duration?: number
           id?: string
           price?: number
+          stripe_price_id?: string | null
+          stripe_product_id?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -599,15 +627,17 @@ export interface Database {
           {
             foreignKeyName: "services_availability_schedule_id_fkey"
             columns: ["availability_schedule_id"]
+            isOneToOne: false
             referencedRelation: "availability_schedules"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "services_business_id_fkey"
             columns: ["business_id"]
+            isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       services_questions: {
@@ -627,15 +657,17 @@ export interface Database {
           {
             foreignKeyName: "services_questions_question_id_fkey"
             columns: ["question_id"]
+            isOneToOne: false
             referencedRelation: "questions"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "services_questions_service_id_fkey"
             columns: ["service_id"]
+            isOneToOne: false
             referencedRelation: "services"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       staffs: {
@@ -673,9 +705,10 @@ export interface Database {
           {
             foreignKeyName: "staffs_business_id_fkey"
             columns: ["business_id"]
+            isOneToOne: false
             referencedRelation: "businesses"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       users: {
@@ -740,4 +773,84 @@ export interface Database {
     }
   }
 }
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
+        Database["public"]["Views"])
+    ? (Database["public"]["Tables"] &
+        Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+    ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof Database["public"]["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
+    ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+    : never
 
