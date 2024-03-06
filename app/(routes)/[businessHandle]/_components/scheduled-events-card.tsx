@@ -25,7 +25,7 @@ export default function ScheduledEventsCard({
   business: Tables<"businesses">;
 }) {
   const router = useRouter();
-  const { checkPrereqsAndRedirectBookingRequest } = useBooking();
+  const { bookEvent } = useBooking();
 
   // We make client side query here because we want the time to be relative to the user's timezone.
   const { data, isLoading } = useSupaQuery(
@@ -62,7 +62,7 @@ export default function ScheduledEventsCard({
               event={event}
               className="py-3"
               onClick={() => {
-                checkPrereqsAndRedirectBookingRequest({
+                bookEvent({
                   user,
                   businessHandle: business.handle,
                   bookingRequest: {

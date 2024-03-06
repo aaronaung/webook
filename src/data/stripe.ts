@@ -11,3 +11,10 @@ export const upsertStripeProduct = async (
 
   return await resp.json();
 };
+
+export const getStripeAccount = async (
+  stripeAccountId: string,
+): Promise<Stripe.Account> => {
+  const resp = await fetch(`/api/stripe/accounts/${stripeAccountId}`);
+  return await resp.json();
+};

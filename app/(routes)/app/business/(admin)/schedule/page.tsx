@@ -19,6 +19,12 @@ import { toast } from "@/src/components/ui/use-toast";
 import { isBefore, startOfDay } from "date-fns";
 import EmptyState from "@/src/components/shared/empty-state";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
+import { Alert, AlertDescription, AlertTitle } from "@/src/components/ui/alert";
+import { Button } from "@/src/components/ui/button";
+import {
+  StripeStatus,
+  useConnectedAccountStatus,
+} from "@/src/hooks/use-connected-account-status";
 
 export default function SchedulePage() {
   const router = useRouter();
@@ -31,6 +37,13 @@ export default function SchedulePage() {
   }>({
     isOpen: false,
   });
+
+  const {
+    status: accountStatus,
+    statusTitle: accountStatusTitle,
+    statusDescription: accountStatusDescription,
+    isLoading: isCheckingIfPaymentReady,
+  } = useConnectedAccountStatus(currentBusiness);
 
   const { data: businessData, isLoading: isBusinessDataLoading } = useSupaQuery(
     getBusinessData,
@@ -116,9 +129,30 @@ export default function SchedulePage() {
     });
   }, []);
 
-  if (isBusinessDataLoading) {
+  if (isBusinessDataLoading || isCheckingIfPaymentReady) {
     // todo - add a loading state.
     return <>Loading...</>;
+  }
+
+  if (accountStatus !== StripeStatus.IsReady) {
+    return (
+      <Alert variant="default">
+        <AlertTitle>{accountStatusTitle}</AlertTitle>
+        <AlertDescription>{accountStatusDescription}</AlertDescription>
+        <Button
+          className="mt-6"
+          onClick={async () => {
+            const resp = await fetch(
+              `/api/stripe/onboard?businessId=${currentBusiness.id}&onSuccessReturnUrl=${window.location.href}`,
+            );
+            const json = await resp.json();
+            window.location.href = json.url;
+          }}
+        >
+          Start
+        </Button>
+      </Alert>
+    );
   }
 
   return (

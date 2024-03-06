@@ -14,7 +14,7 @@ export default function SchedulePage({
   params: { businessHandle: string };
 }) {
   const { data: user, isLoading: userIsLoading } = useSupaQuery(getAuthUser);
-  const { checkPrereqsAndRedirectBookingRequest } = useBooking();
+  const { bookEvent } = useBooking();
 
   const today = startOfToday();
   const firstDayCurrentMonth = parse(
@@ -49,7 +49,7 @@ export default function SchedulePage({
           <ServiceEventCalendar
             data={data || []}
             onServiceEventClick={(event) => {
-              checkPrereqsAndRedirectBookingRequest({
+              bookEvent({
                 user: user ?? undefined,
                 businessHandle: params.businessHandle,
                 bookingRequest: {

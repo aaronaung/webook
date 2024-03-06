@@ -12,7 +12,7 @@ export type BookingRequest = {
 export default function useBooking() {
   const router = useRouter();
 
-  const checkPrereqsAndRedirectBookingRequest = ({
+  const bookEvent = ({
     user,
     businessHandle,
     bookingRequest,
@@ -49,10 +49,11 @@ export default function useBooking() {
     url.pathname = hasPreRequisiteQuestions
       ? `/${businessHandle}/questions`
       : `/${businessHandle}/bookings/confirm`;
+
     router.push(url.toString());
   };
 
   return {
-    checkPrereqsAndRedirectBookingRequest,
+    bookEvent,
   };
 }

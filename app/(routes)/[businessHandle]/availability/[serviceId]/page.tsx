@@ -29,7 +29,7 @@ export default function Availability({
     parseInt(searchParams.get("date_millis") || "") || today.getTime(),
   );
   const { currentViewingBusiness } = useCurrentViewingBusinessContext();
-  const { checkPrereqsAndRedirectBookingRequest } = useBooking();
+  const { bookEvent } = useBooking();
 
   const { data: user, isLoading: isLoadingUser } = useSupaQuery(getAuthUser);
   const { data, isLoading } = useSupaQuery(
@@ -81,7 +81,7 @@ export default function Availability({
     return (
       <div
         onClick={() => {
-          checkPrereqsAndRedirectBookingRequest({
+          bookEvent({
             user: user ?? undefined,
             businessHandle: currentViewingBusiness.handle,
             bookingRequest: {

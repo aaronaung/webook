@@ -3,6 +3,7 @@ import { UpsertStripeProductRequestSchema } from "../dto/upsert-product.dto";
 import { stripeClient } from "../..";
 
 export async function POST(req: NextRequest) {
+  console.log(req.nextUrl);
   const { id, name, priceData, description } =
     UpsertStripeProductRequestSchema.parse(await req.json());
 
