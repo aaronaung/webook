@@ -86,10 +86,12 @@ export default function SchedulePage() {
       });
       return;
     }
+
     _saveServiceEvent({
       serviceEvent: {
         id: args.event.id,
-        start: (args.start as Date).toISOString(),
+        start: (args.start as Date).toISOString(), // TODO - ONLY Move the date and not the hour
+        end: (args.start as Date).toISOString(), // TODO - ONLY Move the date and not the hour
         service_id: args.event.service.id,
       },
     });

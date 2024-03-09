@@ -29,6 +29,8 @@ const queryClient = new QueryClient({
   }),
 });
 
+// const stripePromise = loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
 export default function RootLayout({
   children,
 }: {
@@ -41,6 +43,15 @@ export default function RootLayout({
           process.env.NODE_ENV === "development" ? "debug-screens" : ""
         } h-full overscroll-none`}
       >
+        {/* <Elements
+          stripe={stripePromise}
+          options={{
+            // USING ELEMENTS ALLOW US TO HAVE CUSTOM STRIPE ELEMENTS FOR CHECKOUT
+            // FOR NOW WE DON"T USE THIS.
+            // SEE https://docs.stripe.com/payments/accept-a-payment?platform=web&ui=checkout for more info.
+            clientSecret: "",
+          }}
+        ></Elements> */}
         <ReactQueryProvider>
           <ReactDnDProvider>
             {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}

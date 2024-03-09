@@ -87,19 +87,6 @@ export const saveService = async (
     upsertProductResp = await upsertStripeProduct(upsertStripeProductReq);
   }
 
-  saved = await throwOrData(
-    client
-      .from("services")
-      .upsert({
-        ...(saved as Tables<"services">),
-        stripe_product_id: upsertProductResp?.id,
-        stripe_price_id: upsertProductResp?.default_price?.toString(),
-      })
-      .select("id")
-      .limit(1)
-      .single(),
-  );
-
   if (questionIds) {
     await saveServiceQuestion(saved.id, questionIds, { client });
   }
@@ -131,11 +118,6 @@ export const saveServiceEvent = async (
   },
   { client }: SupabaseOptions,
 ) => {
-  const resp = await fetch("/api/live-stream/meeting", {
-    method: "POST",
-    body: JSON.stringify(req),
-  });
-
   const saved = await throwOrData(
     client
       .from("service_events")

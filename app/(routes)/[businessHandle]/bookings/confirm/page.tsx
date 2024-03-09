@@ -1,13 +1,36 @@
 "use client";
 
+import { Button } from "@/src/components/ui/button";
+
 export default function BookingConfirmationPage({
   searchParams,
 }: {
   // - if booking id is provided, it's a pending booking that just needs to be confirmed on Confirm.
   // - if booking id is not provided, it's a new booking that needs to be confirmed and created on Confirm; this is
   // usually the case when the booking type doesn't require service provider's acceptance.
-  searchParams: { booking_id?: string; service_event_id?: string };
+  searchParams: {
+    booking_id?: string;
+    service_event_id?: string;
+    service_id?: string;
+    business_handle?: string;
+  };
 }) {
+  const onConfirmBooking = async () => {
+    // Call /api/stripe/check-out to create a checkout session
+    const resp = await fetch("/api/stripe/check-out", {
+      method: "POST",
+      body: JSON.stringify({
+        serviceId: searchParams.service_id,
+        businessHandle: searchParams.business_handle,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const checkoutSession = await resp.json();
+    window.location.href = checkoutSession.url;
+  };
+
   return (
     <div>
       <p>
@@ -19,6 +42,7 @@ export default function BookingConfirmationPage({
         New booking for event (service provider auto confirmed):{" "}
         {searchParams.service_event_id}
       </p>
+      <Button onClick={onConfirmBooking}>Confirm Booking</Button>
     </div>
   );
 }

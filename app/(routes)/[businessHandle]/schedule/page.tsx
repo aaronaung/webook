@@ -53,7 +53,7 @@ export default function SchedulePage({
                 user: user ?? undefined,
                 businessHandle: params.businessHandle,
                 bookingRequest: {
-                  service_id: event.service_id,
+                  service_id: event.service.id,
                   service_event_id: event.id,
                   start: event.start,
                   end: event.end,

@@ -40,6 +40,8 @@ export default function useBooking() {
     const url = new URL(window.location.origin);
     url.searchParams.set("start", bookingRequest.start);
     url.searchParams.set("end", bookingRequest.end);
+    url.searchParams.set("business_handle", businessHandle);
+    console.log(url.searchParams.toString());
     if (bookingRequest.service_event_id) {
       url.searchParams.set("service_event_id", bookingRequest.service_event_id);
     }
