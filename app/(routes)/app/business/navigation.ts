@@ -1,4 +1,5 @@
 import {
+  AcademicCapIcon,
   CalendarIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
@@ -8,6 +9,11 @@ import {
 } from "@heroicons/react/24/outline";
 
 export const sidebarNavigation = [
+  {
+    name: "Classes",
+    icon: AcademicCapIcon,
+    href: "/app/business/classes",
+  },
   {
     name: "Bookings",
     icon: ClipboardDocumentCheckIcon,

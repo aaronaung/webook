@@ -3,18 +3,12 @@ import { stripeClient } from "..";
 import { throwOrData } from "@/src/data/util";
 import { supaServerClient } from "@/src/data/clients/server";
 import { CheckOutRequestSchema } from "./dto/check-out.dto";
+import Stripe from "stripe";
+import { StripeCheckoutMetadata } from ".";
 
 export async function POST(req: NextRequest) {
-  const { serviceId, businessHandle } = CheckOutRequestSchema.parse(
+  const { productId, businessHandle, userId } = CheckOutRequestSchema.parse(
     await req.json(),
-  );
-
-  const { stripe_product_id, price } = await throwOrData(
-    supaServerClient
-      .from("services")
-      .select("stripe_product_id, price")
-      .eq("id", serviceId)
-      .single(),
   );
 
   const { stripe_account_id } = await throwOrData(
@@ -30,34 +24,29 @@ export async function POST(req: NextRequest) {
       `Stripe account doesn't exist for business ${businessHandle}.`,
       {
         status: 500,
-        statusText: "Internal Server Error",
       },
     );
   }
-
-  if (!stripe_product_id) {
-    // TODO - this shouldn't happen, every service should have a stripe product.
-    // Make this field required in db.
-    return new Response(
-      `Stripe product doesn't exist for service ${serviceId}.`,
-      {
-        status: 500,
-        statusText: "Internal Server Error",
-      },
-    );
-  }
-  const product = await stripeClient.products.retrieve(stripe_product_id);
+  const product = await stripeClient.products.retrieve(productId, {
+    expand: ["default_price"],
+  });
+  const price: Stripe.Price = product.default_price as Stripe.Price;
+  const checkoutMetadata: StripeCheckoutMetadata = {
+    stripe_product_id: product.id,
+    user_id: userId,
+  };
 
   const session = await stripeClient.checkout.sessions.create({
     payment_intent_data: {
-      application_fee_amount: price * 0.1,
+      application_fee_amount: (price.unit_amount ?? 0) * 0.1,
       transfer_data: {
         destination: stripe_account_id,
       },
+      metadata: checkoutMetadata,
     },
     line_items: [
       {
-        price: product.default_price?.toString(),
+        price: price.id,
         quantity: 1,
       },
     ],

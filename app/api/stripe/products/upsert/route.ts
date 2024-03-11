@@ -1,16 +1,21 @@
 import { NextRequest } from "next/server";
 import { UpsertStripeProductRequestSchema } from "../dto/upsert-product.dto";
 import { stripeClient } from "../..";
-import { throwOrData } from "@/src/data/util";
-import { supaServerClient } from "@/src/data/clients/server";
 import Stripe from "stripe";
+import { StripeProductMetadata } from "..";
 
 export async function POST(req: NextRequest) {
-  const { id, serviceId, name, priceData, description } =
-    UpsertStripeProductRequestSchema.parse(await req.json());
+  const {
+    stripeProductId,
+    internalProductId,
+    name,
+    priceData,
+    description,
+    type,
+  } = UpsertStripeProductRequestSchema.parse(await req.json());
 
   let resp: Stripe.Product;
-  if (id) {
+  if (stripeProductId) {
     // You can not change a price’s amount in the API.
     // Instead, we create a new price for the new amount, switch to the new price’s ID,
     // then update the old price to be inactive.
@@ -18,12 +23,12 @@ export async function POST(req: NextRequest) {
     if (priceData?.id && priceData?.unitAmount !== undefined) {
       // When price id is passed with the unit amount, we assume the caller is updating the price.
       const priceCreateResp = await stripeClient.prices.create({
-        product: id,
+        product: stripeProductId,
         currency: "usd",
         unit_amount: priceData.unitAmount,
       });
 
-      resp = await stripeClient.products.update(id, {
+      resp = await stripeClient.products.update(stripeProductId, {
         name,
         ...(description ? { description } : {}),
         default_price: priceCreateResp.id,
@@ -34,12 +39,17 @@ export async function POST(req: NextRequest) {
         active: false,
       });
     } else {
-      resp = await stripeClient.products.update(id, {
+      resp = await stripeClient.products.update(stripeProductId, {
         name,
         ...(description ? { description } : {}),
       });
     }
   } else {
+    const productMetadata: StripeProductMetadata = {
+      type,
+      internal_product_id: internalProductId,
+    };
+
     resp = await stripeClient.products.create({
       name,
       ...(description ? { description } : {}),
@@ -47,18 +57,9 @@ export async function POST(req: NextRequest) {
         currency: "usd",
         unit_amount: priceData?.unitAmount || 0,
       },
+      metadata: productMetadata,
     });
   }
-
-  await throwOrData(
-    supaServerClient
-      .from("services")
-      .update({
-        stripe_product_id: resp?.id,
-        stripe_price_id: resp?.default_price?.toString(),
-      })
-      .eq("id", serviceId),
-  );
 
   return Response.json(resp);
 }

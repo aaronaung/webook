@@ -8,6 +8,7 @@ import {
 } from "./live-stream";
 import { UpsertStripeProductRequest } from "@/app/api/stripe/products/dto/upsert-product.dto";
 import { upsertStripeProduct } from "./stripe";
+import { ProductType } from "@/app/api/stripe/products";
 
 export type GetServicesResponse = GetServicesResponseSingle[];
 export type GetServicesResponseSingle = Awaited<
@@ -70,11 +71,10 @@ export const saveService = async (
       .single(),
   );
 
-  let upsertProductResp;
   if (titleChanged || priceChanged) {
     const upsertStripeProductReq: UpsertStripeProductRequest = {
-      id: saved.stripe_product_id,
-      serviceId: saved.id,
+      stripeProductId: saved.stripe_product_id,
+      internalProductId: saved.id,
       name: saved.title,
       description: saved.description,
       priceData: priceChanged
@@ -83,8 +83,16 @@ export const saveService = async (
             unitAmount: saved.price,
           }
         : null,
+      type: ProductType.Service,
     };
-    upsertProductResp = await upsertStripeProduct(upsertStripeProductReq);
+    const upsertProductResp = await upsertStripeProduct(upsertStripeProductReq);
+    await throwOrData(
+      client.from("services").upsert({
+        id: saved.id,
+        stripe_product_id: upsertProductResp.id,
+        stripe_price_id: upsertProductResp.default_price,
+      } as Tables<"services">),
+    );
   }
 
   if (questionIds) {

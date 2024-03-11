@@ -31,8 +31,6 @@ export default function ServiceEventItem({
     return [getServiceImgUrl(event.service.id)];
   }
 
-  console.log(event);
-
   return (
     <li
       onClick={onClick}

@@ -6,10 +6,12 @@ import ScheduledEventsCard from "./scheduled-events-card";
 import BookServicesCard from "./book-services-card";
 import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
+import ClassesCard from "./classes-card";
 
-enum TabTypes {
-  BOOK_SERVICES,
-  SCHEDULED_EVENTS,
+enum TabType {
+  BookServices = "Book now",
+  ScheduledEvents = "Scheduled events",
+  Classes = "Classes",
 }
 export default function Tabs({
   user,
@@ -20,45 +22,65 @@ export default function Tabs({
   services: GetServicesResponse;
   business: Tables<"businesses">;
 }) {
-  const [selected, setSelected] = useState(TabTypes.BOOK_SERVICES);
+  const [selected, setSelected] = useState(TabType.BookServices);
+
+  const renderTabContent = () => {
+    switch (selected) {
+      case TabType.BookServices:
+        return (
+          <BookServicesCard
+            business={business}
+            services={services.filter((s) => s.availability_schedule_id)}
+          />
+        );
+      case TabType.ScheduledEvents:
+        return <ScheduledEventsCard user={user} business={business} />;
+      case TabType.Classes:
+        return <ClassesCard business={business} />;
+      default:
+        return <></>;
+    }
+  };
+
   return (
     <>
       <div className="mb-[20px] mt-[38px] flex justify-center gap-x-3">
-        <Button
-          onClick={() => {
-            if (selected !== TabTypes.BOOK_SERVICES) {
-              setSelected(TabTypes.BOOK_SERVICES);
-            }
-          }}
-          variant={
-            selected === TabTypes.BOOK_SERVICES ? "default" : "secondary"
-          }
-          className="rounded-full hover:bg-primary hover:text-secondary"
-        >
-          Book now
-        </Button>
-        <Button
-          onClick={() => {
-            if (selected !== TabTypes.SCHEDULED_EVENTS) {
-              setSelected(TabTypes.SCHEDULED_EVENTS);
-            }
-          }}
-          variant={
-            selected === TabTypes.SCHEDULED_EVENTS ? "default" : "secondary"
-          }
-          className="rounded-full hover:bg-primary hover:text-secondary"
-        >
-          Scheduled events
-        </Button>
+        {Object.values(TabType).map((tab) => {
+          return (
+            <Tab
+              key={tab}
+              type={tab as TabType}
+              selected={selected}
+              onSelect={setSelected}
+            />
+          );
+        })}
       </div>
-      {selected === TabTypes.BOOK_SERVICES ? (
-        <BookServicesCard
-          business={business}
-          services={services.filter((s) => s.availability_schedule_id)}
-        />
-      ) : (
-        <ScheduledEventsCard user={user} business={business} />
-      )}
+      {renderTabContent()}
     </>
   );
 }
+
+const Tab = ({
+  type,
+  selected,
+  onSelect,
+}: {
+  type: TabType;
+  selected: TabType;
+  onSelect: (tab: TabType) => void;
+}) => {
+  return (
+    <Button
+      onClick={() => {
+        if (selected !== type) {
+          onSelect(type);
+        }
+      }}
+      variant={selected === type ? "default" : "secondary"}
+      className="rounded-full hover:bg-primary hover:text-secondary"
+    >
+      {type}
+    </Button>
+  );
+};

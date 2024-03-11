@@ -1,5 +1,17 @@
+import { CheckOutRequest } from "@/app/api/stripe/check-out/dto/check-out.dto";
 import { UpsertStripeProductRequest } from "@/app/api/stripe/products/dto/upsert-product.dto";
 import Stripe from "stripe";
+
+export const createStripeCheckoutSession = async (
+  req: CheckOutRequest,
+): Promise<Stripe.Checkout.Session> => {
+  const resp = await fetch("/api/stripe/check-out", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+
+  return await resp.json();
+};
 
 export const upsertStripeProduct = async (
   req: UpsertStripeProductRequest,

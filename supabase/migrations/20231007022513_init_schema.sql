@@ -15,7 +15,8 @@ create table "public"."businesses" (
     "zip" text,
     "country_code" text,
     "logo_url" text,
-    "cover_photo_url" text
+    "cover_photo_url" text,
+    "stripe_account_id" text unique
 );
 
 

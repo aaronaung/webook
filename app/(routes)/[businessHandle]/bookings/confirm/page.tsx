@@ -17,18 +17,13 @@ export default function BookingConfirmationPage({
 }) {
   const onConfirmBooking = async () => {
     // Call /api/stripe/check-out to create a checkout session
-    const resp = await fetch("/api/stripe/check-out", {
-      method: "POST",
-      body: JSON.stringify({
-        serviceId: searchParams.service_id,
-        businessHandle: searchParams.business_handle,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const checkoutSession = await resp.json();
-    window.location.href = checkoutSession.url;
+    // const checkoutSession = await createStripeCheckoutSession({
+    //   businessHandle: searchParams.business_handle,
+    //   productId: searchParams.service_id,
+    // })
+    // if (checkoutSession.url) {
+    //   window.location.href = checkoutSession.url;
+    // }
   };
 
   return (

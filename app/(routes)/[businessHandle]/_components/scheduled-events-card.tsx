@@ -48,7 +48,6 @@ export default function ScheduledEventsCard({
   if (isLoading) {
     return <>Loading...</>;
   }
-  console.log(data);
 
   return (
     <Card className="w-full">
