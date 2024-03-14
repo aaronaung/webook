@@ -1,17 +1,62 @@
 import { Tables } from "@/types/db";
 import { SupabaseOptions } from "./types";
-import { throwOrData } from "./util";
+import { throwOrCount, throwOrData } from "./util";
 import { UpsertStripeProductRequest } from "@/app/api/stripe/products/dto/upsert-product.dto";
 import { ProductType } from "@/app/api/stripe/products";
 import { upsertStripeProduct } from "./stripe";
 
-export const getClass = async (id: string, { client }: SupabaseOptions) => {
-  return throwOrData(client.from("classes").select("*").eq("id", id).single());
+export const getClass = async (
+  { id, userId }: { id: string; userId?: string },
+  { client }: SupabaseOptions,
+) => {
+  const danceClass = await throwOrData(
+    client.from("classes").select("*").eq("id", id).single(),
+  );
+  if (!danceClass.stripe_product_id || !userId) {
+    return {
+      danceClass,
+      isUserOwner: false,
+    };
+  }
+
+  const isUserOwner =
+    (await throwOrCount(
+      client
+        .from("user_stripe_products")
+        .select("*", { count: "exact", head: true })
+        .eq("stripe_product_id", danceClass.stripe_product_id)
+        .eq("user_id", userId),
+    )) > 0;
+
+  return {
+    danceClass,
+    isUserOwner,
+  };
 };
 
 export const listClasses = async ({ client }: SupabaseOptions) => {
   // TODO IMPLEMENT PAGINATION
-  return throwOrData(client.from("classes").select("*"));
+  return throwOrData(
+    client
+      .from("classes")
+      .select("*, business:businesses(*)")
+      .order("created_at"),
+  );
+};
+
+export const listClassProductIdsUserOwn = async (
+  userId: string,
+  { client }: SupabaseOptions,
+) => {
+  const ownedClassProductIds = await throwOrData(
+    client
+      .from("user_stripe_products")
+      .select("stripe_product_id")
+      .eq("user_id", userId)
+      .eq("type", ProductType.Class),
+  );
+
+  return ownedClassProductIds.map((p) => p.stripe_product_id);
 };
 
 export const saveClass = async (

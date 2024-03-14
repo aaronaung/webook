@@ -10,7 +10,7 @@ import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
 import Link from "next/link";
 
-export default function BookServicesCard({
+export default function BookServicesTabContent({
   business,
   services,
 }: {

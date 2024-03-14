@@ -51,6 +51,7 @@ export default function UserAuthForm({
           description: error.message,
         });
       } else {
+        console.log("logged in", data, returnPath);
         router.replace(returnPath);
       }
     } catch (error) {

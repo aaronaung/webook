@@ -2,16 +2,16 @@
 
 import { Button } from "@/src/components/ui/button";
 import { useState } from "react";
-import ScheduledEventsCard from "./scheduled-events-card";
-import BookServicesCard from "./book-services-card";
+import ScheduledEventsTabContent from "./tab-content-scheduled-events";
+import BookServicesTabContent from "./tab-content-book-services";
 import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
-import ClassesCard from "./classes-card";
+import ClassesTabContent from "./tab-content-classes";
 
 enum TabType {
+  Classes = "Classes",
   BookServices = "Book now",
   ScheduledEvents = "Scheduled events",
-  Classes = "Classes",
 }
 export default function Tabs({
   user,
@@ -22,21 +22,21 @@ export default function Tabs({
   services: GetServicesResponse;
   business: Tables<"businesses">;
 }) {
-  const [selected, setSelected] = useState(TabType.BookServices);
+  const [selected, setSelected] = useState(TabType.Classes);
 
   const renderTabContent = () => {
     switch (selected) {
       case TabType.BookServices:
         return (
-          <BookServicesCard
+          <BookServicesTabContent
             business={business}
             services={services.filter((s) => s.availability_schedule_id)}
           />
         );
       case TabType.ScheduledEvents:
-        return <ScheduledEventsCard user={user} business={business} />;
+        return <ScheduledEventsTabContent user={user} business={business} />;
       case TabType.Classes:
-        return <ClassesCard business={business} />;
+        return <ClassesTabContent business={business} />;
       default:
         return <></>;
     }

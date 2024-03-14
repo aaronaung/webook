@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
         supaServerClient.from("user_stripe_products").upsert({
           stripe_product_id: metadata.stripe_product_id,
           user_id: metadata.user_id,
+          type: metadata.product_type,
         }),
       );
       console.log("payment_intent.succeeded", paymentSuccessEvent, metadata);

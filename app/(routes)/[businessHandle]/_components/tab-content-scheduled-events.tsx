@@ -17,7 +17,7 @@ import { endOfDay, startOfDay } from "date-fns";
 import { Calendar } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function ScheduledEventsCard({
+export default function ScheduledEventsTabContent({
   user,
   business,
 }: {

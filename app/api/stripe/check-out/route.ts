@@ -5,6 +5,7 @@ import { supaServerClient } from "@/src/data/clients/server";
 import { CheckOutRequestSchema } from "./dto/check-out.dto";
 import Stripe from "stripe";
 import { StripeCheckoutMetadata } from ".";
+import { StripeProductMetadata } from "../products";
 
 export async function POST(req: NextRequest) {
   const { productId, businessHandle, userId } = CheckOutRequestSchema.parse(
@@ -30,10 +31,12 @@ export async function POST(req: NextRequest) {
   const product = await stripeClient.products.retrieve(productId, {
     expand: ["default_price"],
   });
+
   const price: Stripe.Price = product.default_price as Stripe.Price;
   const checkoutMetadata: StripeCheckoutMetadata = {
     stripe_product_id: product.id,
     user_id: userId,
+    product_type: (product.metadata as StripeProductMetadata).type,
   };
 
   const session = await stripeClient.checkout.sessions.create({

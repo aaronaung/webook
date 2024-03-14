@@ -11,13 +11,14 @@ create table "public"."classes" (
 );
 
 create unique index "classes_pkey" on "public"."classes" using btree (id);
-create policy "Enable all for authenticated users only"
+
+create policy "Enable classes read to all users"
 on "public"."classes"
 as permissive
-for all
-to authenticated
-using (true)
-with check (true);
+for select
+to public
+using (true);
+
 
 alter table "public"."classes" enable row level security;
 
@@ -26,6 +27,7 @@ alter table "public"."classes" add constraint "classes_business_id_fkey" foreign
 create table "public"."user_stripe_products" (
     "user_id" uuid not null,
     "stripe_product_id" text not null,
+    "type" text not null,
     "created_at" timestamp with time zone default now()
 );
 
@@ -44,3 +46,4 @@ alter table "public"."user_stripe_products" enable row level security;
 
 alter table "public"."user_stripe_products" add constraint "user_stripe_products_user_id_fkey" foreign key ("user_id") references "public"."users"("id") on update cascade on delete cascade;
 
+-- select * from classes as c join user_stripe_products as usp on c.stripe_product_id = usp.stripe_product_id where user_id;
