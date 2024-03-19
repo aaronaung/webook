@@ -1,7 +1,7 @@
 "use client";
 import { SaveStaffDialog } from "@/src/components/dialogs/save-staff-dialog";
 import { SaveStaffFormSchemaType } from "@/src/components/forms/save-staff-form";
-import EmptyState from "@/src/components/shared/empty-state";
+import EmptyState from "@/src/components/common/empty-state";
 import StaffsTable from "@/src/components/tables/staffs-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";

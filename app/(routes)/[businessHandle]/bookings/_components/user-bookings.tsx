@@ -2,7 +2,7 @@
 
 import BookingList, {
   ViewMode,
-} from "@/src/components/shared/bookings/booking-list";
+} from "@/src/components/common/bookings/booking-list";
 import { getBookingsForBusiness } from "@/src/data/booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";

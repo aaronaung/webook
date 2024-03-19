@@ -9,7 +9,7 @@ export default function PriceTag({
   price?: number | null;
   suffix?: string;
   fixed?: number;
-  className: any;
+  className?: any;
 }) {
   return (
     <span

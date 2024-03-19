@@ -1,5 +1,5 @@
 "use client";
-import ClassCard from "@/src/components/shared/class-card";
+import ClassCard from "@/src/components/common/class-card";
 import { Button } from "@/src/components/ui/button";
 import {
   Card,

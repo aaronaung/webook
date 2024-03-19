@@ -1,7 +1,7 @@
 import { PropsWithChildren, forwardRef, useState } from "react";
 import { Button } from "../button";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import HeaderWithAction from "../../shared/header-with-action";
+import HeaderWithAction from "../../common/header-with-action";
 import { cn } from "@/src/utils";
 import { Send } from "lucide-react";
 

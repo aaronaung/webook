@@ -2,7 +2,7 @@
 
 import { SaveQuestionDialog } from "@/src/components/dialogs/save-question-dialog";
 import { SaveQuestionFormSchemaType } from "@/src/components/forms/save-question-form";
-import EmptyState from "@/src/components/shared/empty-state";
+import EmptyState from "@/src/components/common/empty-state";
 import QuestionsTable from "@/src/components/tables/questions-table";
 import { RowAction } from "@/src/components/tables/types";
 import { Button } from "@/src/components/ui/button";

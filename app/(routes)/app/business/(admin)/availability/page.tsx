@@ -34,7 +34,7 @@ import { SaveAvailabilityScheduleDialog } from "@/src/components/dialogs/save-av
 import { SaveAvailabilityScheduleFormSchemaType } from "@/src/components/forms/save-availability-schedule-form";
 import { useState } from "react";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
-import EmptyState from "@/src/components/shared/empty-state";
+import EmptyState from "@/src/components/common/empty-state";
 import { useSearchParams } from "next/navigation";
 
 export default function Availability() {

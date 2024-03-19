@@ -1,11 +1,13 @@
 "use client";
 
+import VideoPlayer from "@/src/components/common/video-player/video-player";
 import { Button } from "@/src/components/ui/button";
 import { toast } from "@/src/components/ui/use-toast";
 import { useAuthUser } from "@/src/contexts/auth";
 import { getClass } from "@/src/data/class";
 import { createStripeCheckoutSession } from "@/src/data/stripe";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
+import { useRef } from "react";
 
 export default function DanceClass({
   params,
@@ -15,6 +17,7 @@ export default function DanceClass({
     businessHandle: string;
   };
 }) {
+  const videoRef = useRef(null);
   const { user } = useAuthUser();
   const { isLoading, data } = useSupaQuery(
     getClass,
@@ -61,6 +64,12 @@ export default function DanceClass({
         data.danceClass.stripe_product_id &&
         user && <Button onClick={() => handleBuyClass()}>Buy class</Button>
       )}
+      <VideoPlayer
+        urls={{
+          auto: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+        }}
+        sections={[]}
+      />
     </div>
   );
 }

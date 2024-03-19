@@ -1,6 +1,6 @@
 "use client";
-import ClassCard from "@/src/components/shared/class-card";
-import EmptyState from "@/src/components/shared/empty-state";
+import ClassCard from "@/src/components/common/class-card";
+import EmptyState from "@/src/components/common/empty-state";
 import { Button } from "@/src/components/ui/button";
 import { listClasses } from "@/src/data/class";
 import { useSupaQuery } from "@/src/hooks/use-supabase";

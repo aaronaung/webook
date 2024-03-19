@@ -1,6 +1,6 @@
 "use client";
 
-import HeaderWithAction from "@/src/components/shared/header-with-action";
+import HeaderWithAction from "@/src/components/common/header-with-action";
 import CalendarV2 from "@/src/components/ui/calendar-v2";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { getAvailabilityForServiceOnDate } from "@/src/data/availability";

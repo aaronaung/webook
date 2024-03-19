@@ -14,7 +14,7 @@ import {
 import { SaveServiceFormSchemaType } from "@/src/components/forms/save-service-form";
 import { Row } from "@tanstack/react-table";
 import { RowAction } from "@/src/components/tables/types";
-import EmptyState from "@/src/components/shared/empty-state";
+import EmptyState from "@/src/components/common/empty-state";
 import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import {
   GetServicesResponseSingle,

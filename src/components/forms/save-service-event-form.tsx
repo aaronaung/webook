@@ -24,7 +24,7 @@ import { DeleteConfirmationDialog } from "../dialogs/delete-confirmation-dialog"
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { deleteServiceEvent, saveServiceEvent } from "@/src/data/service";
 import InputSelect from "../ui/input/select";
-import EmptyState from "../shared/empty-state";
+import EmptyState from "../common/empty-state";
 import { strListDiff } from "@/src/utils";
 import { isBefore } from "date-fns";
 

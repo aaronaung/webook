@@ -1,6 +1,6 @@
 "use client";
 
-import ServiceEventItem from "@/src/components/shared/service-event-item";
+import ServiceEventItem from "@/src/components/common/service-event-item";
 import { Button } from "@/src/components/ui/button";
 import {
   Card,

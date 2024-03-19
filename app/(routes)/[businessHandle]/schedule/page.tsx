@@ -6,7 +6,7 @@ import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { getScheduledEventsInTimeRange } from "@/src/data/business";
 import { getAuthUser } from "@/src/data/user";
 import useBooking from "@/src/hooks/use-booking";
-import HeaderWithAction from "@/src/components/shared/header-with-action";
+import HeaderWithAction from "@/src/components/common/header-with-action";
 
 export default function SchedulePage({
   params,

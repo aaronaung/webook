@@ -1,6 +1,6 @@
 "use client";
-import { bookingTime } from "@/src/components/shared/bookings/booking-list";
-import HeaderWithAction from "@/src/components/shared/header-with-action";
+import { bookingTime } from "@/src/components/common/bookings/booking-list";
+import HeaderWithAction from "@/src/components/common/header-with-action";
 import { Button } from "@/src/components/ui/button";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { Label } from "@/src/components/ui/label";

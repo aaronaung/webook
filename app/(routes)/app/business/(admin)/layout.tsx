@@ -1,7 +1,7 @@
 "use client";
 
 import { CurrentBusinessProvider } from "@/src/contexts/current-business";
-import EmptyState from "@/src/components/shared/empty-state";
+import EmptyState from "@/src/components/common/empty-state";
 import Navbar from "./_components/navbar";
 import _ from "lodash";
 import { BuildingOffice2Icon } from "@heroicons/react/24/outline";

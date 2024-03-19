@@ -9,7 +9,7 @@ import {
   startOfToday,
 } from "date-fns";
 import { useMemo } from "react";
-import ServiceEventItem from "@/src/components/shared/service-event-item";
+import ServiceEventItem from "@/src/components/common/service-event-item";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   GetScheduledEventsInTimeRangeResponse,

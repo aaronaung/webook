@@ -17,10 +17,10 @@ import { getBusinessData } from "@/src/data/business";
 import { saveServiceEvent } from "@/src/data/service";
 import { toast } from "@/src/components/ui/use-toast";
 import { isBefore, startOfDay } from "date-fns";
-import EmptyState from "@/src/components/shared/empty-state";
+import EmptyState from "@/src/components/common/empty-state";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import { useConnectedAccountStatus } from "@/src/hooks/use-connected-account-status";
-import StripeBusinessAccountGuard from "@/src/components/shared/stripe-business-account-guard";
+import StripeBusinessAccountGuard from "@/src/components/common/stripe-business-account-guard";
 
 export default function SchedulePage() {
   const router = useRouter();

@@ -102,6 +102,7 @@ export default function UserAuthForm({
 
   async function handleLoginWithGoogle() {
     try {
+      console.log("redirect to", location.origin);
       const { data, error } =
         await supaClientComponentClient().auth.signInWithOAuth({
           provider: "google",

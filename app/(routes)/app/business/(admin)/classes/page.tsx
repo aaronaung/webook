@@ -2,15 +2,19 @@
 
 import { SaveClassDialog } from "@/src/components/dialogs/save-class-dialog";
 import { SaveClassFormSchemaType } from "@/src/components/forms/save-class-form";
-import ClassCard from "@/src/components/shared/class-card";
-import EmptyState from "@/src/components/shared/empty-state";
-import StripeBusinessAccountGuard from "@/src/components/shared/stripe-business-account-guard";
+import ClassCard from "@/src/components/common/class-card";
+import EmptyState from "@/src/components/common/empty-state";
+import StripeBusinessAccountGuard from "@/src/components/common/stripe-business-account-guard";
 import { Button } from "@/src/components/ui/button";
 import { listClasses } from "@/src/data/class";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Edit } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Uppy } from "@uppy/core";
+import Tus from "@uppy/tus";
+import { env } from "@/env.mjs";
 
 type ClassDialogState = {
   isOpen: boolean;
@@ -24,6 +28,31 @@ export default function Classes() {
   const [dialogState, setDialogState] = useState<ClassDialogState>({
     isOpen: false,
   });
+  const uppy = useMemo(() => new Uppy(), []);
+
+  useEffect(() => {
+    uppy.on("upload-success", (file, response) => {
+      console.log("successful upload", file, response);
+    });
+    uppy.on("upload-error", (file, error) => {
+      console.log("failed upload", file, error);
+    });
+    uppy.on("progress", (progress) => {
+      console.log("progress", progress);
+    });
+    uppy.on("cancel-all", () => {
+      console.log("cancel-all");
+    });
+    uppy.on("pause-all", () => {
+      console.log("pause-all");
+    });
+    uppy.on("resume-all", () => {
+      console.log("resume-all");
+    });
+    return () => {
+      uppy.close();
+    };
+  }, [uppy]);
 
   if (isLoading) {
     return <>Loading...</>;
@@ -31,6 +60,75 @@ export default function Classes() {
 
   return (
     <StripeBusinessAccountGuard>
+      <input
+        id="fileUpload"
+        type="file"
+        onChange={(e) => {
+          if (!e.target.files) return;
+          const file = e.target.files[0];
+          const addResult = uppy.addFile({
+            data: file,
+            size: file.size,
+            name: file.name,
+            meta: {
+              bucketName: "class-videos",
+              objectName: "test",
+              contentType: "video/mov",
+            },
+          });
+          console.log(addResult);
+          console.log(e.target.files);
+        }}
+      />
+      <Button
+        onClick={async () => {
+          const {
+            data: { session },
+          } = await supaClientComponentClient().auth.getSession();
+
+          uppy.use(Tus, {
+            endpoint: `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,
+            headers: {
+              authorization: `Bearer ${session?.access_token}`,
+              "x-upsert": "true",
+            },
+            uploadDataDuringCreation: true,
+            removeFingerprintOnSuccess: true,
+            chunkSize: 6 * 1024 * 1024,
+            allowedMetaFields: [
+              "bucketName",
+              "objectName",
+              "contentType",
+              "cacheControl",
+            ],
+          });
+
+          await uppy.upload();
+        }}
+      >
+        Upload
+      </Button>
+      <Button
+        onClick={async () => {
+          uppy.pauseAll();
+        }}
+      >
+        Pause
+      </Button>
+      <Button
+        onClick={async () => {
+          uppy.resumeAll();
+        }}
+      >
+        Resume
+      </Button>
+      <Button
+        onClick={async () => {
+          uppy.cancelAll();
+        }}
+      >
+        Cancel
+      </Button>
       <SaveClassDialog
         isOpen={dialogState.isOpen}
         onClose={() => setDialogState({ isOpen: false })}
@@ -76,7 +174,7 @@ export default function Classes() {
           </div>
 
           <Button
-            onClick={() => {
+            onClick={async () => {
               setDialogState({
                 isOpen: true,
               });

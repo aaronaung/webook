@@ -17,6 +17,8 @@ export const env = createEnv({
     ZOOM_CLIENT_SECRET: z.string().min(1),
     STRIPE_SECRET_KEY: z.string().min(1),
     STRIPE_WEBHOOK_SECRET: z.string().min(1),
+    GCP_SERVICE_ACCOUNT_KEY: z.string().min(1),
+    GCP_PROJECT: z.string().min(1),
   },
   /*
    * Environment variables available on the client (and server).
@@ -52,5 +54,7 @@ export const env = createEnv({
     ZOOM_CLIENT_SECRET: process.env.ZOOM_CLIENT_SECRET,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    GCP_SERVICE_ACCOUNT_KEY: process.env.GCP_SERVICE_ACCOUNT_KEY,
+    GCP_PROJECT: process.env.GCP_PROJECT,
   },
 });
