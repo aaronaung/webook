@@ -1,5 +1,6 @@
 export const BUCKETS = {
   publicBusinessAssets: "public-business-assets",
+  classes: "classes",
 };
 
 export const STORAGE_DIR_PATHS = {

@@ -23,11 +23,15 @@ export default function FileDropzone({
     >
       <div className="text-center">
         {acceptedFiles.length > 0 ? (
-          <img
-            src={URL.createObjectURL(acceptedFiles[0])}
-            alt="Cover photo"
-            className="m-auto h-24 w-52 rounded-md"
-          />
+          acceptedFiles[0].type.includes("image") ? (
+            <img
+              src={URL.createObjectURL(acceptedFiles[0])}
+              alt="Preview"
+              className="m-auto h-24 w-52 rounded-md"
+            />
+          ) : (
+            acceptedFiles[0].name
+          )
         ) : (
           defaultIcon
         )}

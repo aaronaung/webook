@@ -17,7 +17,7 @@ function ProgressBar({ state, controls }: any) {
       id="default-range"
       className="relative h-1 w-full cursor-pointer align-top"
       type="range"
-      onMouseUp={(e: any) => controls.seek(e.target.value)}
+      // onMouseUp={(e: any) => controls.seek(e.target.value)}
       onChange={(e: any) => controls.seek(e.target.value)}
       value={state.time}
       min={0}

@@ -4,10 +4,16 @@ import z from "zod";
 import InputText from "../ui/input/text";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Button } from "../ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, VideoIcon } from "lucide-react";
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 
 import { saveClass } from "@/src/data/class";
+import FileDropzone from "../ui/input/file-dropzone";
+import { useCallback, useState } from "react";
+import { FileRejection } from "react-dropzone";
+import { toast } from "../ui/use-toast";
+import { useAsyncFileUpload } from "@/src/contexts/async-file-upload";
+import { BUCKETS } from "@/src/consts/storage";
 
 const formSchema = z.object({
   title: z
@@ -56,16 +62,79 @@ export default function SaveClassForm({
     },
     resolver: zodResolver(formSchema),
   });
-
+  const asyncUploader = useAsyncFileUpload();
   const { currentBusiness } = useCurrentBusinessContext();
   const { mutate: _saveClass, isPending } = useSupaMutation(saveClass, {
     invalidate: [["listClasses"], ["getClasss", currentBusiness.id]],
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to create class",
+        description: error.message,
+      });
+    },
+    onSuccess: async (data) => {
+      if (previewFile !== null && classFile !== null) {
+        asyncUploader.upload({
+          id: data.id,
+          targets: [
+            {
+              file: previewFile!,
+              bucketName: BUCKETS.classes,
+              objectName: `${data.id}/preview`,
+              contentType: previewFile!.type,
+            },
+            {
+              file: classFile!,
+              bucketName: BUCKETS.classes,
+              objectName: `${data.id}/class`,
+              contentType: classFile!.type,
+            },
+          ],
+        });
+      }
+    },
     onSettled: () => {
       onSubmitted();
     },
   });
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
+  const [classFile, setClassFile] = useState<File | null>(null);
+
+  const onPreviewVideoDrop = useCallback(
+    (accepted: File[], rejections: FileRejection[]) => {
+      if (rejections.length > 0) {
+        toast({
+          variant: "destructive",
+          title: "File doesn't meet requirements",
+          description:
+            "Please make sure the file is a video and meet size requirements.",
+        });
+        return;
+      }
+      setPreviewFile(accepted[0]);
+    },
+    [],
+  );
+
+  const onClassVideoDrop = useCallback(
+    (accepted: File[], rejections: FileRejection[]) => {
+      if (rejections.length > 0) {
+        toast({
+          variant: "destructive",
+          title: "File doesn't meet requirements",
+          description:
+            "Please make sure the file is a video and meet size requirements.",
+        });
+        return;
+      }
+      setClassFile(accepted[0]);
+    },
+    [],
+  );
 
   const onFormSuccess = (formValues: SaveClassFormSchemaType) => {
+    console.log("FORM SUCCESS!", formValues);
     _saveClass({
       danceClass: {
         ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
@@ -112,6 +181,50 @@ export default function SaveClassForm({
         prefix={<span className="mr-1 text-sm text-muted-foreground">$</span>}
         label="Price"
       />
+      <div className="col-span-full">
+        <label
+          htmlFor="cover-photo"
+          className="block text-sm font-medium leading-6 text-foreground"
+        >
+          Preview video
+        </label>
+
+        <FileDropzone
+          onDrop={onPreviewVideoDrop}
+          options={{
+            accept: { "video/*": [] },
+            multiple: false,
+          }}
+          defaultIcon={
+            <VideoIcon
+              className="mx-auto h-12 w-12 text-muted-foreground"
+              aria-hidden="true"
+            />
+          }
+        />
+      </div>
+      <div className="col-span-full">
+        <label
+          htmlFor="cover-photo"
+          className="block text-sm font-medium leading-6 text-foreground"
+        >
+          Class video
+        </label>
+
+        <FileDropzone
+          onDrop={onClassVideoDrop}
+          options={{
+            accept: { "video/*": [] },
+            multiple: false,
+          }}
+          defaultIcon={
+            <VideoIcon
+              className="mx-auto h-12 w-12 text-muted-foreground"
+              aria-hidden="true"
+            />
+          }
+        />
+      </div>
       <Button className="float-right mt-6" disabled={isPending}>
         {isPending ? <Loader2 className="animate-spin" /> : "Save"}
       </Button>

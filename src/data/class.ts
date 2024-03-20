@@ -71,6 +71,7 @@ export const saveClass = async (
   },
   { client }: SupabaseOptions,
 ) => {
+  console.log("HELLOOO");
   let saved = await throwOrData(
     client
       .from("classes")
@@ -79,6 +80,7 @@ export const saveClass = async (
       .limit(1)
       .single(),
   );
+  console.log(saved);
 
   if (titleChanged || priceChanged) {
     const upsertStripeProductReq: UpsertStripeProductRequest = {
