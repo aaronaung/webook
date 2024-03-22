@@ -12,6 +12,7 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Edit } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAsyncFileUpload } from "@/src/contexts/async-file-upload";
+import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 
 type ClassDialogState = {
   isOpen: boolean;
@@ -19,7 +20,9 @@ type ClassDialogState = {
 };
 
 export default function Classes() {
+  const { currentBusiness } = useCurrentBusinessContext();
   const { data, isLoading } = useSupaQuery(listClasses, {
+    arg: currentBusiness.id,
     queryKey: ["listClasses"],
   });
   const [dialogState, setDialogState] = useState<ClassDialogState>({

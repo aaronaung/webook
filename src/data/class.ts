@@ -1,6 +1,6 @@
 import { Tables } from "@/types/db";
 import { SupabaseOptions } from "./types";
-import { throwOrCount, throwOrData } from "./util";
+import { throwOrCount, throwOrData, throwOrJsonData } from "./util";
 import { UpsertStripeProductRequest } from "@/app/api/stripe/products/dto/upsert-product.dto";
 import { ProductType } from "@/app/api/stripe/products";
 import { upsertStripeProduct } from "./stripe";
@@ -34,12 +34,20 @@ export const getClass = async (
   };
 };
 
-export const listClasses = async ({ client }: SupabaseOptions) => {
+export const listAuthUserClasses = async ({ client }: SupabaseOptions) => {
+  return throwOrJsonData(client.rpc("get_auth_user_classes"));
+};
+
+export const listClasses = async (
+  businessId: string,
+  { client }: SupabaseOptions,
+) => {
   // TODO IMPLEMENT PAGINATION
   return throwOrData(
     client
       .from("classes")
       .select("*, business:businesses(*)")
+      .eq("business_id", businessId)
       .order("created_at"),
   );
 };

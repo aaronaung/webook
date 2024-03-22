@@ -117,7 +117,7 @@ export default function ClassCard({
   }, [asyncUploader, danceClass.id]);
 
   return (
-    <Card key={danceClass.id}>
+    <Card key={danceClass.id} className="overflow-hidden">
       <CardContent className="p-0">
         {asyncUploader.inQueue(danceClass.id) ? (
           <div>

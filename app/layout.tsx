@@ -8,6 +8,7 @@ import { toast } from "@/src/components/ui/use-toast";
 import ReactDnDProvider from "@/src/providers/react-dnd-provider";
 import { TooltipProvider } from "@/src/components/ui/tooltip";
 import { AsyncFileUploadProvider } from "@/src/contexts/async-file-upload";
+import AuthProvider from "@/src/providers/auth-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,23 +54,23 @@ export default function RootLayout({
             clientSecret: "",
           }}
         ></Elements> */}
-        {/* <AuthProvider> */}
-        <AsyncFileUploadProvider>
-          <ReactQueryProvider>
-            <ReactDnDProvider>
-              {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}
-              {/* <ThemeProvider
+        <AuthProvider>
+          <AsyncFileUploadProvider>
+            <ReactQueryProvider>
+              <ReactDnDProvider>
+                {/** todo: Dark mode doesn't work well with TailwindUI. Either make TailwindUI components work with shadcn or migrate to shadcn entirely */}
+                {/* <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
           > */}
-              <TooltipProvider>{children}</TooltipProvider>
-              {/* </ThemeProvider> */}
-            </ReactDnDProvider>
-          </ReactQueryProvider>
-        </AsyncFileUploadProvider>
-        {/* </AuthProvider> */}
+                <TooltipProvider>{children}</TooltipProvider>
+                {/* </ThemeProvider> */}
+              </ReactDnDProvider>
+            </ReactQueryProvider>
+          </AsyncFileUploadProvider>
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

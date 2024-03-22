@@ -825,6 +825,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_auth_user_classes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          business_id: string
+          business: Json
+          created_at: string
+          updated_at: string
+          title: string
+          description: string
+          price: number
+          stripe_product_id: string
+          stripe_price_id: string
+        }[]
+      }
       get_business_data: {
         Args: {
           business_handle: string
@@ -839,6 +854,22 @@ export type Database = {
           availability_schedule_id_arg?: string
         }
         Returns: Json
+      }
+      get_user_classes: {
+        Args: {
+          user_id_in: string
+        }
+        Returns: {
+          id: string
+          business: Json
+          created_at: string
+          updated_at: string
+          title: string
+          description: string
+          price: number
+          stripe_product_id: string
+          stripe_price_id: string
+        }[]
       }
     }
     Enums: {

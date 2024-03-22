@@ -1,4 +1,5 @@
 "use client";
+
 import ClassCard from "@/src/components/common/class-card";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -8,7 +9,6 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { toast } from "@/src/components/ui/use-toast";
-import { useAuthUser } from "@/src/contexts/auth";
 import { listClassProductIdsUserOwn, listClasses } from "@/src/data/class";
 import { createStripeCheckoutSession } from "@/src/data/stripe";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
@@ -16,11 +16,13 @@ import { Tables } from "@/types/db";
 
 export default function ClassesTabContent({
   business,
+  user,
 }: {
   business: Tables<"businesses">;
+  user: Tables<"users">;
 }) {
-  const { user } = useAuthUser();
   const { isLoading, data } = useSupaQuery(listClasses, {
+    arg: business.id,
     queryKey: ["listClasses", business.id],
   });
   const { isLoading: isLoadingUserClasses, data: userClassProductIds } =

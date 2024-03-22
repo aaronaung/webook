@@ -18,7 +18,7 @@ export default function Tabs({
   services,
   business,
 }: {
-  user?: Tables<"users">;
+  user: Tables<"users">;
   services: GetServicesResponse;
   business: Tables<"businesses">;
 }) {
@@ -36,7 +36,7 @@ export default function Tabs({
       case TabType.ScheduledEvents:
         return <ScheduledEventsTabContent user={user} business={business} />;
       case TabType.Classes:
-        return <ClassesTabContent business={business} />;
+        return <ClassesTabContent user={user} business={business} />;
       default:
         return <></>;
     }

@@ -2,11 +2,7 @@ import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { match } from "path-to-regexp";
 
-const protectedRoutes = [
-  "/:businessHandle/bookings",
-  "/:businessHandle/questions",
-  "/app/:path*",
-];
+const protectedRoutes = ["/app/:path*"];
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
@@ -16,7 +12,7 @@ export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
     const search = req.nextUrl.search;
 
-    if (urlMatch(pathname)) {
+    if (urlMatch(pathname) && pathname !== "/login") {
       const supabase = createMiddlewareClient({ req, res });
       const { data, error } = await supabase.auth.getSession();
 

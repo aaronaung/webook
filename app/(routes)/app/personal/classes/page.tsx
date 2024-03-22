@@ -2,13 +2,13 @@
 import ClassCard from "@/src/components/common/class-card";
 import EmptyState from "@/src/components/common/empty-state";
 import { Button } from "@/src/components/ui/button";
-import { listClasses } from "@/src/data/class";
+import { listAuthUserClasses } from "@/src/data/class";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
+import { Tables } from "@/types/db";
 
 export default function Classes() {
-  // for now use list classes.
-  const { data, isLoading } = useSupaQuery(listClasses, {
-    queryKey: ["listClasses"],
+  const { data, isLoading } = useSupaQuery(listAuthUserClasses, {
+    queryKey: ["listAuthUserClasses"],
   });
 
   return !data || data.length === 0 ? (
@@ -25,9 +25,10 @@ export default function Classes() {
           // todo maybe group by business title and make horizontally scrollable like netflix
           return (
             <div className="" key={danceClass.id}>
-              <p>{danceClass.business?.title}</p>
+              <p>{(danceClass.business as Tables<"businesses">)?.title}</p>
               <ClassCard
                 danceClass={danceClass}
+                hidePriceTag
                 footerAction={
                   <a
                     href={`${window.location.origin}/${danceClass.business?.handle}/classes/${danceClass.id}`}

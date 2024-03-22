@@ -20,6 +20,7 @@ export default function DanceClass({
   };
 }) {
   const { user } = useAuthUser();
+  console.log(user);
   const { isLoading, data } = useSupaQuery(getClass, {
     arg: {
       id: params.id,

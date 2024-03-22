@@ -52,7 +52,7 @@ export const AuthContextProvider = (props: { children: React.ReactNode }) => {
     );
 
     return () => {
-      authListener.subscription;
+      authListener.subscription.unsubscribe();
     };
   }, []);
 

@@ -9,22 +9,29 @@ import { getServices } from "@/src/data/service";
 import BusinessLogo from "./_components/business-logo";
 import Navbar from "./_components/navbar";
 
-export default async function ServiceProvider({
+export default async function BusinessPage({
   params,
 }: {
   params: { businessHandle: string };
 }) {
   const supabaseOptions = { client: supaServerComponentClient() };
   const user = await getAuthUser(supabaseOptions);
-
   const business = await getBusinessByHandle(
     params.businessHandle,
     supabaseOptions,
   );
+
   if (!business) {
     console.error(`Business not found for handle: ${params.businessHandle}`);
     redirect("/");
   }
+
+  if (!user) {
+    redirect(
+      `/login?return_path=${encodeURIComponent(`/${params.businessHandle}`)}`,
+    );
+  }
+
   const services = await getServices(business.id, supabaseOptions);
 
   return (

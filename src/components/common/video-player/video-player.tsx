@@ -8,19 +8,22 @@ import { SideBar } from "./sidebar/sidebar";
 import { VideoQualityPopover } from "./video-quality-popover/video-quality-popover";
 import { useVideoPlayer } from "@/src/hooks/use-video-player";
 import ReactPlayer from "react-player";
+import { cn } from "@/src/utils";
 
 // @todo - Fix slow/sluggish seeking behavior on high quality videos. Solution: (Needs to be mp4 encoded)
 export default function VideoPlayer({
   urls,
   disableSettings,
-  sections,
+  sections = [],
   className,
+  showControls = true,
 }: {
   localPath?: string;
   disableSettings?: boolean;
   urls: { [quality: string]: string };
-  sections: any;
+  sections?: any;
   className?: string;
+  showControls?: boolean;
 }) {
   const videoContainerRef = useRef(null);
   const videoRef = useRef<ReactPlayer>(null);
@@ -64,7 +67,10 @@ export default function VideoPlayer({
     <div
       id="video-container "
       ref={videoContainerRef}
-      className={`relative flex flex-col items-center border-2 border-red-500 bg-black`}
+      className={cn(
+        `relative flex flex-col items-center border-2 border-red-500 bg-black`,
+        className,
+      )}
       onClick={onVideoContainerClick}
     >
       <div className="flex-grow">
@@ -79,13 +85,15 @@ export default function VideoPlayer({
           height={"100%"}
         />
       </div>
-      <div className="absolute bottom-0 w-full">
-        <ControlBar
-          disableSettings={disableSettings}
-          controls={controls}
-          state={state}
-        />
-      </div>
+      {showControls && (
+        <div className="absolute bottom-0 w-full">
+          <ControlBar
+            disableSettings={disableSettings}
+            controls={controls}
+            state={state}
+          />
+        </div>
+      )}
       <Camera state={state} />
       <div className="absolute left-[50%] top-[50%] translate-x-[-50%]  translate-y-[-50%] ">
         {renderPingedIcons()}

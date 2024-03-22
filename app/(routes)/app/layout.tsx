@@ -2,6 +2,7 @@ import { navigation, userNavigation } from "./navigation";
 import { Suspense } from "react";
 import Navbar from "./_components/navbar";
 
+// auth protected by middleware
 export default async function Layout({
   children,
 }: {
