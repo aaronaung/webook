@@ -7,19 +7,70 @@ import { Tables } from "@/types/db";
 import { XIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
-import { PauseIcon, PlayIcon } from "@heroicons/react/24/solid";
+import {
+  PauseIcon,
+  PlayCircleIcon,
+  PlayIcon,
+  SpeakerWaveIcon,
+} from "@heroicons/react/24/solid";
+import { useSupaMutation } from "@/src/hooks/use-supabase";
+import { deleteClass } from "@/src/data/class";
+import { toast } from "../ui/use-toast";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
+import { BUCKETS } from "@/src/consts/storage";
+import { SpeakerXMarkIcon } from "@heroicons/react/24/outline";
 
 export default function ClassCard({
   danceClass,
-  footerActionButton,
+  footerAction,
+  hidePriceTag = false,
 }: {
   danceClass: Tables<"classes">;
-  footerActionButton?: React.ReactNode;
+  footerAction?: React.ReactNode;
+  hidePriceTag?: boolean;
 }) {
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
+  const [previewPlaying, setPreviewPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+
+  useEffect(() => {
+    fetchSignedPreviewUrl();
+  }, []);
+
+  const fetchSignedPreviewUrl = async () => {
+    const { data } = await supaClientComponentClient()
+      .storage.from(BUCKETS.classes)
+      .createSignedUrl(`${danceClass.id}/preview`, 24 * 3600);
+
+    setPreviewUrl(data?.signedUrl);
+  };
+
   const asyncUploader = useAsyncFileUpload();
   const [uploadProgress, setUploadProgress] = useState(0);
+  const { mutate: _deleteClass, isPending: deletingClass } = useSupaMutation(
+    deleteClass,
+    {
+      invalidate: [["listClasses"]],
+    },
+  );
 
-  const renderUploadActionButton = () => {
+  const renderPingedIcons = () => {
+    const className = "absolute w-10 animate-ping text-black duration-1000";
+    if (!previewUrl) {
+      return <></>;
+    }
+    if (previewPlaying) {
+      return (
+        <PlayCircleIcon
+          className={className}
+          style={{ animationIterationCount: 1, animationFillMode: "forwards" }}
+        />
+      );
+    }
+    return <></>;
+  };
+
+  const renderUploadStatus = () => {
     switch (asyncUploader.status(danceClass.id)) {
       case "uploading":
         return (
@@ -27,7 +78,7 @@ export default function ClassCard({
             onClick={() => {
               asyncUploader.pause(danceClass.id);
             }}
-            className="h-16 w-16 rounded-full"
+            className="h-14 w-14 rounded-full"
           >
             <PauseIcon width={24} />
           </Button>
@@ -38,9 +89,9 @@ export default function ClassCard({
             onClick={() => {
               asyncUploader.resume(danceClass.id);
             }}
-            className="h-16 w-16 rounded-full"
+            className="h-14 w-14 rounded-full"
           >
-            <PlayIcon width={24} />
+            <PlayIcon width={20} />
           </Button>
         );
       default:
@@ -49,8 +100,19 @@ export default function ClassCard({
   };
 
   useEffect(() => {
+    asyncUploader.onSuccess(danceClass.id, () => {
+      fetchSignedPreviewUrl();
+    });
     asyncUploader.onProgress(danceClass.id, (progress) => {
       setUploadProgress(progress);
+    });
+    asyncUploader.onError(danceClass.id, (err) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to upload class videos.`,
+      });
+      _deleteClass(danceClass);
     });
   }, [asyncUploader, danceClass.id]);
 
@@ -59,11 +121,22 @@ export default function ClassCard({
       <CardContent className="p-0">
         {asyncUploader.inQueue(danceClass.id) ? (
           <div>
-            <div className="flex h-40 w-full items-center justify-center gap-4">
-              {renderUploadActionButton()}
+            <div className="flex h-64 w-full items-center justify-center gap-4">
+              {renderUploadStatus()}
               <Button
                 className="h-16 w-16 rounded-full"
                 variant={"destructive"}
+                disabled={deletingClass}
+                onClick={() => {
+                  const confirmed = confirm(
+                    "Are you sure you want to cancel the upload? This will delete the class.",
+                  );
+
+                  if (confirmed) {
+                    asyncUploader.cancel(danceClass.id);
+                    _deleteClass(danceClass);
+                  }
+                }}
               >
                 <XIcon width={24} />
               </Button>
@@ -71,11 +144,58 @@ export default function ClassCard({
             <Progress value={uploadProgress} />
           </div>
         ) : (
-          <img
-            className="cover h-72 w-full rounded-t-md"
-            src={`/offstage_1.jpeg`}
-            alt=""
-          />
+          <div
+            className="relative flex h-64 items-center justify-center"
+            onClick={() => {
+              setIsMuted(!isMuted);
+            }}
+          >
+            {previewPlaying && (
+              <div className="absolute right-4 top-4">
+                {isMuted ? (
+                  <Button
+                    className="h-8 w-8 rounded-full p-0.5"
+                    variant={"secondary"}
+                  >
+                    <SpeakerXMarkIcon
+                      width={16}
+                      className="text-secondary-foreground"
+                    />
+                  </Button>
+                ) : (
+                  <Button
+                    className="h-8 w-8 rounded-full p-0.5"
+                    variant={"secondary"}
+                  >
+                    <SpeakerWaveIcon
+                      width={16}
+                      className="text-secondary-foreground"
+                    />
+                  </Button>
+                )}
+              </div>
+            )}
+            {renderPingedIcons()}
+            {!previewUrl ? (
+              <>Loading...</>
+            ) : (
+              <video
+                src={previewUrl}
+                className="min-h-full min-w-full rounded-md object-cover"
+                onMouseOver={(event: any) => {
+                  setPreviewPlaying(true);
+                  event.target?.play();
+                }}
+                onMouseOut={(event: any) => {
+                  setPreviewPlaying(false);
+                  setIsMuted(true);
+                  event.target.currentTime = 0;
+                  event.target?.pause();
+                }}
+                muted={isMuted}
+              />
+            )}
+          </div>
         )}
       </CardContent>
       <CardFooter className="items-start p-3">
@@ -84,7 +204,9 @@ export default function ClassCard({
             <p className="text-md line-clamp-1 font-medium text-secondary-foreground">
               {danceClass.title}
             </p>
-            <PriceTag className="ml-2" price={danceClass.price} />
+            {!hidePriceTag && (
+              <PriceTag className="ml-2" price={danceClass.price} />
+            )}
           </div>
 
           {danceClass.description && (
@@ -93,7 +215,7 @@ export default function ClassCard({
             </p>
           )}
         </div>
-        {footerActionButton}
+        {footerAction}
       </CardFooter>
     </Card>
   );

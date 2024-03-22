@@ -18,7 +18,7 @@ type AsyncFileUploadContextValue = {
   onSuccess: (id: string, onSuccess?: () => void) => void;
   onError: (id: string, onError?: (error: any) => void) => void;
   inQueue: (id: string) => boolean;
-  status: (id: string) => "uploading" | "paused" | "complete" | "canceled";
+  status: (id: string) => "uploading" | "paused" | "complete";
 };
 
 const AsyncFileUploadContext =
@@ -57,7 +57,7 @@ export type UploadTask = {
 
 type UppyUploadTask = UploadTask & {
   uppyInstance: Uppy;
-  status: "uploading" | "paused" | "complete" | "canceled";
+  status: "uploading" | "paused" | "complete";
   error?: any;
 };
 
@@ -74,15 +74,9 @@ function AsyncFileUploadProvider({ ...props }) {
     };
   }, []);
 
-  /**
-   * Stage puts a file into the upload queue, but does not start the upload.
-   * Caller must call upload with the task ID to start the upload.
-   */
-  const stage = () => {};
-
   const setTaskStatus = (
     id: string,
-    status: "uploading" | "paused" | "complete" | "canceled",
+    status: "uploading" | "paused" | "complete",
     err?: any,
   ) => {
     setUploadTasks((prev) => ({
@@ -115,7 +109,7 @@ function AsyncFileUploadProvider({ ...props }) {
     }
   };
 
-  const setOnError = (id: string, onError?: (error: any) => void) => {
+  const setOnErrorHandler = (id: string, onError?: (error: any) => void) => {
     if (inQueue(id)) {
       uploadTasks[id].uppyInstance.on("upload-error", (file, err) => {
         setTaskStatus(id, "complete", err);
@@ -128,21 +122,25 @@ function AsyncFileUploadProvider({ ...props }) {
    * Remove removes a task from the upload queue and cancels the upload if it is in progress.
    */
   const remove = (id: string) => {
-    const task = uploadTasks[id];
-    if (task) {
-      task.uppyInstance.close();
-      setUploadTasks((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      });
-    }
+    setUploadTasks((prev) => {
+      const next = { ...prev };
+
+      next[id].uppyInstance.close();
+      delete next[id];
+
+      return next;
+    });
   };
 
   /**
    * Upload starts the upload of a staged task.
    */
-  const upload = async (task: UploadTask, options?: UploadOptions) => {
+  const upload = async (
+    task: UploadTask,
+    options: UploadOptions = {
+      removeOnComplete: true,
+    },
+  ) => {
     const uppyInstance = new Uppy({
       id: task.id,
     });
@@ -167,6 +165,7 @@ function AsyncFileUploadProvider({ ...props }) {
       setTaskStatus(task.id, "complete", err);
     });
     uppyInstance.on("complete", () => {
+      console.log("on complete triggered");
       // Triggered when all files in the upload queue have completed with success or failure.
       uppyInstance.close();
       if (options?.removeOnComplete) {
@@ -219,7 +218,7 @@ function AsyncFileUploadProvider({ ...props }) {
     const task = uploadTasks[id];
     if (task) {
       task.uppyInstance.cancelAll();
-      setTaskStatus(id, "canceled");
+      remove(id);
     }
   };
 
@@ -236,7 +235,7 @@ function AsyncFileUploadProvider({ ...props }) {
         cancel,
         onProgress: setOnProgressHandler,
         onSuccess: setOnSuccessHandler,
-        onError: setOnError,
+        onError: setOnErrorHandler,
         inQueue,
         status,
       }}

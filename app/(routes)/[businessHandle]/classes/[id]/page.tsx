@@ -3,11 +3,13 @@
 import VideoPlayer from "@/src/components/common/video-player/video-player";
 import { Button } from "@/src/components/ui/button";
 import { toast } from "@/src/components/ui/use-toast";
+import { BUCKETS } from "@/src/consts/storage";
 import { useAuthUser } from "@/src/contexts/auth";
 import { getClass } from "@/src/data/class";
+import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { createStripeCheckoutSession } from "@/src/data/stripe";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 
 export default function DanceClass({
   params,
@@ -17,18 +19,30 @@ export default function DanceClass({
     businessHandle: string;
   };
 }) {
-  const videoRef = useRef(null);
   const { user } = useAuthUser();
-  const { isLoading, data } = useSupaQuery(
-    getClass,
-    {
+  const { isLoading, data } = useSupaQuery(getClass, {
+    arg: {
       id: params.id,
       userId: user?.id,
     },
-    {
-      queryKey: ["getClass", params.id, user?.id],
-    },
-  );
+    queryKey: ["getClass", params.id, user?.id],
+  });
+
+  const [signedVideoUrl, setSignedVideoUrl] = useState<string | undefined>();
+
+  useEffect(() => {
+    const fetchSignedVideoUrl = async () => {
+      const { data } = await supaClientComponentClient()
+        .storage.from(BUCKETS.classes)
+        .createSignedUrl(`${params.id}/class`, 24 * 3600);
+      console.log(data?.signedUrl);
+      setSignedVideoUrl(data?.signedUrl);
+    };
+
+    if (data && data.isUserOwner) {
+      fetchSignedVideoUrl();
+    }
+  }, [data, params.id]);
 
   const handleBuyClass = async () => {
     if (!data?.danceClass?.stripe_product_id || !user) {
@@ -59,17 +73,23 @@ export default function DanceClass({
       <h1>{data.danceClass.title}</h1>
       <p>{data.danceClass.description}</p>
       {data.isUserOwner ? (
-        <p>YOU OWN THIS CLASS</p>
+        <>
+          <p>YOU OWN THIS CLASS</p>{" "}
+          {signedVideoUrl ? (
+            <VideoPlayer
+              urls={{
+                auto: signedVideoUrl,
+              }}
+              sections={[]}
+            />
+          ) : (
+            <>Loading...</>
+          )}
+        </>
       ) : (
         data.danceClass.stripe_product_id &&
         user && <Button onClick={() => handleBuyClass()}>Buy class</Button>
       )}
-      <VideoPlayer
-        urls={{
-          auto: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        }}
-        sections={[]}
-      />
     </div>
   );
 }

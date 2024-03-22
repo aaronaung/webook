@@ -43,7 +43,8 @@ export default function Availability() {
   const {
     data: availabilitySchedules,
     isLoading: isLoadingAvailabilitySchedules,
-  } = useSupaQuery(getAvailabilitySchedules, currentBusiness.id, {
+  } = useSupaQuery(getAvailabilitySchedules, {
+    arg: currentBusiness.id,
     queryKey: ["getAvailabilitySchedules", currentBusiness.id],
   });
 

@@ -18,10 +18,10 @@ export default function UserBookings({
   const { data: bookings, isLoading: isLoadingBookings } = useSupaQuery(
     getBookingsForBusiness,
     {
-      businessId: business.id,
-      userId: loggedInUser.id,
-    },
-    {
+      arg: {
+        businessId: business.id,
+        userId: loggedInUser.id,
+      },
       queryKey: ["getBookingsForBusiness", loggedInUser.id, business.id],
     },
   );

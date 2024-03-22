@@ -52,11 +52,11 @@ export default function ScheduleCalendar({
   const { data, isLoading: isBusinessScheduleDataLoading } = useSupaQuery(
     getScheduledEventsInTimeRange,
     {
-      businessHandle: currentBusiness.handle,
-      start: add(firstDayCurrentMonth, { months: -3 }),
-      end: add(firstDayCurrentMonth, { months: 3 }),
-    },
-    {
+      arg: {
+        businessHandle: currentBusiness.handle,
+        start: add(firstDayCurrentMonth, { months: -3 }),
+        end: add(firstDayCurrentMonth, { months: 3 }),
+      },
       queryKey: ["getScheduledEventsInTimeRange", currentBusiness.handle],
     },
   );

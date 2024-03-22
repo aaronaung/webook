@@ -12,9 +12,9 @@ export default function BusinessBookings() {
   const { data: bookings, isLoading: isLoadingBookings } = useSupaQuery(
     getBookingsForBusiness,
     {
-      businessId: currentBusiness.id,
-    },
-    {
+      arg: {
+        businessId: currentBusiness.id,
+      },
       queryKey: ["getBookingsForBusiness", currentBusiness.id],
     },
   );

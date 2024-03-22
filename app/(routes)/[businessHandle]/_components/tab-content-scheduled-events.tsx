@@ -28,22 +28,19 @@ export default function ScheduledEventsTabContent({
   const { bookEvent } = useBooking();
 
   // We make client side query here because we want the time to be relative to the user's timezone.
-  const { data, isLoading } = useSupaQuery(
-    getScheduledEventsInTimeRange,
-    {
+  const { data, isLoading } = useSupaQuery(getScheduledEventsInTimeRange, {
+    arg: {
       businessHandle: business.handle,
       start: startOfDay(new Date()),
       end: endOfDay(new Date()),
     },
-    {
-      queryKey: [
-        "getScheduledEventsInTimeRange",
-        business.id,
-        startOfDay(new Date()),
-        endOfDay(new Date()),
-      ],
-    },
-  );
+    queryKey: [
+      "getScheduledEventsInTimeRange",
+      business.id,
+      startOfDay(new Date()),
+      endOfDay(new Date()),
+    ],
+  });
 
   if (isLoading) {
     return <>Loading...</>;

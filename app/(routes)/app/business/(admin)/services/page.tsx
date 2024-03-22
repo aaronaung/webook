@@ -48,16 +48,16 @@ export default function Services() {
 
   const { data: questions, isLoading: isQuestionsLoading } = useSupaQuery(
     getQuestions,
-    currentBusiness.id,
     {
+      arg: currentBusiness.id,
       queryKey: ["getQuestions", currentBusiness.id],
     },
   );
 
   const { data: services, isLoading: isServicesLoading } = useSupaQuery(
     getServices,
-    currentBusiness.id,
     {
+      arg: currentBusiness.id,
       queryKey: ["getServices", currentBusiness.id],
     },
   );
@@ -65,7 +65,8 @@ export default function Services() {
   const {
     data: availabilitySchedules,
     isLoading: isAvailabilitySchedulesLoading,
-  } = useSupaQuery(getAvailabilitySchedules, currentBusiness?.id, {
+  } = useSupaQuery(getAvailabilitySchedules, {
+    arg: currentBusiness?.id,
     queryKey: ["getAvailabilitySchedules", currentBusiness.id],
   });
 

@@ -19,14 +19,13 @@ export default function Questions() {
   const { currentBusiness } = useCurrentBusinessContext();
   const { data: questions, isLoading: isLoadingQuestions } = useSupaQuery(
     getQuestions,
-    currentBusiness.id,
-    { queryKey: ["getQuestions", currentBusiness.id] },
+    { arg: currentBusiness.id, queryKey: ["getQuestions", currentBusiness.id] },
   );
 
   const { data: services, isLoading: isLoadingServices } = useSupaQuery(
     getServices,
-    currentBusiness.id,
     {
+      arg: currentBusiness.id,
       queryKey: ["getServices", currentBusiness.id],
     },
   );

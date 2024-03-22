@@ -51,22 +51,23 @@ type QueryFnWithoutArgs<Result> = (
 
 export function useSupaQuery<Args, Result>(
   fn: QueryFnWithArgs<Args, Result> | QueryFnWithoutArgs<Result>,
-  args?: Args,
   options?: UseQueryOptions & {
     errorMessage?: string;
+    arg?: Args;
   },
 ) {
   const { data, error, ...props } = useQuery<Result, Error, Result>({
     // @ts-ignore
-    queryFn: args
-      ? () =>
-          (fn as QueryFnWithArgs<Args, Result>)(args!, {
-            client: supaClientComponentClient(),
-          })
-      : () =>
-          (fn as QueryFnWithoutArgs<Result>)({
-            client: supaClientComponentClient(),
-          }),
+    queryFn:
+      options && "arg" in options
+        ? () =>
+            (fn as QueryFnWithArgs<Args, Result>)(options.arg!, {
+              client: supaClientComponentClient(),
+            })
+        : () =>
+            (fn as QueryFnWithoutArgs<Result>)({
+              client: supaClientComponentClient(),
+            }),
     meta: { errorMessage: options?.errorMessage || "Failed to run query." },
     ...(options || {}),
   });

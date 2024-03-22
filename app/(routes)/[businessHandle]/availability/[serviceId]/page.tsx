@@ -32,20 +32,17 @@ export default function Availability({
   const { bookEvent } = useBooking();
 
   const { data: user, isLoading: isLoadingUser } = useSupaQuery(getAuthUser);
-  const { data, isLoading } = useSupaQuery(
-    getAvailabilityForServiceOnDate,
-    {
+  const { data, isLoading } = useSupaQuery(getAvailabilityForServiceOnDate, {
+    arg: {
       serviceId: params.serviceId,
       date: selectedDay,
     },
-    {
-      queryKey: [
-        "getAvailabilityForServiceOnDate",
-        params.serviceId,
-        selectedDay.getTime(),
-      ],
-    },
-  );
+    queryKey: [
+      "getAvailabilityForServiceOnDate",
+      params.serviceId,
+      selectedDay.getTime(),
+    ],
+  });
   const availability = data?.availability || [];
   const service = data?.service;
 

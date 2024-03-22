@@ -10,7 +10,7 @@ export const createStripeCheckoutSession = async (
     body: JSON.stringify(req),
   });
 
-  return await resp.json();
+  return resp.json();
 };
 
 export const upsertStripeProduct = async (
@@ -21,12 +21,21 @@ export const upsertStripeProduct = async (
     body: JSON.stringify(req),
   });
 
-  return await resp.json();
+  return resp.json();
 };
 
+export const deleteStripeProduct = async (
+  stripeProductId: string,
+): Promise<void> => {
+  const resp = await fetch(`/api/stripe/products/${stripeProductId}`, {
+    method: "DELETE",
+  });
+
+  return resp.json();
+};
 export const getStripeAccount = async (
   stripeAccountId: string,
 ): Promise<Stripe.Account> => {
   const resp = await fetch(`/api/stripe/accounts/${stripeAccountId}`);
-  return await resp.json();
+  return resp.json();
 };

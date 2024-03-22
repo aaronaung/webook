@@ -45,9 +45,12 @@ export const listClasses = async ({ client }: SupabaseOptions) => {
 };
 
 export const listClassProductIdsUserOwn = async (
-  userId: string,
+  { userId }: { [key: string]: string | undefined },
   { client }: SupabaseOptions,
 ) => {
+  if (!userId) {
+    return [];
+  }
   const ownedClassProductIds = await throwOrData(
     client
       .from("user_stripe_products")
@@ -71,7 +74,6 @@ export const saveClass = async (
   },
   { client }: SupabaseOptions,
 ) => {
-  console.log("HELLOOO");
   let saved = await throwOrData(
     client
       .from("classes")
@@ -80,7 +82,6 @@ export const saveClass = async (
       .limit(1)
       .single(),
   );
-  console.log(saved);
 
   if (titleChanged || priceChanged) {
     const upsertStripeProductReq: UpsertStripeProductRequest = {
@@ -109,4 +110,22 @@ export const saveClass = async (
   }
 
   return saved;
+};
+
+export const deleteClass = async (
+  danceClass: Tables<"classes">,
+  { client }: SupabaseOptions,
+) => {
+  const resp = await throwOrData(
+    client.from("classes").delete().eq("id", danceClass.id),
+  );
+
+  // CLEAN UP
+
+  // if (danceClass.stripe_product_id) {
+  //   await deleteStripeProduct(danceClass.stripe_product_id);
+  // }
+
+  // todo: delete assets related to the class
+  return resp;
 };

@@ -134,7 +134,6 @@ export default function SaveClassForm({
   );
 
   const onFormSuccess = (formValues: SaveClassFormSchemaType) => {
-    console.log("FORM SUCCESS!", formValues);
     _saveClass({
       danceClass: {
         ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)

@@ -43,8 +43,10 @@ export default function SchedulePage() {
 
   const { data: businessData, isLoading: isBusinessDataLoading } = useSupaQuery(
     getBusinessData,
-    currentBusiness.handle,
-    { queryKey: ["getBusinessData", currentBusiness.handle] },
+    {
+      arg: currentBusiness.handle,
+      queryKey: ["getBusinessData", currentBusiness.handle],
+    },
   );
   const { mutate: _saveServiceEvent } = useSupaMutation(saveServiceEvent, {
     // todo: potential optimization here: this is inefficient, we refetch the entire schedule.

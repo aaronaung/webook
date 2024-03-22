@@ -20,11 +20,14 @@ export default function ClassesTabContent({
   business: Tables<"businesses">;
 }) {
   const { user } = useAuthUser();
-  const { isLoading, data } = useSupaQuery(listClasses, undefined, {
+  const { isLoading, data } = useSupaQuery(listClasses, {
     queryKey: ["listClasses", business.id],
   });
   const { isLoading: isLoadingUserClasses, data: userClassProductIds } =
-    useSupaQuery(listClassProductIdsUserOwn, user?.id, {
+    useSupaQuery(listClassProductIdsUserOwn, {
+      arg: {
+        userId: user?.id,
+      },
       queryKey: ["listClassesUserOwn", user?.id],
     });
 
@@ -69,14 +72,15 @@ export default function ClassesTabContent({
               <ClassCard
                 key={danceClass.id}
                 danceClass={danceClass}
-                footerActionButton={
+                hidePriceTag={userIsOwner}
+                footerAction={
                   userIsOwner ? (
                     <a href={`${business.handle}/classes/${danceClass.id}`}>
-                      <Button className="ml-2">View</Button>
+                      <Button className="ml-2 rounded-full">View lesson</Button>
                     </a>
                   ) : (
                     <Button
-                      className="ml-2 bg-green-600 hover:bg-green-700"
+                      className="ml-2 rounded-full bg-green-600 hover:bg-green-700"
                       onClick={() => {
                         handleBuyClass(danceClass);
                       }}

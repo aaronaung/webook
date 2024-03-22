@@ -17,13 +17,10 @@ import { useCallback, useState } from "react";
 
 export default function Staffs() {
   const { currentBusiness } = useCurrentBusinessContext();
-  const { data: staffs, isLoading } = useSupaQuery(
-    getStaffs,
-    currentBusiness?.id,
-    {
-      queryKey: ["getStaffs", currentBusiness?.id],
-    },
-  );
+  const { data: staffs, isLoading } = useSupaQuery(getStaffs, {
+    arg: currentBusiness?.id,
+    queryKey: ["getStaffs", currentBusiness?.id],
+  });
   const { mutate: _deleteStaff, isPending: isDeleteStaffPending } =
     useSupaMutation(deleteStaff, {
       invalidate: [["getStaffs", currentBusiness?.id]],

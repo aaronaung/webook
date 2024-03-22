@@ -32,8 +32,8 @@ export default function SlotOverrides({
 }: SlotOverridesProps) {
   const { data, isLoading } = useSupaQuery(
     getAvailabilitySlotOverridesBySchedule,
-    scheduleId,
     {
+      arg: scheduleId,
       queryKey: ["getAvailabilitySlotOverridesBySchedule", scheduleId],
     },
   );

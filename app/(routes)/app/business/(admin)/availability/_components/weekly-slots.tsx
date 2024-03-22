@@ -38,8 +38,8 @@ export default function WeeklySlots({
 }: WeeklySlotsProps) {
   const { data, isLoading } = useSupaQuery(
     getWeeklyAvailabilitySlotsBySchedule,
-    scheduleId,
     {
+      arg: scheduleId,
       queryKey: ["getWeeklyAvailabilitySlotsBySchedule", scheduleId],
     },
   );

@@ -7,7 +7,7 @@ import { useSupaQuery } from "@/src/hooks/use-supabase";
 
 export default function Classes() {
   // for now use list classes.
-  const { data, isLoading } = useSupaQuery(listClasses, undefined, {
+  const { data, isLoading } = useSupaQuery(listClasses, {
     queryKey: ["listClasses"],
   });
 
@@ -28,11 +28,11 @@ export default function Classes() {
               <p>{danceClass.business?.title}</p>
               <ClassCard
                 danceClass={danceClass}
-                footerActionButton={
+                footerAction={
                   <a
-                    href={`${danceClass.business?.handle}/classes/${danceClass.id}`}
+                    href={`${window.location.origin}/${danceClass.business?.handle}/classes/${danceClass.id}`}
                   >
-                    <Button className="ml-2">Take class</Button>
+                    <Button className="ml-2">View lesson</Button>
                   </a>
                 }
               />

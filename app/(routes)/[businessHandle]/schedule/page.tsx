@@ -24,17 +24,14 @@ export default function SchedulePage({
   );
 
   // @todo (important) - right now we only fetch 6 month window of data, and we don't have a dynamic way of fetching more data as the user moves around the calendar.
-  const { data, isLoading } = useSupaQuery(
-    getScheduledEventsInTimeRange,
-    {
+  const { data, isLoading } = useSupaQuery(getScheduledEventsInTimeRange, {
+    arg: {
       businessHandle: params.businessHandle,
       start: add(firstDayCurrentMonth, { months: -3 }),
       end: add(firstDayCurrentMonth, { months: 3 }),
     },
-    {
-      queryKey: ["getScheduledEventsInTimeRange", params.businessHandle],
-    },
-  );
+    queryKey: ["getScheduledEventsInTimeRange", params.businessHandle],
+  });
 
   if (isLoading || userIsLoading) {
     // todo - add a loading state.

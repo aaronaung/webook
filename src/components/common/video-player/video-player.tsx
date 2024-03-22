@@ -11,6 +11,7 @@ import ReactPlayer from "react-player";
 
 // @todo - Fix slow/sluggish seeking behavior on high quality videos. Solution: (Needs to be mp4 encoded)
 export default function VideoPlayer({
+  urls,
   disableSettings,
   sections,
   className,
@@ -70,7 +71,7 @@ export default function VideoPlayer({
         <ReactPlayer
           url={
             // "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            "http://localhost:54321/storage/v1/object/sign/class-videos/test?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJjbGFzcy12aWRlb3MvdGVzdCIsImlhdCI6MTcxMDg0MzEwNCwiZXhwIjoxNzExNDQ3OTA0fQ.VdQM-TQpdLx4lIdt1NMtc6H0J3eZ2K6G2bvobLMrE6A&t=2024-03-19T10%3A11%3A44.146Z"
+            urls["auto"]
           }
           controls={false}
           ref={videoRef}
