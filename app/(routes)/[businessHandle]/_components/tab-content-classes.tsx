@@ -2,9 +2,8 @@
 
 import ClassCard from "@/src/components/common/class-card";
 import { Button } from "@/src/components/ui/button";
-import { toast } from "@/src/components/ui/use-toast";
 import { listClassProductIdsUserOwn, listClasses } from "@/src/data/class";
-import { createStripeCheckoutSession } from "@/src/data/stripe";
+import { useBuyDanceClass } from "@/src/hooks/use-buy-dance-class";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db";
 
@@ -15,6 +14,11 @@ export default function ClassesTabContent({
   business: Tables<"businesses">;
   user: Tables<"users">;
 }) {
+  const { buy } = useBuyDanceClass({
+    user,
+    business,
+  });
+
   const { isLoading, data } = useSupaQuery(listClasses, {
     arg: business.id,
     queryKey: ["listClasses", business.id],
@@ -26,27 +30,6 @@ export default function ClassesTabContent({
       },
       queryKey: ["listClassesUserOwn", user?.id],
     });
-
-  const handleBuyClass = async (danceClass: Tables<"classes">) => {
-    if (!danceClass.stripe_product_id || !user) {
-      return;
-    }
-    const checkoutSession = await createStripeCheckoutSession({
-      businessHandle: business.handle,
-      productId: danceClass.stripe_product_id,
-      userId: user.id,
-    });
-
-    if (!checkoutSession.url) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: `Failed to create checkout session for class ${danceClass.title}.`,
-      });
-      return;
-    }
-    window.location.href = checkoutSession.url;
-  };
 
   if (isLoading || isLoadingUserClasses) {
     return <>Loading...</>;
@@ -73,7 +56,7 @@ export default function ClassesTabContent({
                 <Button
                   className="ml-2 rounded-full bg-green-600 hover:bg-green-700"
                   onClick={() => {
-                    handleBuyClass(danceClass);
+                    buy(danceClass);
                   }}
                 >
                   Buy

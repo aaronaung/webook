@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
     const pathname = req.nextUrl.pathname;
     const search = req.nextUrl.search;
 
-    if (urlMatch(pathname) && pathname !== "/login") {
+    if (urlMatch(pathname)) {
       const supabase = createMiddlewareClient({ req, res });
       const { data, error } = await supabase.auth.getSession();
 

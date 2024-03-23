@@ -1,33 +1,14 @@
 import { NextRequest } from "next/server";
 import { stripeClient } from "..";
-import { throwOrData } from "@/src/data/util";
-import { supaServerClient } from "@/src/data/clients/server";
 import { CheckOutRequestSchema } from "./dto/check-out.dto";
 import Stripe from "stripe";
 import { StripeCheckoutMetadata } from ".";
 import { StripeProductMetadata } from "../products";
 
 export async function POST(req: NextRequest) {
-  const { productId, businessHandle, userId } = CheckOutRequestSchema.parse(
-    await req.json(),
-  );
+  const { productId, businessStripeAccountId, userId, returnUrl } =
+    CheckOutRequestSchema.parse(await req.json());
 
-  const { stripe_account_id } = await throwOrData(
-    supaServerClient
-      .from("businesses")
-      .select("stripe_account_id")
-      .eq("handle", businessHandle)
-      .single(),
-  );
-  if (!stripe_account_id) {
-    // TODO - We should disallow businesses from selling services if they haven't connected their stripe account.
-    return new Response(
-      `Stripe account doesn't exist for business ${businessHandle}.`,
-      {
-        status: 500,
-      },
-    );
-  }
   const product = await stripeClient.products.retrieve(productId, {
     expand: ["default_price"],
   });
@@ -43,7 +24,7 @@ export async function POST(req: NextRequest) {
     payment_intent_data: {
       application_fee_amount: (price.unit_amount ?? 0) * 0.1,
       transfer_data: {
-        destination: stripe_account_id,
+        destination: businessStripeAccountId,
       },
       metadata: checkoutMetadata,
     },
@@ -54,8 +35,8 @@ export async function POST(req: NextRequest) {
       },
     ],
     mode: "payment",
-    success_url: `${req.nextUrl.origin}/${businessHandle}`,
-    cancel_url: `${req.nextUrl.origin}/${businessHandle}`,
+    success_url: returnUrl,
+    cancel_url: returnUrl,
   });
 
   return Response.json(session);

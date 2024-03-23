@@ -26,6 +26,7 @@ export default async function Classes() {
           // todo maybe group by business title and make horizontally scrollable like netflix
           return (
             <div key={danceClass.id}>
+              <p>{business?.title}</p>
               <ClassCard
                 danceClass={danceClass}
                 hidePriceTag

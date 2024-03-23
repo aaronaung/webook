@@ -16,20 +16,19 @@ export default async function BusinessPage({
 }) {
   const supabaseOptions = { client: supaServerComponentClient() };
   const user = await getAuthUser(supabaseOptions);
-  const business = await getBusinessByHandle(
-    params.businessHandle,
-    supabaseOptions,
-  );
-
-  if (!business) {
-    console.error(`Business not found for handle: ${params.businessHandle}`);
-    redirect("/");
-  }
-
   if (!user) {
     redirect(
       `/login?return_path=${encodeURIComponent(`/${params.businessHandle}`)}`,
     );
+  }
+
+  const business = await getBusinessByHandle(
+    params.businessHandle,
+    supabaseOptions,
+  );
+  if (!business) {
+    console.error(`Business not found for handle: ${params.businessHandle}`);
+    redirect("/");
   }
 
   const services = await getServices(business.id, supabaseOptions);

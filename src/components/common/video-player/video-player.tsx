@@ -28,7 +28,6 @@ export default function VideoPlayer({
   const videoContainerRef = useRef(null);
   const videoRef = useRef<ReactPlayer>(null);
   const { state, controls } = useVideoPlayer(videoContainerRef, videoRef);
-  console.log("video state", state, videoRef);
 
   const onVideoContainerClick = () => {
     controls.togglePlay();
