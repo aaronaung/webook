@@ -19,9 +19,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
       <EmptyState
         Icon={BuildingOffice2Icon}
-        title="No businesses"
-        description="Create one to get started."
-        actionButtonText="New business"
+        title="Become an instructor"
+        description="Create lessons for your students and start earning!"
+        actionButtonText="Start"
         onAction={() => {
           router.push("/app/business/new");
         }}
