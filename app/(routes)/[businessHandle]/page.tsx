@@ -37,9 +37,8 @@ export default async function BusinessPage({
   return (
     <div>
       {/** <Hero business={business} /> */}
-
-      <div className="m-auto flex max-w-4xl flex-col gap-y-4 p-4">
-        <div className="flex h-full flex-col rounded-lg bg-secondary p-4 sm:p-8">
+      <div className="m-auto flex max-w-4xl flex-col gap-y-4 p-2">
+        <div className="flex h-full flex-col rounded-lg p-2 sm:p-8 ">
           <Navbar business={business} user={user ?? undefined} />
 
           <div className="mx-auto flex w-[90%] flex-col items-center justify-center text-center">

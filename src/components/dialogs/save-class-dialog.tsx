@@ -19,7 +19,7 @@ export function SaveClassDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="min-w-screen h-screen">
         <DialogHeader>
           <DialogTitle>{initFormValues?.id ? "Edit" : "Add"} class</DialogTitle>
         </DialogHeader>

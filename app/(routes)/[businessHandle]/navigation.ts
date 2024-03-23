@@ -1,17 +1,14 @@
 import { sidebarNavigation } from "../app/business/navigation";
-import {
-  ClipboardDocumentCheckIcon,
-  Squares2X2Icon,
-} from "@heroicons/react/24/outline";
+import { Squares2X2Icon } from "@heroicons/react/24/outline";
 
 export const customerNavigations = (businessHandle: string) => [
+  // {
+  //   name: "My bookings",
+  //   icon: ClipboardDocumentCheckIcon,
+  //   href: `/${businessHandle}/bookings`,
+  // },
   {
-    name: "My bookings",
-    icon: ClipboardDocumentCheckIcon,
-    href: `/${businessHandle}/bookings`,
-  },
-  {
-    name: "Manage businesses",
+    name: "Go to app",
     icon: Squares2X2Icon,
     href: sidebarNavigation[0].href,
   },

@@ -35,7 +35,7 @@ export default function ClassCard({
 
   useEffect(() => {
     fetchSignedPreviewUrl();
-  }, []);
+  }, [danceClass.id]);
 
   const fetchSignedPreviewUrl = async () => {
     const { data } = await supaClientComponentClient()

@@ -2,12 +2,6 @@
 
 import ClassCard from "@/src/components/common/class-card";
 import { Button } from "@/src/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/components/ui/card";
 import { toast } from "@/src/components/ui/use-toast";
 import { listClassProductIdsUserOwn, listClasses } from "@/src/data/class";
 import { createStripeCheckoutSession } from "@/src/data/stripe";
@@ -59,43 +53,36 @@ export default function ClassesTabContent({
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Classes</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {(data || []).map((danceClass) => {
-            const userIsOwner = userClassProductIds?.some(
-              (id) => danceClass.stripe_product_id === id,
-            );
+    <div className="grid grid-cols-1 gap-4 sm:mt-4 sm:grid-cols-2">
+      {(data || []).map((danceClass) => {
+        const userIsOwner = userClassProductIds?.some(
+          (id) => danceClass.stripe_product_id === id,
+        );
 
-            return (
-              <ClassCard
-                key={danceClass.id}
-                danceClass={danceClass}
-                hidePriceTag={userIsOwner}
-                footerAction={
-                  userIsOwner ? (
-                    <a href={`${business.handle}/classes/${danceClass.id}`}>
-                      <Button className="ml-2 rounded-full">View lesson</Button>
-                    </a>
-                  ) : (
-                    <Button
-                      className="ml-2 rounded-full bg-green-600 hover:bg-green-700"
-                      onClick={() => {
-                        handleBuyClass(danceClass);
-                      }}
-                    >
-                      Buy
-                    </Button>
-                  )
-                }
-              />
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+        return (
+          <ClassCard
+            key={danceClass.id}
+            danceClass={danceClass}
+            hidePriceTag={userIsOwner}
+            footerAction={
+              userIsOwner ? (
+                <a href={`${business.handle}/classes/${danceClass.id}`}>
+                  <Button className="ml-2 rounded-full">View lesson</Button>
+                </a>
+              ) : (
+                <Button
+                  className="ml-2 rounded-full bg-green-600 hover:bg-green-700"
+                  onClick={() => {
+                    handleBuyClass(danceClass);
+                  }}
+                >
+                  Buy
+                </Button>
+              )
+            }
+          />
+        );
+      })}
+    </div>
   );
 }

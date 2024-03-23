@@ -10,8 +10,7 @@ import { deleteClass, listClasses } from "@/src/data/class";
 import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Edit } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useAsyncFileUpload } from "@/src/contexts/async-file-upload";
+import { useState } from "react";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 
 type ClassDialogState = {
@@ -34,16 +33,6 @@ export default function Classes() {
       invalidate: [["listClasses"]],
     },
   );
-
-  const asyncUpload = useAsyncFileUpload();
-
-  function beforeUnload() {
-    return confirm("unloading");
-  }
-
-  useEffect(() => {
-    // todo show a warning confirmation if there are uploads in progress.
-  }, []);
 
   if (isLoading) {
     return <>Loading...</>;

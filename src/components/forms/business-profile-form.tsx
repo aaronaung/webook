@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/src/components/ui/button";
 import InputAddress from "@/src/components/ui/input/address";
-import FileDropzone from "@/src/components/ui/input/file-dropzone";
 import InputMask from "@/src/components/ui/input/mask";
 import InputSelect from "@/src/components/ui/input/select";
 import InputText from "@/src/components/ui/input/text";
@@ -11,7 +10,7 @@ import { countries } from "@/src/consts/countries";
 import { BUCKETS, STORAGE_DIR_PATHS } from "@/src/consts/storage";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { Tables } from "@/types/db.extension";
-import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -152,11 +151,12 @@ export default function BusinessProfileForm({
   }
 
   async function onFormSuccess(values: FormSchemaType) {
-    if (!logoFile || !coverPhotoFile) {
+    if (!logoFile) {
       toast({
         variant: "destructive",
         title: "Missing file",
-        description: "Please upload a logo and cover photo.",
+        description:
+          "Please upload your headshot. This will show up in the header of your page.",
       });
       return;
     }
@@ -191,15 +191,15 @@ export default function BusinessProfileForm({
               upsert: true,
             },
           ),
-        supaClientComponentClient()
-          .storage.from(BUCKETS.publicBusinessAssets)
-          .upload(
-            `/${STORAGE_DIR_PATHS.businessCoverPhotos}/${values.handle}`,
-            coverPhotoFile,
-            {
-              upsert: true,
-            },
-          ),
+        // supaClientComponentClient()
+        //   .storage.from(BUCKETS.publicBusinessAssets)
+        //   .upload(
+        //     `/${STORAGE_DIR_PATHS.businessCoverPhotos}/${values.handle}`,
+        //     coverPhotoFile,
+        //     {
+        //       upsert: true,
+        //     },
+        //   ),
         supaClientComponentClient()
           .from("businesses")
           .upsert({ ...values, owner_id: loggedInUser.id }),
@@ -212,7 +212,7 @@ export default function BusinessProfileForm({
       }
       setIsSaving(false);
       // todo - celebrate with a toast.
-      router.replace("/app/business/schedule");
+      router.replace("/app/business/classes");
     } catch (err) {
       console.log(err);
       if ((err as PostgrestError).code === UNIQUE_CONSTRAINT_VIOLATION) {
@@ -402,10 +402,10 @@ export default function BusinessProfileForm({
 
             <div className="col-span-full">
               <label
-                htmlFor="logo"
+                htmlFor="headshot"
                 className="block text-sm font-medium leading-6 text-foreground"
               >
-                Logo
+                Headshot
               </label>
               <div className="mt-2 flex items-center gap-x-3">
                 {logoFile ? (
@@ -441,7 +441,7 @@ export default function BusinessProfileForm({
               </div>
             </div>
 
-            <div className="col-span-full">
+            {/* <div className="col-span-full">
               <label
                 htmlFor="cover-photo"
                 className="block text-sm font-medium leading-6 text-foreground"
@@ -463,7 +463,7 @@ export default function BusinessProfileForm({
                   />
                 }
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

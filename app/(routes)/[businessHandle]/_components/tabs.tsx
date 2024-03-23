@@ -2,16 +2,14 @@
 
 import { Button } from "@/src/components/ui/button";
 import { useState } from "react";
-import ScheduledEventsTabContent from "./tab-content-scheduled-events";
-import BookServicesTabContent from "./tab-content-book-services";
 import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
 import ClassesTabContent from "./tab-content-classes";
 
 enum TabType {
   Classes = "Classes",
-  BookServices = "Book now",
-  ScheduledEvents = "Scheduled events",
+  // BookServices = "Book now",
+  // ScheduledEvents = "Scheduled events",
 }
 export default function Tabs({
   user,
@@ -26,15 +24,15 @@ export default function Tabs({
 
   const renderTabContent = () => {
     switch (selected) {
-      case TabType.BookServices:
-        return (
-          <BookServicesTabContent
-            business={business}
-            services={services.filter((s) => s.availability_schedule_id)}
-          />
-        );
-      case TabType.ScheduledEvents:
-        return <ScheduledEventsTabContent user={user} business={business} />;
+      // case TabType.BookServices:
+      //   return (
+      //     <BookServicesTabContent
+      //       business={business}
+      //       services={services.filter((s) => s.availability_schedule_id)}
+      //     />
+      //   );
+      // case TabType.ScheduledEvents:
+      //   return <ScheduledEventsTabContent user={user} business={business} />;
       case TabType.Classes:
         return <ClassesTabContent user={user} business={business} />;
       default:
@@ -44,19 +42,21 @@ export default function Tabs({
 
   return (
     <>
-      <div className="mb-[20px] mt-[38px] flex justify-center gap-x-3">
-        {Object.values(TabType).map((tab) => {
-          return (
-            <Tab
-              key={tab}
-              type={tab as TabType}
-              selected={selected}
-              onSelect={setSelected}
-            />
-          );
-        })}
-      </div>
-      {renderTabContent()}
+      {Object.values(TabType).length > 1 && (
+        <div className="mt-[38px] flex justify-center gap-x-3">
+          {Object.values(TabType).map((tab) => {
+            return (
+              <Tab
+                key={tab}
+                type={tab as TabType}
+                selected={selected}
+                onSelect={setSelected}
+              />
+            );
+          })}
+        </div>
+      )}
+      <div className="mt-[20px]">{renderTabContent()}</div>
     </>
   );
 }

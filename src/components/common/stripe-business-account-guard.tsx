@@ -14,7 +14,7 @@ export default function StripeBusinessAccountGuard({
   children?: any;
 }) {
   const { currentBusiness } = useCurrentBusinessContext();
-  return children;
+
   const {
     status: accountStatus,
     statusTitle: accountStatusTitle,
