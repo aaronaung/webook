@@ -49,16 +49,16 @@ export const saveService = async (
   {
     service,
     questionIds,
-    priceChanged,
-    titleChanged,
+    priceChanged = false,
+    titleChanged = false,
   }: {
     service: Partial<Tables<"services">>;
     questionIds?: {
       added: string[];
       removed: string[];
     };
-    priceChanged: boolean;
-    titleChanged: boolean;
+    priceChanged?: boolean;
+    titleChanged?: boolean;
   },
   { client }: SupabaseOptions,
 ) => {
