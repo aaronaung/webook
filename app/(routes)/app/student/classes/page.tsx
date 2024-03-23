@@ -1,10 +1,9 @@
 import ClassCard from "@/src/components/common/class-card";
 import EmptyState from "@/src/components/common/empty-state";
-import { Button } from "@/src/components/ui/button";
+import { ClassActionType } from "@/src/consts/classes";
 import { listAuthUserClasses } from "@/src/data/class";
 import { supaServerComponentClient } from "@/src/data/clients/server";
 import { Tables } from "@/types/db";
-import Link from "next/link";
 
 export default async function Classes() {
   const data = await listAuthUserClasses({
@@ -26,15 +25,10 @@ export default async function Classes() {
           // todo maybe group by business title and make horizontally scrollable like netflix
           return (
             <div key={danceClass.id}>
-              <p>{business?.title}</p>
               <ClassCard
                 danceClass={danceClass}
                 hidePriceTag
-                footerAction={
-                  <Link href={`/${business?.handle}/classes/${danceClass.id}`}>
-                    <Button className="ml-2 rounded-full">View lesson</Button>
-                  </Link>
-                }
+                classActionType={ClassActionType.View}
               />
             </div>
           );

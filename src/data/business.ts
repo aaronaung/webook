@@ -64,6 +64,15 @@ export const getBusinessByHandle = async (
   );
 };
 
+export const getExploreBusinesses = async ({ client }: SupabaseOptions) => {
+  // todo - for now, return all businesses implement pagination
+  return throwOrData(
+    client.from("businesses").select("*").limit(3).order("created_at", {
+      ascending: false,
+    }),
+  );
+};
+
 export const getLoggedInUserBusinesses = async ({
   client,
 }: SupabaseOptions) => {
@@ -80,11 +89,12 @@ export const getLoggedInUserBusinesses = async ({
     };
   }
 
-  const { data: businesses, error: businessesError } = await client
-    .from("businesses")
-    .select("*")
-    .eq("owner_id", user?.id);
-  if (businessesError) throw businessesError;
+  const businesses = await throwOrData(
+    client
+      .from("businesses")
+      .select("*")
+      .eq("owner_id", user?.id),
+  );
 
   return { user, businesses };
 };

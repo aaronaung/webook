@@ -34,8 +34,22 @@ export const getClass = async (
   };
 };
 
-export const listAuthUserClasses = async ({ client }: SupabaseOptions) => {
+export type ClassWithBusiness = Tables<"classes"> & {
+  business: Tables<"businesses"> | null;
+};
+
+export const listAuthUserClasses = async ({
+  client,
+}: SupabaseOptions): Promise<ClassWithBusiness[]> => {
+  // @ts-ignore - we can't correctly type the Json types in the response of postgres functions.
   return throwOrJsonData(client.rpc("get_auth_user_classes"));
+};
+
+export const listNonAuthUserClasses = async ({
+  client,
+}: SupabaseOptions): Promise<ClassWithBusiness[]> => {
+  // @ts-ignore - we can't correctly type the Json types in the response of postgres functions.
+  return throwOrJsonData(client.rpc("get_non_auth_user_classes"));
 };
 
 export const listClasses = async (
@@ -50,6 +64,18 @@ export const listClasses = async (
       .eq("business_id", businessId)
       .order("created_at"),
   );
+};
+
+export const getExploreClasses = async ({ client }: SupabaseOptions) => {
+  // todo - for now, return all classe user doesn't own; implement pagination.
+  const nonAuthUserClasses = await listNonAuthUserClasses({ client });
+  const authUserClasses = await listAuthUserClasses({ client });
+
+  // show nonAuthUserClasses first
+  return {
+    owned: authUserClasses,
+    notOwned: nonAuthUserClasses,
+  };
 };
 
 export const listClassProductIdsUserOwn = async (

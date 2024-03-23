@@ -846,6 +846,21 @@ export type Database = {
         }
         Returns: Json
       }
+      get_non_auth_user_classes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          business_id: string
+          business: Json
+          created_at: string
+          updated_at: string
+          title: string
+          description: string
+          price: number
+          stripe_product_id: string
+          stripe_price_id: string
+        }[]
+      }
       get_scheduled_events_in_time_range: {
         Args: {
           business_handle: string

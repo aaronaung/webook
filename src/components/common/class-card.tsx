@@ -20,19 +20,31 @@ import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { BUCKETS } from "@/src/consts/storage";
 import { SpeakerXMarkIcon } from "@heroicons/react/24/outline";
 import { Spinner } from "./loading-spinner";
+import { useBuyDanceClass } from "@/src/hooks/use-buy-dance-class";
+import { useAuthUser } from "@/src/contexts/auth";
+import Link from "next/link";
+import { ClassActionType } from "@/src/consts/classes";
 
 export default function ClassCard({
   danceClass,
-  footerAction,
+  classActionType = ClassActionType.Buy,
+  classActionOverride,
   hidePriceTag = false,
 }: {
-  danceClass: Tables<"classes">;
-  footerAction?: React.ReactNode;
+  danceClass: Tables<"classes"> & { business: Tables<"businesses"> | null };
+  classActionType?: ClassActionType;
+  classActionOverride?: React.ReactNode;
   hidePriceTag?: boolean;
 }) {
   const [previewUrl, setPreviewUrl] = useState<string | undefined>();
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const { user } = useAuthUser();
+
+  const { buy } = useBuyDanceClass({
+    business: danceClass.business,
+    user,
+  });
 
   useEffect(() => {
     fetchSignedPreviewUrl();
@@ -97,6 +109,36 @@ export default function ClassCard({
         );
       default:
         return <>{asyncUploader.status(danceClass.id)}</>;
+    }
+  };
+
+  const renderFooterAction = () => {
+    if (classActionOverride) {
+      return classActionOverride;
+    }
+    switch (classActionType) {
+      case ClassActionType.Buy:
+        return (
+          <Button
+            className="ml-2 rounded-full bg-green-600 hover:bg-green-700"
+            onClick={() => {
+              buy(danceClass);
+            }}
+          >
+            Buy
+          </Button>
+        );
+      case ClassActionType.View:
+        return (
+          <Link
+            href={`/${danceClass.business?.handle}/classes/${danceClass.id}`}
+          >
+            <Button className="ml-2 rounded-full">View lesson</Button>
+          </Link>
+        );
+
+      default:
+        return <></>;
     }
   };
 
@@ -178,7 +220,10 @@ export default function ClassCard({
             )}
             {renderPingedIcons()}
             {!previewUrl ? (
-              <Spinner />
+              <div className="flex h-64 w-full items-center justify-center">
+                {" "}
+                <Spinner />
+              </div>
             ) : (
               <video
                 src={previewUrl}
@@ -215,8 +260,16 @@ export default function ClassCard({
               {danceClass.description}
             </p>
           )}
+          {danceClass.business && (
+            <Link href={`/${danceClass.business.handle}`}>
+              🧠
+              <span className="ml-2 cursor-pointer text-sm font-medium text-primary hover:underline">
+                {danceClass.business.title}
+              </span>
+            </Link>
+          )}
         </div>
-        {footerAction}
+        {renderFooterAction()}
       </CardFooter>
     </Card>
   );

@@ -65,7 +65,7 @@ export default function Classes() {
                 <div className="" key={danceClass.id}>
                   <ClassCard
                     danceClass={danceClass}
-                    footerAction={
+                    classActionOverride={
                       <div className="flex gap-1.5">
                         <Button
                           className="h-8 w-8 rounded-full p-2"

@@ -7,13 +7,18 @@ export const useBuyDanceClass = ({
   user,
   business,
 }: {
-  user?: Tables<"users">;
-  business: Tables<"businesses">;
+  user?: Tables<"users"> | null;
+  business?: Tables<"businesses"> | null;
 }) => {
   const router = useRouter();
 
   const buy = async (danceClass: Tables<"classes">) => {
-    if (!danceClass.stripe_product_id || !user) {
+    if (!danceClass.stripe_product_id || !user || !business) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Failed to buy class ${danceClass.title}. Please reload the page and try again.`,
+      });
       return;
     }
 

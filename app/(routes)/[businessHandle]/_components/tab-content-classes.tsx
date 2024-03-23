@@ -2,7 +2,7 @@
 
 import ClassCard from "@/src/components/common/class-card";
 import { Spinner } from "@/src/components/common/loading-spinner";
-import { Button } from "@/src/components/ui/button";
+import { ClassActionType } from "@/src/consts/classes";
 import { listClassProductIdsUserOwn, listClasses } from "@/src/data/class";
 import { useBuyDanceClass } from "@/src/hooks/use-buy-dance-class";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
@@ -48,21 +48,8 @@ export default function ClassesTabContent({
             key={danceClass.id}
             danceClass={danceClass}
             hidePriceTag={userIsOwner}
-            footerAction={
-              userIsOwner ? (
-                <a href={`${business.handle}/classes/${danceClass.id}`}>
-                  <Button className="ml-2 rounded-full">View lesson</Button>
-                </a>
-              ) : (
-                <Button
-                  className="ml-2 rounded-full bg-green-600 hover:bg-green-700"
-                  onClick={() => {
-                    buy(danceClass);
-                  }}
-                >
-                  Buy
-                </Button>
-              )
+            classActionType={
+              userIsOwner ? ClassActionType.View : ClassActionType.Buy
             }
           />
         );
