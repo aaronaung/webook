@@ -36,6 +36,7 @@ import { useState } from "react";
 import { DeleteConfirmationDialog } from "@/src/components/dialogs/delete-confirmation-dialog";
 import EmptyState from "@/src/components/common/empty-state";
 import { useSearchParams } from "next/navigation";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 export default function Availability() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -70,7 +71,7 @@ export default function Availability() {
   });
 
   if (isLoadingAvailabilitySchedules) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

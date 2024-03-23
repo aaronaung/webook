@@ -20,6 +20,7 @@ import { isSameDay } from "date-fns";
 import { CopyIcon, PlusIcon } from "lucide-react";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/src/utils";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 type SlotOverridesProps = {
   scheduleId: string;
@@ -63,7 +64,7 @@ export default function SlotOverrides({
   );
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   const handleOnSlotStartChange = (slot: Slot, newStart: number) => {

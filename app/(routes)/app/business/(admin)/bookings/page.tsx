@@ -2,6 +2,7 @@
 import BookingList, {
   ViewMode,
 } from "@/src/components/common/bookings/booking-list";
+import { Spinner } from "@/src/components/common/loading-spinner";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { getBookingsForBusiness } from "@/src/data/booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
@@ -20,7 +21,7 @@ export default function BusinessBookings() {
   );
 
   if (isLoadingBookings) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
   return (
     <BookingList

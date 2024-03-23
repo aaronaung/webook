@@ -1,3 +1,4 @@
+import { Spinner } from "@/src/components/common/loading-spinner";
 import DnDCalendar, { localizer } from "@/src/components/ui/dnd-calendar";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import {
@@ -139,7 +140,7 @@ export default function ScheduleCalendar({
 
   if (isBusinessScheduleDataLoading) {
     // todo - add a loading state.
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

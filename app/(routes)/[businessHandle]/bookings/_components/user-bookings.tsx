@@ -3,6 +3,7 @@
 import BookingList, {
   ViewMode,
 } from "@/src/components/common/bookings/booking-list";
+import { Spinner } from "@/src/components/common/loading-spinner";
 import { getBookingsForBusiness } from "@/src/data/booking";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { Tables } from "@/types/db.extension";
@@ -27,7 +28,7 @@ export default function UserBookings({
   );
 
   if (isLoadingBookings) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
   return (
     <BookingList

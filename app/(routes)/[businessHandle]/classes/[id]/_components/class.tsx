@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/src/components/common/loading-spinner";
 import { Button } from "@/src/components/ui/button";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { useBuyDanceClass } from "@/src/hooks/use-buy-dance-class";
@@ -44,7 +45,7 @@ export default function ClassView({
               sections={[]}
             />
           ) : (
-            <>Loading...</>
+            <Spinner />
           )}
         </>
       ) : (

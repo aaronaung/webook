@@ -1,12 +1,8 @@
 "use client";
 import { Button } from "@/src/components/ui/button";
-import InputAddress from "@/src/components/ui/input/address";
-import InputMask from "@/src/components/ui/input/mask";
-import InputSelect from "@/src/components/ui/input/select";
 import InputText from "@/src/components/ui/input/text";
 import InputTextArea from "@/src/components/ui/input/textarea";
 import { toast } from "@/src/components/ui/use-toast";
-import { countries } from "@/src/consts/countries";
 import { BUCKETS, STORAGE_DIR_PATHS } from "@/src/consts/storage";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { Tables } from "@/types/db.extension";
@@ -307,7 +303,7 @@ export default function BusinessProfileForm({
                 error={errors.email?.message}
               />
             </div>
-            <div className="sm:col-span-3">
+            {/* <div className="sm:col-span-3">
               <InputMask
                 rhfKey="phone"
                 register={register}
@@ -319,7 +315,7 @@ export default function BusinessProfileForm({
                 label="Phone"
                 error={errors.phone?.message}
               />
-            </div>
+            </div> */}
 
             <div className="col-span-full">
               <div className="mt-2">
@@ -335,7 +331,7 @@ export default function BusinessProfileForm({
                 />
               </div>
             </div>
-            <div className="sm:col-span-full">
+            {/* <div className="sm:col-span-full">
               <InputAddress
                 rhfKey="address"
                 onPlaceSelected={(location) => {
@@ -398,7 +394,7 @@ export default function BusinessProfileForm({
                 }}
                 error={errors.country_code?.message}
               />
-            </div>
+            </div> */}
 
             <div className="col-span-full">
               <label

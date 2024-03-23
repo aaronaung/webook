@@ -1,6 +1,7 @@
 "use client";
 
 import HeaderWithAction from "@/src/components/common/header-with-action";
+import { Spinner } from "@/src/components/common/loading-spinner";
 import CalendarV2 from "@/src/components/ui/calendar-v2";
 import { useCurrentViewingBusinessContext } from "@/src/contexts/current-viewing-business";
 import { getAvailabilityForServiceOnDate } from "@/src/data/availability";
@@ -100,7 +101,7 @@ export default function Availability({
   };
 
   if (isLoadingUser) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (
@@ -128,7 +129,7 @@ export default function Availability({
 
               <ol className="mt-4 space-y-1 text-sm leading-6 text-muted-foreground">
                 {isLoading ? (
-                  <p>Loading...</p>
+                  <Spinner />
                 ) : (
                   <div className="flex flex-wrap gap-x-3 gap-y-5">
                     {getAvailabilityOffsetsFromDayStart().length === 0 && (

@@ -9,6 +9,7 @@ import { VideoQualityPopover } from "./video-quality-popover/video-quality-popov
 import { useVideoPlayer } from "@/src/hooks/use-video-player";
 import ReactPlayer from "react-player";
 import { cn } from "@/src/utils";
+import { Spinner } from "../loading-spinner";
 
 // @todo - Fix slow/sluggish seeking behavior on high quality videos. Solution: (Needs to be mp4 encoded)
 export default function VideoPlayer({
@@ -59,7 +60,7 @@ export default function VideoPlayer({
     if (!state.buffering) {
       return <></>;
     }
-    return <>Loading...</>;
+    return <Spinner />;
   };
 
   return (

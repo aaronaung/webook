@@ -1,6 +1,7 @@
 "use client";
 
 import ClassCard from "@/src/components/common/class-card";
+import { Spinner } from "@/src/components/common/loading-spinner";
 import { Button } from "@/src/components/ui/button";
 import { listClassProductIdsUserOwn, listClasses } from "@/src/data/class";
 import { useBuyDanceClass } from "@/src/hooks/use-buy-dance-class";
@@ -32,7 +33,7 @@ export default function ClassesTabContent({
     });
 
   if (isLoading || isLoadingUserClasses) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

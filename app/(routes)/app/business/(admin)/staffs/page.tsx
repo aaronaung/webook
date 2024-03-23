@@ -14,6 +14,7 @@ import { Row } from "@tanstack/react-table";
 import _ from "lodash";
 import { PlusIcon } from "lucide-react";
 import { useCallback, useState } from "react";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 export default function Staffs() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -62,7 +63,7 @@ export default function Staffs() {
   );
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
   return (
     <>

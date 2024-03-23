@@ -33,6 +33,7 @@ import {
   PRICING_INTERVALS,
   SaveAvailabilityBasedServiceFormSchemaType,
 } from "@/src/components/forms/save-availability-based-service-form";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 type ServiceDialogState = {
   isOpen: boolean;
@@ -133,7 +134,7 @@ export default function Services() {
     isQuestionsLoading ||
     isAvailabilitySchedulesLoading
   ) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
   return (
     <div className="flex w-full justify-center">

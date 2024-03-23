@@ -17,7 +17,7 @@ export default async function LoginPage({
 }) {
   const user = await getAuthUser({ client: supaServerComponentClient() });
   if (user) {
-    redirect(searchParams.return_path || "/app/student/classes");
+    redirect(searchParams.return_path || "/app/explore");
   }
 
   return <UserAuthForm returnPath={searchParams.return_path} />;

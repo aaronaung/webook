@@ -1,8 +1,7 @@
-import { sidebarNavigation } from "./business/navigation";
-
 export const navigation = [
-  { name: "Business", href: sidebarNavigation[0].href },
-  { name: "Personal", href: "/app/personal/classes" },
+  { name: "Explore", href: "/app/explore" },
+  { name: "Students", href: "/app/student/classes" },
+  { name: "Instructors", href: "/app/business/classes" },
 ];
 
 export const userNavigation = [{ name: "Sign out", href: "#" }];

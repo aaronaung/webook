@@ -14,6 +14,7 @@ import { Tables } from "@/types/db.extension";
 import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { Row } from "@tanstack/react-table";
 import { useCallback, useState } from "react";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 export default function Questions() {
   const { currentBusiness } = useCurrentBusinessContext();
@@ -79,7 +80,7 @@ export default function Questions() {
   );
 
   if (isLoadingQuestions || isLoadingServices) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

@@ -21,6 +21,7 @@ import EmptyState from "@/src/components/common/empty-state";
 import { Square3Stack3DIcon } from "@heroicons/react/24/outline";
 import { useConnectedAccountStatus } from "@/src/hooks/use-connected-account-status";
 import StripeBusinessAccountGuard from "@/src/components/common/stripe-business-account-guard";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 export default function SchedulePage() {
   const router = useRouter();
@@ -131,7 +132,7 @@ export default function SchedulePage() {
 
   if (isBusinessDataLoading) {
     // todo - add a loading state.
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

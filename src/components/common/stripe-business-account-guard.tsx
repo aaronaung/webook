@@ -7,6 +7,7 @@ import {
 } from "@/src/hooks/use-connected-account-status";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
+import { Spinner } from "./loading-spinner";
 
 export default function StripeBusinessAccountGuard({
   children,
@@ -22,7 +23,7 @@ export default function StripeBusinessAccountGuard({
     isLoading: isCheckingIfPaymentReady,
   } = useConnectedAccountStatus(currentBusiness);
   if (isCheckingIfPaymentReady) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   if (accountStatus !== StripeStatus.IsReady) {

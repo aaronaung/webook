@@ -7,13 +7,14 @@ import { BuildingOffice2Icon } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
 import { useSupaQuery } from "@/src/hooks/use-supabase";
 import { getLoggedInUserBusinesses } from "@/src/data/business";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = useSupaQuery(getLoggedInUserBusinesses);
   const router = useRouter();
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
   if (_.isEmpty(data?.businesses) && !isLoading) {
     return (
@@ -31,12 +32,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <CurrentBusinessProvider initialBusinesses={data?.businesses || []}>
-      <div className="mx-auto h-full max-w-7xl px-4 lg:flex lg:gap-x-2">
-        {/* <Navbar businesses={data?.businesses || []} /> */}
-        <main className="h-full w-full overflow-x-auto py-4 pb-28 lg:flex-auto lg:px-0 lg:pb-16 lg:pt-0">
-          {children}
-        </main>
-      </div>
+      {/* <Navbar businesses={data?.businesses || []} /> */}
+
+      {children}
     </CurrentBusinessProvider>
   );
 }

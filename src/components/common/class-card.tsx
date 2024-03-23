@@ -19,6 +19,7 @@ import { toast } from "../ui/use-toast";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { BUCKETS } from "@/src/consts/storage";
 import { SpeakerXMarkIcon } from "@heroicons/react/24/outline";
+import { Spinner } from "./loading-spinner";
 
 export default function ClassCard({
   danceClass,
@@ -177,7 +178,7 @@ export default function ClassCard({
             )}
             {renderPingedIcons()}
             {!previewUrl ? (
-              <>Loading...</>
+              <Spinner />
             ) : (
               <video
                 src={previewUrl}

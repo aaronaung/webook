@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/src/components/common/loading-spinner";
 import ServiceEventItem from "@/src/components/common/service-event-item";
 import { Button } from "@/src/components/ui/button";
 import {
@@ -43,7 +44,7 @@ export default function ScheduledEventsTabContent({
   });
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

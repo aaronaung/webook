@@ -7,6 +7,7 @@ import { getScheduledEventsInTimeRange } from "@/src/data/business";
 import { getAuthUser } from "@/src/data/user";
 import useBooking from "@/src/hooks/use-booking";
 import HeaderWithAction from "@/src/components/common/header-with-action";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 export default function SchedulePage({
   params,
@@ -35,7 +36,7 @@ export default function SchedulePage({
 
   if (isLoading || userIsLoading) {
     // todo - add a loading state.
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (

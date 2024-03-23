@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import Navbar from "./_components/navbar";
 
-import { getAuthUser } from "@/src/data/user";
-import { supaServerComponentClient } from "@/src/data/clients/server";
-import { redirect } from "next/navigation";
-import { getLoggedInUserBusinesses } from "@/src/data/business";
+import { navigation, userNavigation } from "./navigation";
+import AuthProvider from "@/src/providers/auth-provider";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 // Everything under /app is auth protected in middleware.ts.
 export default async function Layout({
@@ -12,28 +11,16 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabaseOptions = {
-    client: supaServerComponentClient(),
-  };
-  const authUser = await getAuthUser(supabaseOptions);
-
-  if (!authUser) {
-    redirect("/login");
-  }
-
-  const { businesses } = await getLoggedInUserBusinesses(supabaseOptions);
-
   return (
     <div className="h-full overflow-hidden">
-      <Navbar
-        user={authUser}
-        userHasABusiness={(businesses || []).length > 0}
-      />
-      <main className="h-full py-4 sm:py-10">
-        <div className="mx-auto h-full max-w-7xl">
-          <Suspense fallback={<>LOADING...</>}>{children}</Suspense>
+      <AuthProvider>
+        <Navbar navigation={navigation} userNavigation={userNavigation} />
+        <div className="mx-auto h-full max-w-7xl px-4 sm:py-10 lg:flex lg:gap-x-2">
+          <main className="h-full w-full overflow-x-auto py-4 pb-28 lg:flex-auto lg:px-0 lg:pb-16 lg:pt-0">
+            <Suspense fallback={<Spinner />}>{children}</Suspense>
+          </main>
         </div>
-      </main>
+      </AuthProvider>
     </div>
   );
 }

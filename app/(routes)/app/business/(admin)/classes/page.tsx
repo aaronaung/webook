@@ -12,6 +12,7 @@ import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Edit } from "lucide-react";
 import { useState } from "react";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
+import { Spinner } from "@/src/components/common/loading-spinner";
 
 type ClassDialogState = {
   isOpen: boolean;
@@ -35,7 +36,7 @@ export default function Classes() {
   );
 
   if (isLoading) {
-    return <>Loading...</>;
+    return <Spinner />;
   }
 
   return (
