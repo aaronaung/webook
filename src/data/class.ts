@@ -10,7 +10,11 @@ export const getClass = async (
   { client }: SupabaseOptions,
 ) => {
   const danceClass = await throwOrData(
-    client.from("classes").select("*").eq("id", id).single(),
+    client
+      .from("classes")
+      .select("*,  business:businesses(*)")
+      .eq("id", id)
+      .single(),
   );
   if (!danceClass.stripe_product_id || !userId) {
     return {

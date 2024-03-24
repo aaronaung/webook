@@ -130,9 +130,7 @@ export default function ClassCard({
         );
       case ClassActionType.View:
         return (
-          <Link
-            href={`/${danceClass.business?.handle}/classes/${danceClass.id}`}
-          >
+          <Link href={`/app/student/classes/${danceClass.id}`}>
             <Button className="ml-2 rounded-full">View lesson</Button>
           </Link>
         );

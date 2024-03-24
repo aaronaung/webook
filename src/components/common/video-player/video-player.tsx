@@ -1,3 +1,4 @@
+"use client";
 import { PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/20/solid";
 import { useRef } from "react";
 import { Camera } from "./camera/camera";
@@ -68,7 +69,7 @@ export default function VideoPlayer({
       id="video-container "
       ref={videoContainerRef}
       className={cn(
-        `relative flex flex-col items-center border-2 border-red-500 bg-black`,
+        `relative flex flex-col items-center border-2  bg-black`,
         className,
       )}
       onClick={onVideoContainerClick}

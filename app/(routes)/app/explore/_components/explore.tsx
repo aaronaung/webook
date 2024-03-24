@@ -26,7 +26,7 @@ export default function ExploreView({
       </div>
       <div>
         <p className="mb-2 text-xl font-bold">Trending Classes</p>
-        <div className="flex gap-2 p-2">
+        <div className="gird-cols-1 grid gap-2 p-2 sm:grid-cols-3">
           {classes.notOwned.map((danceClass) => {
             return (
               <ClassCard
