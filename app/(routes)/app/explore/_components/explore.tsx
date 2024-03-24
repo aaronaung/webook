@@ -1,3 +1,5 @@
+"use client";
+
 import ClassCard from "@/src/components/common/class-card";
 import InstructorCard from "@/src/components/common/instructor-card";
 import { ClassActionType } from "@/src/consts/classes";

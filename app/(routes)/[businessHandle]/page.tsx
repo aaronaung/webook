@@ -9,6 +9,8 @@ import { getServices } from "@/src/data/service";
 import BusinessLogo from "./_components/business-logo";
 import Navbar from "./_components/navbar";
 
+export const dynamic = "force-dynamic";
+
 export default async function BusinessPage({
   params,
 }: {

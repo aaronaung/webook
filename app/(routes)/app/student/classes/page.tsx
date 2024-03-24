@@ -5,6 +5,8 @@ import { listAuthUserClasses } from "@/src/data/class";
 import { supaServerComponentClient } from "@/src/data/clients/server";
 import { Tables } from "@/types/db";
 
+export const dynamic = "force-dynamic";
+
 export default async function Classes() {
   const data = await listAuthUserClasses({
     client: supaServerComponentClient(),

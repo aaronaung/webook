@@ -3,6 +3,8 @@ import ExploreView from "./_components/explore";
 import { supaServerComponentClient } from "@/src/data/clients/server";
 import { getExploreClasses } from "@/src/data/class";
 
+export const dynamic = "force-dynamic";
+
 export default async function ExplorePage() {
   const supabaseOptions = { client: supaServerComponentClient() };
   const businesses = await getExploreBusinesses(supabaseOptions);
