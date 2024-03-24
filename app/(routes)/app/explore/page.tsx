@@ -9,6 +9,7 @@ export default async function ExplorePage() {
   const supabaseOptions = { client: supaServerComponentClient() };
   const businesses = await getExploreBusinesses(supabaseOptions);
   const classes = await getExploreClasses(supabaseOptions);
+  console.log("b", businesses);
 
   return <ExploreView businesses={businesses} classes={classes} />;
 }

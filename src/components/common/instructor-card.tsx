@@ -1,5 +1,7 @@
 import { Tables } from "@/types/db";
 import { Button } from "../ui/button";
+import { getBusinessLogoUrl } from "@/src/utils";
+import Image from "../ui/image";
 
 export default function InstructorCard({
   business,
@@ -9,11 +11,11 @@ export default function InstructorCard({
   return (
     <div className="flex items-center justify-between rounded-lg bg-white p-4 shadow-md">
       <div className="flex items-center">
-        <img
+        <Image
           className="h-10 w-10 rounded-full sm:h-16 sm:w-16"
-          src={
-            business.logo_url || `https://i.pravatar.cc/150?u=${business.id}`
-          }
+          src={getBusinessLogoUrl(business.handle)}
+          fallbackSrc={`https://ui-avatars.com/api/?name=${business.title}`}
+          retryOnError
           alt="Instructor"
         />
         <div className="ml-4">

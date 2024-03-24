@@ -29,20 +29,20 @@ const formSchema = z.object({
     .min(1, { message: "Title is required." })
     .max(25, { message: "Title must be at most 25 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
-  phone: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 digits." })
-    .transform((val) => val.replace(/\D/g, ""))
-    .refine((val) => val.length > 9, { message: "Invalid phone number." }),
+  // phone: z
+  //   .string()
+  //   .min(10, { message: "Phone number must be at least 10 digits." })
+  //   .transform((val) => val.replace(/\D/g, ""))
+  //   .refine((val) => val.length > 9, { message: "Invalid phone number." }),
   description: z
     .string()
     .min(1, { message: "Description is required." })
     .max(200, { message: "Description must be at most 200 characters." }),
-  address: z.string().min(1, { message: "Address is required." }),
-  city: z.string().min(1, { message: "City is required." }),
-  state: z.string().min(1, { message: "State is required." }),
-  zip: z.string().min(1, { message: "Zip code is required." }),
-  country_code: z.string().min(1, { message: "Country code is required." }),
+  // address: z.string().min(1, { message: "Address is required." }),
+  // city: z.string().min(1, { message: "City is required." }),
+  // state: z.string().min(1, { message: "State is required." }),
+  // zip: z.string().min(1, { message: "Zip code is required." }),
+  // country_code: z.string().min(1, { message: "Country code is required." }),
 });
 
 type FormSchemaType = z.infer<typeof formSchema>;
@@ -208,7 +208,7 @@ export default function BusinessProfileForm({
       }
       setIsSaving(false);
       // todo - celebrate with a toast.
-      router.replace("/app/explore");
+      router.replace("/app/business/classes");
     } catch (err) {
       console.log(err);
       if ((err as PostgrestError).code === UNIQUE_CONSTRAINT_VIOLATION) {
@@ -229,7 +229,7 @@ export default function BusinessProfileForm({
     }
   }
 
-  function onFormError() {
+  function onFormError(err: any) {
     if (handleExists) {
       setError(
         "handle",
@@ -248,6 +248,7 @@ export default function BusinessProfileForm({
       });
       return;
     }
+    console.error(err);
   }
 
   return (
