@@ -15,8 +15,8 @@ export default async function Layout({
     <div className="h-full overflow-hidden">
       <AuthProvider>
         <Navbar navigation={navigation} userNavigation={userNavigation} />
-        <div className="mx-auto h-full max-w-7xl px-4 sm:py-10 lg:flex lg:gap-x-2">
-          <main className="h-full w-full overflow-x-auto py-4 pb-28 lg:flex-auto lg:px-0 lg:pb-16 lg:pt-0">
+        <div className="mx-auto h-full max-w-7xl px-4 sm:py-8 lg:flex lg:gap-x-2">
+          <main className="h-full w-full overflow-x-auto py-2 pb-28 lg:flex-auto lg:px-0 lg:pb-16 lg:pt-0">
             <Suspense fallback={<Spinner />}>{children}</Suspense>
           </main>
         </div>

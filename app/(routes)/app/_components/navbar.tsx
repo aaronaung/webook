@@ -2,10 +2,10 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { cn } from "@/src/utils";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import Link from "next/link";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const user = {
   name: "Tom Cook",
@@ -21,8 +21,9 @@ export default function Navbar({
   navigation: any[];
   userNavigation: any[];
 }) {
-  const [selectedPage, setSelectedPage] = useState(navigation[0]?.name);
   const router = useRouter();
+  const path = usePathname();
+  console.log("PATH", path);
 
   return (
     <Disclosure as="nav" className="border-b border-gray-200 bg-background">
@@ -43,16 +44,13 @@ export default function Navbar({
                     <Link
                       key={item.name}
                       href={item.href}
-                      onClick={() => setSelectedPage(item.name)}
                       className={cn(
-                        item.name === selectedPage
+                        item.href === path
                           ? "border-primary text-gray-900"
                           : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
                         "inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium",
                       )}
-                      aria-current={
-                        item.name === selectedPage ? "page" : undefined
-                      }
+                      aria-current={item.href === path ? "page" : undefined}
                     >
                       {item.name}
                     </Link>

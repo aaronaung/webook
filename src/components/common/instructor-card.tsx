@@ -1,4 +1,5 @@
 import { Tables } from "@/types/db";
+import { Button } from "../ui/button";
 
 export default function InstructorCard({
   business,
@@ -23,9 +24,7 @@ export default function InstructorCard({
         </div>
       </div>
       <a href={`/${business.handle}`}>
-        <button className="rounded-md bg-blue-500 px-4 py-2 text-sm text-white">
-          View Profile
-        </button>
+        <Button className="rounded-full  px-4 py-2 ">View profile</Button>
       </a>
     </div>
   );

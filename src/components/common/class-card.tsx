@@ -23,7 +23,8 @@ import { Spinner } from "./loading-spinner";
 import { useBuyDanceClass } from "@/src/hooks/use-buy-dance-class";
 import { useAuthUser } from "@/src/contexts/auth";
 import Link from "next/link";
-import { ClassActionType } from "@/src/consts/classes";
+import { ClassActionType, DIFFICULTY_COLORS } from "@/src/consts/classes";
+import { Badge } from "../ui/badge";
 
 export default function ClassCard({
   danceClass,
@@ -40,6 +41,8 @@ export default function ClassCard({
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const { user } = useAuthUser();
+
+  console.log(danceClass);
 
   const { buy } = useBuyDanceClass({
     business: danceClass.business,
@@ -244,20 +247,26 @@ export default function ClassCard({
       </CardContent>
       <CardFooter className="items-start p-3">
         <div className="flex min-w-0 flex-1 flex-col gap-y-1">
-          <div className="flex">
-            <p className="text-md line-clamp-1 font-medium text-secondary-foreground">
-              {danceClass.title}
-            </p>
-            {!hidePriceTag && (
-              <PriceTag className="ml-2" price={danceClass.price} />
-            )}
-          </div>
+          <div className="flex items-center">
+            <Badge
+              className={`${
+                DIFFICULTY_COLORS[danceClass.difficulty]
+              } rounded-sm`}
+            >
+              {danceClass.difficulty}
+            </Badge>
 
+            {<PriceTag className="ml-2" price={danceClass.price} />}
+          </div>
+          <p className="text-md line-clamp-2 font-medium text-secondary-foreground">
+            {danceClass.title}
+          </p>
           {danceClass.description && (
             <p className="line-clamp-3 text-sm text-muted-foreground">
               {danceClass.description}
             </p>
           )}
+
           {danceClass.business && (
             <Link href={`/${danceClass.business.handle}`}>
               🧠

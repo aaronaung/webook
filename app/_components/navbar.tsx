@@ -73,7 +73,7 @@ export default function Navbar({ user }: { user?: Tables<"users"> }) {
             <div className="flex gap-2">
               <Button
                 size="sm"
-                onClick={() => router.push("/app/student/classes")}
+                onClick={() => router.push("/app/explore")}
                 className="rounded-lg"
               >
                 Go to app
@@ -139,7 +139,7 @@ export default function Navbar({ user }: { user?: Tables<"users"> }) {
                   <div className="flex gap-2">
                     <Button
                       size="sm"
-                      onClick={() => router.push("/app/student/classes")}
+                      onClick={() => router.push("/app/explore")}
                       className=" rounded-lg"
                     >
                       Go to app

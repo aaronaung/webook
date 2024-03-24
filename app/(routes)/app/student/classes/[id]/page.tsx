@@ -7,6 +7,10 @@ import dynamic from "next/dynamic";
 import { Alert } from "@/src/components/ui/alert";
 import Link from "next/link";
 
+import { DIFFICULTY_COLORS } from "@/src/consts/classes";
+import PriceTag from "@/src/components/ui/price-tag";
+import { Badge } from "@/src/components/ui/badge";
+
 // Disable ssr on VideoPlayer to avoid Hydration Error.
 const VideoPlayer = dynamic(
   () => import("@/src/components/common/video-player/video-player"),
@@ -54,23 +58,40 @@ export default async function ClassPage({
   }
 
   return (
-    <div>
-      {danceClass.business?.handle && (
-        <span className="text-lg font-medium">
-          {danceClass.title} -{" "}
-          <Link href={`/${danceClass.business.handle}`}>
-            <span className="cursor-pointer text-base font-medium text-primary hover:underline">
-              {danceClass.business.title}
-            </span>
-          </Link>
-        </span>
-      )}
+    <div className="flex h-full min-w-0 flex-1 flex-col gap-y-1">
       <VideoPlayer
+        className="mb-2 h-[720px] w-[1080px]"
         urls={{
           auto: signedUrlData.signedUrl,
         }}
         sections={[]}
       />
+      <div className="flex items-center">
+        <Badge
+          className={`${DIFFICULTY_COLORS[danceClass.difficulty]} rounded-sm`}
+        >
+          {danceClass.difficulty}
+        </Badge>
+
+        {<PriceTag className="ml-2" price={danceClass.price} />}
+      </div>
+      <p className="text-md line-clamp-1 font-medium text-secondary-foreground">
+        {danceClass.title}
+      </p>
+      {danceClass.description && (
+        <p className="line-clamp-1 text-sm text-muted-foreground">
+          {danceClass.description}
+        </p>
+      )}
+
+      {danceClass.business && (
+        <Link href={`/${danceClass.business.handle}`}>
+          🧠
+          <span className="ml-2 cursor-pointer text-sm font-medium text-primary hover:underline">
+            {danceClass.business.title}
+          </span>
+        </Link>
+      )}
     </div>
   );
 }

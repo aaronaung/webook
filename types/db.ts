@@ -374,6 +374,7 @@ export type Database = {
           business_id: string | null
           created_at: string | null
           description: string | null
+          difficulty: string
           id: string
           price: number
           stripe_price_id: string | null
@@ -385,6 +386,7 @@ export type Database = {
           business_id?: string | null
           created_at?: string | null
           description?: string | null
+          difficulty?: string
           id?: string
           price: number
           stripe_price_id?: string | null
@@ -396,6 +398,7 @@ export type Database = {
           business_id?: string | null
           created_at?: string | null
           description?: string | null
+          difficulty?: string
           id?: string
           price?: number
           stripe_price_id?: string | null

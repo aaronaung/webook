@@ -14,6 +14,8 @@ import { FileRejection } from "react-dropzone";
 import { toast } from "../ui/use-toast";
 import { useAsyncFileUpload } from "@/src/contexts/async-file-upload";
 import { BUCKETS } from "@/src/consts/storage";
+import { Difficulty } from "@/src/consts/classes";
+import InputSelect from "../ui/input/select";
 
 const formSchema = z.object({
   title: z
@@ -36,6 +38,9 @@ const formSchema = z.object({
       message: "Price must be a positive number.",
     })
     .transform((val) => val * 100),
+  difficulty: z
+    .enum([Difficulty.Beginner, Difficulty.Intermediate, Difficulty.Advanced])
+    .transform((val) => val as string),
 });
 
 type SaveClassFormProps = {
@@ -54,6 +59,7 @@ export default function SaveClassForm({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<SaveClassFormSchemaType>({
     defaultValues: {
@@ -179,6 +185,16 @@ export default function SaveClassForm({
         className="pr-0"
         prefix={<span className="mr-1 text-sm text-muted-foreground">$</span>}
         label="Price"
+      />
+      <InputSelect
+        rhfKey="difficulty"
+        options={Object.values(Difficulty).map((d) => ({
+          label: d,
+          value: d,
+        }))}
+        control={control}
+        error={errors.difficulty?.message}
+        label="Difficulty"
       />
       <div className="col-span-full">
         <label

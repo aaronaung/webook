@@ -7,7 +7,8 @@ create table "public"."classes" (
     "description" text,
     "price" bigint not null,
     "stripe_product_id" text unique,
-    "stripe_price_id" text unique
+    "stripe_price_id" text unique,
+    "difficulty" text not null
 );
 
 create unique index "classes_pkey" on "public"."classes" using btree (id);

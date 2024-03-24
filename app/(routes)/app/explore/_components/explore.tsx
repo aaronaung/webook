@@ -44,6 +44,7 @@ export default function ExploreView({
                 key={danceClass.id}
                 danceClass={danceClass}
                 classActionType={ClassActionType.View}
+                hidePriceTag
               />
             );
           })}

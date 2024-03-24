@@ -9,7 +9,8 @@ RETURNS TABLE (
     description text,
     price bigint,
     stripe_product_id text,
-    stripe_price_id text
+    stripe_price_id text,
+    difficulty text
 )
 AS $$
 DECLARE
@@ -42,7 +43,8 @@ BEGIN
            c.description,
            c.price,
            c.stripe_product_id,
-           c.stripe_price_id
+           c.stripe_price_id,
+           c.difficulty
     FROM classes c
     JOIN user_stripe_products usp ON c.stripe_product_id = usp.stripe_product_id
     JOIN businesses b ON c.business_id = b.id
@@ -62,7 +64,8 @@ RETURNS TABLE (
     description text,
     price bigint,
     stripe_product_id text,
-    stripe_price_id text
+    stripe_price_id text,
+    difficulty text
 )
 AS $$
 DECLARE
@@ -95,7 +98,8 @@ BEGIN
            c.description,
            c.price,
            c.stripe_product_id,
-           c.stripe_price_id
+           c.stripe_price_id,
+           c.difficulty
     FROM classes c
     JOIN user_stripe_products usp ON c.stripe_product_id = usp.stripe_product_id
     JOIN businesses b ON c.business_id = b.id
