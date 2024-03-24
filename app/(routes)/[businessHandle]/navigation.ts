@@ -1,4 +1,3 @@
-import { sidebarNavigation } from "../app/business/navigation";
 import { Squares2X2Icon } from "@heroicons/react/24/outline";
 
 export const customerNavigations = (businessHandle: string) => [
@@ -10,6 +9,6 @@ export const customerNavigations = (businessHandle: string) => [
   {
     name: "Go to app",
     icon: Squares2X2Icon,
-    href: sidebarNavigation[0].href,
+    href: "/app/explore",
   },
 ];

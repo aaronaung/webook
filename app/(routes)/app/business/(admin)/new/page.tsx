@@ -9,7 +9,7 @@ export default async function NewBusiness() {
     redirect("/login");
   }
   return (
-    <div className="h-full overflow-scroll px-6 pb-24">
+    <div className="px-1 pb-24">
       <BusinessProfileForm loggedInUser={user} />
     </div>
   );

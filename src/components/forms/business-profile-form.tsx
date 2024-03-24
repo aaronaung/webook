@@ -208,7 +208,7 @@ export default function BusinessProfileForm({
       }
       setIsSaving(false);
       // todo - celebrate with a toast.
-      router.replace("/app/business/classes");
+      router.replace("/app/explore");
     } catch (err) {
       console.log(err);
       if ((err as PostgrestError).code === UNIQUE_CONSTRAINT_VIOLATION) {
@@ -255,17 +255,12 @@ export default function BusinessProfileForm({
       <div className="space-y-12">
         <div className="border-b border-foreground/10 pb-12">
           <h2 className="text-base font-semibold leading-7 text-foreground">
-            Profile
+            Instructor profile
           </h2>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            This information will be displayed publicly so be careful what you
-            share.
-          </p>
-
-          <div className="mt-8 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-6">
+          <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-6">
             <div className="sm:col-span-3">
               <InputText
-                label="Business handle"
+                label="Handle"
                 prefix={
                   <span className="select-none pr-2 text-sm text-muted-foreground">
                     webook.com/

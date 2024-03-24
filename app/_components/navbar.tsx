@@ -140,7 +140,7 @@ export default function Navbar({ user }: { user?: Tables<"users"> }) {
                     <Button
                       size="sm"
                       onClick={() => router.push("/app/explore")}
-                      className=" rounded-lg"
+                      className="rounded-lg"
                     >
                       Go to app
                     </Button>
