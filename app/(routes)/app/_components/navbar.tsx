@@ -6,13 +6,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { usePathname, useRouter } from "next/navigation";
-
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
+import { useAuthUser } from "@/src/contexts/auth";
 
 export default function Navbar({
   navigation,
@@ -23,7 +17,7 @@ export default function Navbar({
 }) {
   const router = useRouter();
   const path = usePathname();
-  console.log("PATH", path);
+  const { user } = useAuthUser();
 
   return (
     <Disclosure as="nav" className="border-b border-gray-200 bg-background">
@@ -68,7 +62,10 @@ export default function Navbar({
                       <span className="sr-only">Open user menu</span>
                       <img
                         className="h-8 w-8 rounded-full"
-                        src={user.imageUrl}
+                        src={
+                          user?.avatar_url ||
+                          `https://ui-avatars.com/api/?name=${user?.first_name} ${user?.last_name}`
+                        }
                         alt=""
                       />
                     </Menu.Button>
@@ -143,16 +140,19 @@ export default function Navbar({
                 <div className="flex-shrink-0">
                   <img
                     className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
+                    src={
+                      user?.avatar_url ||
+                      `https://ui-avatars.com/api/?name=${user?.first_name} ${user?.last_name}`
+                    }
                     alt=""
                   />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
-                    {user.name}
+                    {user?.first_name} {user?.last_name}
                   </div>
                   <div className="text-sm font-medium text-gray-500">
-                    {user.email}
+                    {user?.email}
                   </div>
                 </div>
                 <button
