@@ -13,7 +13,7 @@ export default function InstructorCard({
       <div className="flex w-full items-center overflow-scroll">
         <Image
           className="h-10 w-10 rounded-full sm:h-16 sm:w-16"
-          src={getBusinessLogoUrl(business.handle)}
+          src={getBusinessLogoUrl(business.handle, new Date().toISOString())}
           fallbackSrc={`https://ui-avatars.com/api/?name=${business.title}`}
           alt="Instructor"
           retryOnError
