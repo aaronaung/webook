@@ -89,7 +89,7 @@ function SettingsBtn({ state, controls }: any) {
   return (
     <div
       onClickCapture={(e) => {
-        if (state.popoverShown) {
+        if (state.popoverShown !== null) {
           controls.hidePopover();
         } else {
           controls.showPopover(VideoControlPopover.SettingsPopover);

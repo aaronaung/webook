@@ -102,13 +102,15 @@ export function SettingsPopover({ controls, state }: any) {
         state.popoverShown === VideoControlPopover.SettingsPopover
           ? "scale-y-100"
           : "scale-y-0"
-      } absolute bottom-16 right-10 z-50 flex h-48 w-56 origin-bottom  flex-col rounded-lg bg-[rgba(0,0,0,0.75)] py-3 text-white transition`}
+      } absolute bottom-16 right-10 z-50 flex h-28 w-56 origin-bottom  flex-col rounded-lg bg-[rgba(0,0,0,0.75)] py-3 text-white transition`}
     >
-      <ShowSectionsSetting controls={controls} state={state} />
+      {/* The width and height of this div should be h-48 w-56 with sections and video quality settings implemented */}
+
+      {/* <ShowSectionsSetting controls={controls} state={state} /> */}
       <MirrorVideoSetting controls={controls} state={state} />
       <CameraSetting controls={controls} state={state} />
       <PlaybackRateSetting controls={controls} state={state} />
-      <VideoQualitySetting controls={controls} />
+      {/* <VideoQualitySetting controls={controls} /> */}
     </div>
   );
 }

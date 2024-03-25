@@ -6,7 +6,7 @@ import { getBusinessLogoUrl } from "@/src/utils";
 import { useEffect, useState } from "react";
 
 export default function ProfilePage() {
-  const { currentBusiness, setCurrentBusiness } = useCurrentBusinessContext();
+  const { currentBusiness } = useCurrentBusinessContext();
   const [businessLogoUrl, setBusinessLogoUrl] = useState<string | undefined>();
   const { user } = useAuthUser();
 

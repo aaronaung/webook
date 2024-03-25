@@ -32,8 +32,8 @@ const useImageWithRetry = (
       return;
     } else {
       if (retries.current >= MAX_RETRIES || !retryOnError) {
-        if (fallbackSrc) {
-          imageRef.current!.src = fallbackSrc;
+        if (fallbackSrc && imageRef.current) {
+          imageRef.current.src = fallbackSrc;
         }
         setImageStatus(IMAGE_STATUS.ERROR);
         return;

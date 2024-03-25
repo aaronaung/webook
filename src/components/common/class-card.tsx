@@ -81,6 +81,7 @@ export default function ClassCard({
         setPreviewUrl(data?.signedUrl);
         return;
       } catch (e) {
+        console.log("ERROR ", e);
         retries++;
         await new Promise((resolve) =>
           setTimeout(resolve, PREVIEW_URL_FETCH_RETRY_BACKOFF),

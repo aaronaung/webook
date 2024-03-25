@@ -140,7 +140,14 @@ export function useVideoPlayer(
       setProgress: (progress: number) => {},
       toggleCamera,
       toggleFullscreen,
-      toggleMirrorVideo,
+      toggleMirrorVideo: () => {
+        if (videoPlayer) {
+          videoPlayer.style.transform = videoMirrored
+            ? "scaleX(1)"
+            : "scaleX(-1)";
+        }
+        toggleMirrorVideo();
+      },
       toggleMute,
       togglePlay,
       toggleSideBar,

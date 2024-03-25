@@ -58,9 +58,9 @@ export default async function ClassPage({
   }
 
   return (
-    <div className="flex h-full min-w-0 flex-1 flex-col gap-y-1">
+    <div className="flex h-full min-w-0 flex-1 flex-col gap-y-1 overflow-scroll overflow-x-hidden">
       <VideoPlayer
-        className="mb-2 h-[720px] w-[1080px]"
+        className="mb-2 h-fit w-[480px] max-w-full sm:w-[720px] md:w-[1080px]"
         urls={{
           auto: signedUrlData.signedUrl,
         }}
@@ -75,11 +75,11 @@ export default async function ClassPage({
 
         {<PriceTag className="ml-2" price={danceClass.price} />}
       </div>
-      <p className="text-md line-clamp-1 font-medium text-secondary-foreground">
+      <p className="text-md line-clamp-1 shrink-0 font-medium text-secondary-foreground">
         {danceClass.title}
       </p>
       {danceClass.description && (
-        <p className="line-clamp-1 text-sm text-muted-foreground">
+        <p className="line-clamp-1 shrink-0 text-sm text-muted-foreground">
           {danceClass.description}
         </p>
       )}
