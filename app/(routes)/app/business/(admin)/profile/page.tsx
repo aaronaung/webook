@@ -9,9 +9,6 @@ export default function ProfilePage() {
   const { currentBusiness, setCurrentBusiness } = useCurrentBusinessContext();
   const [businessLogoUrl, setBusinessLogoUrl] = useState<string | undefined>();
   const { user } = useAuthUser();
-  if (!user) {
-    return <></>;
-  }
 
   useEffect(() => {
     fetch(getBusinessLogoUrl(currentBusiness.handle), {
@@ -24,6 +21,9 @@ export default function ProfilePage() {
       }
     });
   });
+  if (!user) {
+    return <></>;
+  }
 
   return (
     <div className="px-1">
