@@ -19,7 +19,7 @@ export function SaveClassDialog({
 }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="min-w-screen h-screen">
+      <DialogContent className="min-w-screen h-[calc(100dvh)]">
         <DialogHeader>
           <DialogTitle>{initFormValues?.id ? "Edit" : "Add"} class</DialogTitle>
         </DialogHeader>

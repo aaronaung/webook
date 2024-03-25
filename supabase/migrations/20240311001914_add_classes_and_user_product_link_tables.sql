@@ -20,6 +20,21 @@ for select
 to public
 using (true);
 
+create policy "Enable class insert for authenticated users only"
+on "public"."businesses"
+as permissive
+for insert
+to authenticated
+with check (true);
+
+create policy "Enable class update for users based on email"
+on "public"."classes"
+as permissive
+for update
+to public
+using (true)
+with check (business_id = (select business_id from businesses where owner_id = auth.uid()));
+
 
 alter table "public"."classes" enable row level security;
 
