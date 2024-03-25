@@ -42,8 +42,6 @@ export default function ClassCard({
   const [isMuted, setIsMuted] = useState(true);
   const { user } = useAuthUser();
 
-  console.log(danceClass);
-
   const { buy } = useBuyDanceClass({
     business: danceClass.business,
     user,
@@ -222,7 +220,6 @@ export default function ClassCard({
             {renderPingedIcons()}
             {!previewUrl ? (
               <div className="flex h-64 w-full items-center justify-center">
-                {" "}
                 <Spinner />
               </div>
             ) : (
@@ -256,7 +253,9 @@ export default function ClassCard({
               {danceClass.difficulty}
             </Badge>
 
-            {<PriceTag className="ml-2" price={danceClass.price} />}
+            {!hidePriceTag && (
+              <PriceTag className="ml-2" price={danceClass.price} />
+            )}
           </div>
           <p className="text-md line-clamp-2 font-medium text-secondary-foreground">
             {danceClass.title}

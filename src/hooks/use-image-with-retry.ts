@@ -25,6 +25,28 @@ const useImageWithRetry = (
     imageStatus === IMAGE_STATUS.RETRYING;
   const hasError = imageStatus === IMAGE_STATUS.ERROR;
 
+  const fetchImageUrl = async (url: string) => {
+    const resp = await fetch(url, { method: "HEAD" });
+    if (resp.ok) {
+      setImageStatus(IMAGE_STATUS.LOADED);
+      return;
+    } else {
+      if (retries.current >= MAX_RETRIES || !retryOnError) {
+        if (fallbackSrc) {
+          imageRef.current!.src = fallbackSrc;
+        }
+        setImageStatus(IMAGE_STATUS.ERROR);
+        return;
+      } else {
+        retries.current = retries.current + 1;
+        setImageStatus(IMAGE_STATUS.RETRYING);
+        setTimeout(() => {
+          fetchImageUrl(url);
+        }, DEFAULT_TIMEOUT);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!imageRef.current) {
       return;
@@ -44,9 +66,13 @@ const useImageWithRetry = (
       return;
     }
 
+    fetchImageUrl(image.src);
+
     const handleError = (event: any) => {
+      console.log("Hello");
       if (retries.current >= MAX_RETRIES || !retryOnError) {
         if (fallbackSrc) {
+          console.log("Handled image error", fallbackSrc);
           image.src = fallbackSrc;
         }
         setImageStatus(IMAGE_STATUS.ERROR);

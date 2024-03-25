@@ -9,16 +9,15 @@ export default function InstructorCard({
   business: Tables<"businesses">;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-lg bg-white p-4 shadow-md">
-      <div className="flex items-center">
+    <div className="flex items-center justify-between  rounded-lg bg-white p-4 shadow-md">
+      <div className="flex w-full items-center overflow-scroll">
         <Image
           className="h-10 w-10 rounded-full sm:h-16 sm:w-16"
           src={getBusinessLogoUrl(business.handle)}
           fallbackSrc={`https://ui-avatars.com/api/?name=${business.title}`}
-          retryOnError
           alt="Instructor"
         />
-        <div className="ml-4">
+        <div className="ml-4 flex-1">
           <p className="font-semibold text-secondary-foreground">
             {business.title}
           </p>
@@ -26,12 +25,12 @@ export default function InstructorCard({
             {business.description}
           </p>
         </div>
+        <a href={`/${business.handle}`}>
+          <Button className="ml-2 min-w-max rounded-full px-4 py-2">
+            View profile
+          </Button>
+        </a>
       </div>
-      <a href={`/${business.handle}`}>
-        <Button className="ml-2 min-w-max rounded-full px-4 py-2">
-          View profile
-        </Button>
-      </a>
     </div>
   );
 }

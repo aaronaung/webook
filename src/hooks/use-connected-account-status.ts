@@ -27,13 +27,13 @@ const STRIPE_STATUS_TITLES: { [key: number]: string } = {
 
 const STRIPE_STATUS_DESCRIPTIONS: { [key: number]: string } = {
   [StripeStatus.OnboardingNotInitiated]:
-    "You must first set up payment to start scheduling events!",
+    "You must first set up payment to start!",
   [StripeStatus.HasCurrentlyDueRequirements]:
-    "You must first complete your payment profile to start scheduling events and receiving payments.",
+    "You must first complete your payment profile to start receiving payments.",
   [StripeStatus.HasPastDueRequirements]:
-    "You must first complete your payment profile to start scheduling events and receiving payments.",
+    "You must first complete your payment profile to start receiving payments.",
   [StripeStatus.HasEventuallyDueRequirements]:
-    "You must first complete your payment profile to start scheduling events and receiving payments.",
+    "You must first complete your payment profile to start receiving payments.",
 };
 
 export const useConnectedAccountStatus = (business: Tables<"businesses">) => {

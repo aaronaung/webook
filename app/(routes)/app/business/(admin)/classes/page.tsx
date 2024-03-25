@@ -14,6 +14,8 @@ import { useState } from "react";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Spinner } from "@/src/components/common/loading-spinner";
 
+export const dynamic = "force-dynamic";
+
 type ClassDialogState = {
   isOpen: boolean;
   initFormValues?: Partial<SaveClassFormSchemaType>;

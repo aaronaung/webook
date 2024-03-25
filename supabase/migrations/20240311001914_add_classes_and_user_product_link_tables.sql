@@ -21,7 +21,7 @@ to public
 using (true);
 
 create policy "Enable class insert for authenticated users only"
-on "public"."businesses"
+on "public"."classes"
 as permissive
 for insert
 to authenticated

@@ -65,6 +65,7 @@ export default function SaveClassForm({
     defaultValues: {
       ...defaultValues,
       price: defaultValues?.price ? defaultValues.price / 100 : undefined,
+      difficulty: defaultValues?.difficulty ?? Difficulty.Beginner,
     },
     resolver: zodResolver(formSchema),
   });
@@ -140,6 +141,14 @@ export default function SaveClassForm({
   );
 
   const onFormSuccess = (formValues: SaveClassFormSchemaType) => {
+    if (!previewFile || !classFile) {
+      toast({
+        variant: "destructive",
+        title: "Missing files",
+        description: "Please upload both preview and class videos.",
+      });
+      return;
+    }
     _saveClass({
       danceClass: {
         ...(defaultValues?.id ? { id: defaultValues.id } : {}), // if id exists, then we are editing an existing service  (not creating a new one)
