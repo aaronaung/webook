@@ -1,10 +1,11 @@
 import ClassCard from "@/src/components/common/class-card";
 import EmptyState from "@/src/components/common/empty-state";
+import { Button } from "@/src/components/ui/button";
 import { ClassActionType } from "@/src/consts/classes";
 import { listAuthUserClasses } from "@/src/data/class";
 import { supaServerComponentClient } from "@/src/data/clients/server";
 import { Tables } from "@/types/db";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +19,13 @@ export default async function Classes() {
       <EmptyState
         title="No classes"
         description="Looks like you haven't bought any classes."
-        actionButtonText="Explore classes"
-        onAction={() => {
-          redirect("/app/explore");
-        }}
+        actionButtonOverride={
+          <div className="mt-6">
+            <Link href="/app/explore">
+              <Button type="button">Explore classes</Button>
+            </Link>
+          </div>
+        }
       />
     </div>
   ) : (

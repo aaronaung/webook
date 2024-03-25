@@ -12,7 +12,7 @@ export default function BusinessLogo({
   return (
     <Image
       alt="logo"
-      className="mb-2 mt-[44px] h-12 w-12 rounded-full"
+      className="mb-2 mt-[44px] h-24 w-24 rounded-full"
       src={getBusinessLogoUrl(business.handle)}
       fallbackSrc={`https://ui-avatars.com/api/?name=${business?.title}}`}
     />

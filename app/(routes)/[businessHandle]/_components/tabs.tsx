@@ -5,6 +5,7 @@ import { useState } from "react";
 import { GetServicesResponse } from "@/src/data/service";
 import { Tables } from "@/types/db.extension";
 import ClassesTabContent from "./tab-content-classes";
+import { useAuthUser } from "@/src/contexts/auth";
 
 enum TabType {
   Classes = "Classes",
@@ -12,17 +13,17 @@ enum TabType {
   // ScheduledEvents = "Scheduled events",
 }
 export default function Tabs({
-  user,
   services,
   business,
 }: {
-  user: Tables<"users">;
   services: GetServicesResponse;
   business: Tables<"businesses">;
 }) {
   const [selected, setSelected] = useState(TabType.Classes);
+  const { user } = useAuthUser();
 
   const renderTabContent = () => {
+    if (!user) return <></>;
     switch (selected) {
       // case TabType.BookServices:
       //   return (

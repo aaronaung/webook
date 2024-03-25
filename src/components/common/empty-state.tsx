@@ -9,6 +9,7 @@ type EmptyStateProps = {
   description?: string;
   Icon?: React.ComponentType<{ className?: string }>;
   icon?: React.ReactNode;
+  actionButtonOverride?: React.ReactNode;
 };
 
 export default function EmptyState({
@@ -18,7 +19,25 @@ export default function EmptyState({
   description,
   Icon,
   icon,
+  actionButtonOverride,
 }: EmptyStateProps) {
+  const renderActionButton = () => {
+    if (actionButtonOverride) {
+      return actionButtonOverride;
+    }
+    return (
+      onAction &&
+      actionButtonText && (
+        <div className="mt-6">
+          <Button type="button" onClick={onAction}>
+            <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+            {actionButtonText}
+          </Button>
+        </div>
+      )
+    );
+  };
+
   return (
     <div className="text-center">
       {Icon && <Icon className="mx-auto h-12 w-12" aria-hidden="true" />}
@@ -27,14 +46,7 @@ export default function EmptyState({
       {description && (
         <p className="mt-1 text-sm text-gray-500">{description}</p>
       )}
-      {onAction && actionButtonText && (
-        <div className="mt-6">
-          <Button type="button" onClick={onAction}>
-            <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-            {actionButtonText}
-          </Button>
-        </div>
-      )}
+      {renderActionButton()}
     </div>
   );
 }

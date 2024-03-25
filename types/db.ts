@@ -194,9 +194,11 @@ export type Database = {
           created_at: string | null
           description: string | null
           email: string
+          facebook_link: string | null
           handle: string
           id: string
           inactive: boolean | null
+          instagram_handle: string | null
           logo_url: string | null
           owner_id: string
           phone: string | null
@@ -214,9 +216,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           email: string
+          facebook_link?: string | null
           handle: string
           id?: string
           inactive?: boolean | null
+          instagram_handle?: string | null
           logo_url?: string | null
           owner_id: string
           phone?: string | null
@@ -234,9 +238,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           email?: string
+          facebook_link?: string | null
           handle?: string
           id?: string
           inactive?: boolean | null
+          instagram_handle?: string | null
           logo_url?: string | null
           owner_id?: string
           phone?: string | null
@@ -841,6 +847,7 @@ export type Database = {
           price: number
           stripe_product_id: string
           stripe_price_id: string
+          difficulty: string
         }[]
       }
       get_business_data: {
@@ -862,6 +869,7 @@ export type Database = {
           price: number
           stripe_product_id: string
           stripe_price_id: string
+          difficulty: string
         }[]
       }
       get_scheduled_events_in_time_range: {

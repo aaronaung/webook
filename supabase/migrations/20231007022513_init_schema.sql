@@ -9,6 +9,8 @@ create table "public"."businesses" (
     "phone" text,
     "email" text not null,
     "inactive" boolean default false,
+    "instagram_handle" text,
+    "facebook_link" text,
     "address" text,
     "city" text,
     "state" text,

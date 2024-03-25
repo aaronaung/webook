@@ -38,6 +38,8 @@ const formSchema = z.object({
     .string()
     .min(1, { message: "Description is required." })
     .max(200, { message: "Description must be at most 200 characters." }),
+  instagram_handle: z.string().optional(),
+  facebook_link: z.string().optional(),
   // address: z.string().min(1, { message: "Address is required." }),
   // city: z.string().min(1, { message: "City is required." }),
   // state: z.string().min(1, { message: "State is required." }),
@@ -295,6 +297,29 @@ export default function BusinessProfileForm({
                 inputProps={{
                   autoComplete: "email",
                   placeholder: "Email address",
+                }}
+                error={errors.email?.message}
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <InputText
+                rhfKey="instagram_handle"
+                register={register}
+                label="Instagram handle"
+                inputProps={{
+                  placeholder: "Instagram handle (don't include @). e.g. moovn",
+                }}
+                error={errors.email?.message}
+              />
+            </div>
+            <div className="sm:col-span-3">
+              <InputText
+                rhfKey="facebook_link"
+                register={register}
+                label="Facebook link"
+                inputProps={{
+                  placeholder:
+                    "Link to Facebook page. e.g. https://facebook.com/moovn",
                 }}
                 error={errors.email?.message}
               />

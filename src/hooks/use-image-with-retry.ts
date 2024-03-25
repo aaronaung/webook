@@ -69,10 +69,8 @@ const useImageWithRetry = (
     fetchImageUrl(image.src);
 
     const handleError = (event: any) => {
-      console.log("Hello");
       if (retries.current >= MAX_RETRIES || !retryOnError) {
         if (fallbackSrc) {
-          console.log("Handled image error", fallbackSrc);
           image.src = fallbackSrc;
         }
         setImageStatus(IMAGE_STATUS.ERROR);
