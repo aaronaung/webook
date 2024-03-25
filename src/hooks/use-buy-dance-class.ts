@@ -32,7 +32,7 @@ export const useBuyDanceClass = ({
     }
 
     const checkoutSession = await createStripeCheckoutSession({
-      returnUrl: `${window.origin}/${business.handle}/classes/${danceClass.id}`,
+      returnUrl: `${window.origin}/app/student/classes/${danceClass.id}`,
       businessStripeAccountId: business.stripe_account_id,
       productId: danceClass.stripe_product_id,
       userId: user.id,
