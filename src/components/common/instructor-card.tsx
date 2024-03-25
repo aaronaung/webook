@@ -16,6 +16,7 @@ export default function InstructorCard({
           src={getBusinessLogoUrl(business.handle)}
           fallbackSrc={`https://ui-avatars.com/api/?name=${business.title}`}
           alt="Instructor"
+          retryOnError
         />
         <div className="ml-4 flex-1">
           <p className="font-semibold text-secondary-foreground">

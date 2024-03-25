@@ -25,6 +25,10 @@ import { useAuthUser } from "@/src/contexts/auth";
 import Link from "next/link";
 import { ClassActionType, DIFFICULTY_COLORS } from "@/src/consts/classes";
 import { Badge } from "../ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+
+const PREVIEW_URL_FETCH_RETRY_COUNT = 5;
+const PREVIEW_URL_FETCH_RETRY_BACKOFF = 1500;
 
 export default function ClassCard({
   danceClass,
@@ -52,11 +56,29 @@ export default function ClassCard({
   }, [danceClass.id]);
 
   const fetchSignedPreviewUrl = async () => {
-    const { data } = await supaClientComponentClient()
-      .storage.from(BUCKETS.classes)
-      .createSignedUrl(`${danceClass.id}/preview`, 24 * 3600);
+    let retries = 0;
+    while (retries < PREVIEW_URL_FETCH_RETRY_COUNT) {
+      try {
+        const { data } = await supaClientComponentClient()
+          .storage.from(BUCKETS.classes)
+          .createSignedUrl(`${danceClass.id}/preview`, 24 * 3600);
 
-    setPreviewUrl(data?.signedUrl);
+        if (!data?.signedUrl) {
+          retries++;
+          await new Promise((resolve) =>
+            setTimeout(resolve, PREVIEW_URL_FETCH_RETRY_BACKOFF),
+          );
+          continue;
+        }
+        setPreviewUrl(data?.signedUrl);
+        return;
+      } catch (e) {
+        retries++;
+        await new Promise((resolve) =>
+          setTimeout(resolve, PREVIEW_URL_FETCH_RETRY_BACKOFF),
+        );
+      }
+    }
   };
 
   const asyncUploader = useAsyncFileUpload();
@@ -166,7 +188,7 @@ export default function ClassCard({
             <div className="flex h-64 w-full items-center justify-center gap-4">
               {renderUploadStatus()}
               <Button
-                className="h-16 w-16 rounded-full"
+                className="h-14 w-14 rounded-full"
                 variant={"destructive"}
                 disabled={deletingClass}
                 onClick={() => {
@@ -183,7 +205,14 @@ export default function ClassCard({
                 <XIcon width={24} />
               </Button>
             </div>
-            <Progress value={uploadProgress} />
+            <Tooltip>
+              <TooltipTrigger>
+                <Progress className="rounded-none" value={uploadProgress} />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{booking.status}</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         ) : (
           <div

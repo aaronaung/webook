@@ -75,6 +75,10 @@ export function useVideoPlayer(
       videoPlayer.ontimeupdate = (e) => {
         setVideoState((prev) => ({ ...prev, time: videoPlayer.currentTime }));
       };
+      videoPlayer.onload = () => {
+        videoPlayer.play();
+        videoPlayer.pause();
+      };
     }
   }, [videoPlayer]);
 
