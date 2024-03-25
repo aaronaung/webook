@@ -45,6 +45,14 @@ export default function ClassCard({
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const { user } = useAuthUser();
+  const asyncUploader = useAsyncFileUpload();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const { mutate: _deleteClass, isPending: deletingClass } = useSupaMutation(
+    deleteClass,
+    {
+      invalidate: [["listClasses"]],
+    },
+  );
 
   const { buy } = useBuyDanceClass({
     business: danceClass.business,
@@ -80,15 +88,6 @@ export default function ClassCard({
       }
     }
   };
-
-  const asyncUploader = useAsyncFileUpload();
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const { mutate: _deleteClass, isPending: deletingClass } = useSupaMutation(
-    deleteClass,
-    {
-      invalidate: [["listClasses"]],
-    },
-  );
 
   const renderPingedIcons = () => {
     const className = "absolute w-10 animate-ping text-black duration-1000";
@@ -210,13 +209,13 @@ export default function ClassCard({
                 <Progress className="rounded-none" value={uploadProgress} />
               </TooltipTrigger>
               <TooltipContent>
-                <p>{booking.status}</p>
+                <p>{uploadProgress}% completed</p>
               </TooltipContent>
             </Tooltip>
           </div>
         ) : (
           <div
-            className="relative flex h-64 items-center justify-center"
+            className="relative flex h-64 items-center justify-center overflow-hidden"
             onClick={() => {
               setIsMuted(!isMuted);
             }}

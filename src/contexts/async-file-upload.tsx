@@ -19,6 +19,7 @@ type AsyncFileUploadContextValue = {
   onError: (id: string, onError?: (error: any) => void) => void;
   inQueue: (id: string) => boolean;
   status: (id: string) => "uploading" | "paused" | "complete";
+  hasTaskInProgress: boolean;
 };
 
 const AsyncFileUploadContext =
@@ -238,6 +239,9 @@ function AsyncFileUploadProvider({ ...props }) {
         onError: setOnErrorHandler,
         inQueue,
         status,
+        hasTaskInProgress: Object.values(uploadTasks).some(
+          (task) => task.status === "uploading",
+        ),
       }}
       {...props}
     />

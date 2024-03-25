@@ -10,9 +10,10 @@ import { deleteClass, listClasses } from "@/src/data/class";
 import { useSupaMutation, useSupaQuery } from "@/src/hooks/use-supabase";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Edit } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Spinner } from "@/src/components/common/loading-spinner";
+import { useAsyncFileUpload } from "@/src/contexts/async-file-upload";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,24 @@ export default function Classes() {
       invalidate: [["listClasses"]],
     },
   );
+  const asyncUploader = useAsyncFileUpload();
+
+  function handleBeforeUnload(e: BeforeUnloadEvent) {
+    e.preventDefault();
+    e.returnValue =
+      "Leaving this page will cancel the upload in progress. Are you sure?";
+  }
+
+  useEffect(() => {
+    if (asyncUploader.hasTaskInProgress) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    } else {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    }
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [asyncUploader.hasTaskInProgress]);
 
   if (isLoading) {
     return <Spinner />;
