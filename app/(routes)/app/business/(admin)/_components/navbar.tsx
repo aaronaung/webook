@@ -1,23 +1,11 @@
 "use client";
 import { sidebarNavigation } from "@/app/(routes)/app/business/navigation";
 import { useCurrentBusinessContext } from "@/src/contexts/current-business";
-import { Button } from "@/src/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/src/components/ui/dropdown-menu";
-import { cn, getBusinessLogoUrl } from "@/src/utils";
+import { cn } from "@/src/utils";
 import { Tables } from "@/types/db.extension";
-import { BuildingOfficeIcon } from "@heroicons/react/24/outline";
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import Image from "@/src/components/ui/image";
 
 export default function Navbar({
   businesses,
@@ -61,7 +49,7 @@ export default function Navbar({
               </Link>
             </li>
           ))}
-          <li className="lg:mb-10 lg:mt-auto lg:w-48">
+          {/* <li className="lg:mb-10 lg:mt-auto lg:w-48">
             {currentBusiness && (
               <>
                 <DropdownMenu>
@@ -110,7 +98,7 @@ export default function Navbar({
                 </DropdownMenu>
               </>
             )}
-          </li>
+          </li> */}
         </ul>
       </nav>
     </aside>

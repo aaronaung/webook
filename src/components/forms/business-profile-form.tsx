@@ -37,9 +37,10 @@ const formSchema = z.object({
   description: z
     .string()
     .min(1, { message: "Description is required." })
-    .max(200, { message: "Description must be at most 200 characters." }),
-  instagram_handle: z.string().optional(),
-  facebook_link: z.string().optional(),
+    .max(200, { message: "Description must be at most 200 characters." })
+    .nullable(),
+  instagram_handle: z.string().optional().nullable(),
+  facebook_link: z.string().optional().nullable(),
   // address: z.string().min(1, { message: "Address is required." }),
   // city: z.string().min(1, { message: "City is required." }),
   // state: z.string().min(1, { message: "State is required." }),
@@ -52,9 +53,11 @@ type FormSchemaType = z.infer<typeof formSchema>;
 const FILE_SIZE_LIMIT = 5000000; // 5MB in bytes
 
 export default function BusinessProfileForm({
+  defaultValues,
   onBack,
   loggedInUser,
 }: {
+  defaultValues?: FormSchemaType & { id: string; logoUrl?: string };
   onBack?: () => void;
   loggedInUser: Tables<"users">;
 }) {
@@ -68,6 +71,7 @@ export default function BusinessProfileForm({
     control,
     formState: { errors, isSubmitting },
   } = useForm<FormSchemaType>({
+    defaultValues,
     resolver: zodResolver(formSchema),
   });
   const router = useRouter();
@@ -75,16 +79,17 @@ export default function BusinessProfileForm({
 
   const [logoFile, setLogoFile] = useState<File>();
   const [coverPhotoFile, setCoverPhotoFile] = useState<File>();
-  const [handle, setHandle] = useState<string>("");
+  const [handle, setHandle] = useState<string>(defaultValues?.handle || "");
   const [handleExists, setHandleExists] = useState<boolean>(false);
   const debouncedHandleValue = useDebounce<string>(handle, 1000);
   const [isSaving, setIsSaving] = useState(false);
+  const isAnUpdate = !!defaultValues;
 
   useEffect(() => {
     if (debouncedHandleValue) {
       (async () => {
         const exists = await checkIfHandleExists(debouncedHandleValue);
-        if (exists) {
+        if (exists && !(isAnUpdate && handle === defaultValues.handle)) {
           setError("handle", {
             message: "This handle is already taken.",
             type: "custom",
@@ -133,6 +138,33 @@ export default function BusinessProfileForm({
     setLogoFile(file);
   }, []);
 
+  const renderLogoPreview = () => {
+    if (logoFile) {
+      return (
+        <img
+          src={URL.createObjectURL(logoFile)}
+          alt="Logo"
+          className="h-12 w-12 rounded-full object-cover"
+        />
+      );
+    }
+    if (defaultValues?.logoUrl) {
+      return (
+        <img
+          src={defaultValues.logoUrl}
+          alt="Logo"
+          className="h-12 w-12 rounded-full object-cover"
+        />
+      );
+    }
+    return (
+      <UserCircleIcon
+        className="h-12 w-12 text-muted-foreground"
+        aria-hidden="true"
+      />
+    );
+  };
+
   async function checkIfHandleExists(handle: string) {
     try {
       const { count } = await supaClientComponentClient()
@@ -149,7 +181,7 @@ export default function BusinessProfileForm({
   }
 
   async function onFormSuccess(values: FormSchemaType) {
-    if (!logoFile) {
+    if (!defaultValues?.logoUrl && !logoFile) {
       toast({
         variant: "destructive",
         title: "Missing file",
@@ -160,7 +192,7 @@ export default function BusinessProfileForm({
     }
     try {
       setIsSaving(true);
-      if (handleExists) {
+      if (handleExists && !(isAnUpdate && handle === defaultValues.handle)) {
         setError(
           "handle",
           {
@@ -179,30 +211,30 @@ export default function BusinessProfileForm({
         return;
       }
 
-      const results = await Promise.all([
-        supaClientComponentClient()
-          .storage.from(BUCKETS.publicBusinessAssets)
-          .upload(
-            `/${STORAGE_DIR_PATHS.businessLogos}/${values.handle}`,
-            logoFile,
-            {
-              upsert: true,
-            },
-          ),
-        // supaClientComponentClient()
-        //   .storage.from(BUCKETS.publicBusinessAssets)
-        //   .upload(
-        //     `/${STORAGE_DIR_PATHS.businessCoverPhotos}/${values.handle}`,
-        //     coverPhotoFile,
-        //     {
-        //       upsert: true,
-        //     },
-        //   ),
+      const promises: any[] = [
         supaClientComponentClient()
           .from("businesses")
-          .upsert({ ...values, owner_id: loggedInUser.id }),
-      ]);
-
+          .upsert({
+            ...values,
+            owner_id: loggedInUser.id,
+            id: defaultValues?.id,
+          }),
+      ];
+      if (logoFile) {
+        promises.push(
+          supaClientComponentClient()
+            .storage.from(BUCKETS.publicBusinessAssets)
+            .upload(
+              `/${STORAGE_DIR_PATHS.businessLogos}/${values.handle}`,
+              logoFile,
+              {
+                upsert: true,
+              },
+            ),
+        );
+      }
+      console.log(promises);
+      const results = await Promise.all(promises);
       for (const result of results) {
         if (result.error) {
           throw result.error;
@@ -210,7 +242,14 @@ export default function BusinessProfileForm({
       }
       setIsSaving(false);
       // todo - celebrate with a toast.
-      router.replace("/app/business/classes");
+      if (isAnUpdate) {
+        toast({
+          title: "Profile updated",
+          description: "Your profile has been updated.",
+        });
+      } else {
+        router.replace("/app/business/classes");
+      }
     } catch (err) {
       console.log(err);
       if ((err as PostgrestError).code === UNIQUE_CONSTRAINT_VIOLATION) {
@@ -425,20 +464,7 @@ export default function BusinessProfileForm({
                 Headshot
               </label>
               <div className="mt-2 flex items-center gap-x-3">
-                {logoFile ? (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={URL.createObjectURL(logoFile)}
-                      alt="Logo"
-                      className="h-12 w-12 rounded-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <UserCircleIcon
-                    className="h-12 w-12 text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                )}
+                {renderLogoPreview()}
                 <input
                   ref={logoRef}
                   type="file"
