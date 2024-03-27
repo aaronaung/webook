@@ -69,7 +69,7 @@ export default function VideoPlayer({
       id="video-container "
       ref={videoContainerRef}
       className={cn(
-        `relative flex flex-col items-center border-2  bg-black`,
+        `relative flex flex-col items-center rounded-md bg-black`,
         className,
       )}
       onClick={onVideoContainerClick}

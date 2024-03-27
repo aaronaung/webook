@@ -64,29 +64,14 @@ export default function ClassCard({
   }, [danceClass.id]);
 
   const fetchSignedPreviewUrl = async () => {
-    let retries = 0;
-    while (retries < PREVIEW_URL_FETCH_RETRY_COUNT) {
-      try {
-        const { data } = await supaClientComponentClient.storage
-          .from(BUCKETS.classes)
-          .createSignedUrl(`${danceClass.id}/preview`, 24 * 3600);
-        if (!data?.signedUrl) {
-          retries++;
-          await new Promise((resolve) =>
-            setTimeout(resolve, PREVIEW_URL_FETCH_RETRY_BACKOFF),
-          );
-          continue;
+    supaClientComponentClient.storage
+      .from(BUCKETS.classes)
+      .createSignedUrl(`${danceClass.id}/preview`, 24 * 3600)
+      .then((resp) => {
+        if (resp.data?.signedUrl) {
+          setPreviewUrl(resp.data?.signedUrl);
         }
-        setPreviewUrl(data?.signedUrl);
-        return;
-      } catch (e) {
-        console.log("ERROR ", e);
-        retries++;
-        await new Promise((resolve) =>
-          setTimeout(resolve, PREVIEW_URL_FETCH_RETRY_BACKOFF),
-        );
-      }
-    }
+      });
   };
 
   const renderPingedIcons = () => {
