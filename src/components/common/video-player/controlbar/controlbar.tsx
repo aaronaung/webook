@@ -30,7 +30,7 @@ function PlayPauseBtn({ state, controls }: any) {
   return (
     <div
       onClickCapture={controls.togglePlay}
-      className={"play-pause w-6 flex-none cursor-pointer text-white"}
+      className={"play-pause w-5 flex-none cursor-pointer text-white sm:w-6"}
     >
       {state.playing ? <PauseIcon /> : <PlayIcon />}
     </div>
@@ -47,7 +47,7 @@ function VolumeControl({ state, controls }: any) {
           controls.toggleMute();
           setIsMuted(!isMuted);
         }}
-        className="mr-1 w-6 flex-none"
+        className="mr-1 w-5 flex-none sm:w-6"
       >
         {isMuted || currentVolume === 0 ? (
           <SpeakerXMarkIcon className="cursor-pointer" />
@@ -96,7 +96,7 @@ function SettingsBtn({ state, controls }: any) {
         }
         e.stopPropagation();
       }}
-      className="mr-2 w-6 flex-none text-white"
+      className="mr-2 w-5 flex-none text-white sm:w-6"
     >
       <CogIcon className="cursor-pointer" />
     </div>
@@ -107,7 +107,7 @@ function FullscreenBtn({ state, controls }: any) {
   return (
     <div
       onClickCapture={controls.toggleFullscreen}
-      className="w-6 flex-none text-white"
+      className="w-5 flex-none text-white sm:w-6"
     >
       {state.isFullscreen ? (
         <ArrowsPointingInIcon className="cursor-pointer" />
@@ -129,7 +129,7 @@ export function ControlBar({ state, controls, disableSettings }: any) {
       className="h-14 w-full bg-gradient-to-t from-black to-transparent"
     >
       <ProgressBar state={state} controls={controls} />
-      <div className="relative bottom-4 z-10 flex w-full items-center space-x-5 px-4 py-2">
+      <div className="relative bottom-4 z-10 flex w-full items-center space-x-4 px-4 py-2 sm:space-x-5">
         <PlayPauseBtn state={state} controls={controls} />
         <VolumeControl state={state} controls={controls} />
         <VideoTimestamp state={state} />
