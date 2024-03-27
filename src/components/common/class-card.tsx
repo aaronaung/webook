@@ -16,7 +16,6 @@ import {
 import { useSupaMutation } from "@/src/hooks/use-supabase";
 import { deleteClass } from "@/src/data/class";
 import { toast } from "../ui/use-toast";
-import { supaClientComponentClient } from "@/src/data/clients/browser";
 import { BUCKETS } from "@/src/consts/storage";
 import { SpeakerXMarkIcon } from "@heroicons/react/24/outline";
 import { Spinner } from "./loading-spinner";
@@ -26,9 +25,7 @@ import Link from "next/link";
 import { ClassActionType, DIFFICULTY_COLORS } from "@/src/consts/classes";
 import { Badge } from "../ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-
-const PREVIEW_URL_FETCH_RETRY_COUNT = 5;
-const PREVIEW_URL_FETCH_RETRY_BACKOFF = 1500;
+import { useSignedUrl } from "@/src/hooks/use-signed-url";
 
 export default function ClassCard({
   danceClass,
@@ -41,7 +38,6 @@ export default function ClassCard({
   classActionOverride?: React.ReactNode;
   hidePriceTag?: boolean;
 }) {
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
   const [previewPlaying, setPreviewPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const { user } = useAuthUser();
@@ -59,20 +55,10 @@ export default function ClassCard({
     user,
   });
 
-  useEffect(() => {
-    fetchSignedPreviewUrl();
-  }, [danceClass.id]);
-
-  const fetchSignedPreviewUrl = async () => {
-    supaClientComponentClient.storage
-      .from(BUCKETS.classes)
-      .createSignedUrl(`${danceClass.id}/preview`, 24 * 3600)
-      .then((resp) => {
-        if (resp.data?.signedUrl) {
-          setPreviewUrl(resp.data?.signedUrl);
-        }
-      });
-  };
+  const { signedUrl: previewUrl, refresh: refreshSignedUrl } = useSignedUrl({
+    bucket: BUCKETS.classes,
+    objectPath: `${danceClass.id}/preview`,
+  });
 
   const renderPingedIcons = () => {
     const className = "absolute w-10 animate-ping text-black duration-1000";
@@ -149,7 +135,7 @@ export default function ClassCard({
 
   useEffect(() => {
     asyncUploader.onSuccess(danceClass.id, () => {
-      fetchSignedPreviewUrl();
+      refreshSignedUrl();
     });
     asyncUploader.onProgress(danceClass.id, (progress) => {
       setUploadProgress(progress);

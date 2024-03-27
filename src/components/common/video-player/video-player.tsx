@@ -73,10 +73,7 @@ export default function VideoPlayer({
     >
       <div className="flex-grow">
         <ReactPlayer
-          url={
-            // "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-            urls["auto"]
-          }
+          url={urls["auto"]}
           width="100%"
           height="100%"
           controls={false}

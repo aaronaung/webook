@@ -141,7 +141,7 @@ export default function SaveClassForm({
   );
 
   const onFormSuccess = (formValues: SaveClassFormSchemaType) => {
-    if (!previewFile || !classFile) {
+    if (!defaultValues?.id && (!previewFile || !classFile)) {
       toast({
         variant: "destructive",
         title: "Missing files",

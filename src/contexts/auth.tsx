@@ -35,19 +35,29 @@ export const AuthContextProvider = (props: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      redirectToLoginIfUnauthed(session);
-      const dbUser = await toDbUser(session?.user, { client: supabase });
-      setUserSession(session);
-      setUser(dbUser);
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        redirectToLoginIfUnauthed(session, event);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("here");
+      setTimeout(async () => {
+        // We have to use setTimeout here to avoid deadlock. See the "important"
+        // section here: https://supabase.com/docs/reference/javascript/auth-onauthstatechange
+        redirectToLoginIfUnauthed(session);
         const dbUser = await toDbUser(session?.user, { client: supabase });
         setUserSession(session);
         setUser(dbUser);
+      }, 0);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("auth state change");
+        setTimeout(async () => {
+          // We have to use setTimeout here to avoid deadlock. See the "important"
+          // section here: https://supabase.com/docs/reference/javascript/auth-onauthstatechange
+          redirectToLoginIfUnauthed(session, event);
+          const dbUser = await toDbUser(session?.user, { client: supabase });
+          setUserSession(session);
+          setUser(dbUser);
+        }, 0);
       },
     );
 

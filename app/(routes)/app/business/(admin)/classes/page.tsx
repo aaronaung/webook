@@ -15,8 +15,6 @@ import { useCurrentBusinessContext } from "@/src/contexts/current-business";
 import { Spinner } from "@/src/components/common/loading-spinner";
 import { useAsyncFileUpload } from "@/src/contexts/async-file-upload";
 
-export const dynamic = "force-dynamic";
-
 type ClassDialogState = {
   isOpen: boolean;
   initFormValues?: Partial<SaveClassFormSchemaType>;
