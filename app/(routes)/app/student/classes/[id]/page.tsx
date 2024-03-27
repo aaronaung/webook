@@ -60,7 +60,7 @@ export default async function ClassPage({
   return (
     <div className="flex h-full min-w-0 flex-1 flex-col gap-y-1 overflow-scroll overflow-x-hidden">
       <VideoPlayer
-        className="mb-2 h-fit w-[480px] max-w-full sm:w-[720px] md:w-[1080px]"
+        className="max-h-400 mb-2 h-fit w-[480px] max-w-full sm:w-[720px] md:w-[1080px]"
         urls={{
           auto: signedUrlData.signedUrl,
         }}

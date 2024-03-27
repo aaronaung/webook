@@ -68,10 +68,7 @@ export default function VideoPlayer({
     <div
       id="video-container "
       ref={videoContainerRef}
-      className={cn(
-        `relative flex flex-col items-center rounded-md bg-black`,
-        className,
-      )}
+      className={cn(`relative flex flex-col items-center bg-black`, className)}
       onClick={onVideoContainerClick}
     >
       <div className="flex-grow">
@@ -80,10 +77,10 @@ export default function VideoPlayer({
             // "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
             urls["auto"]
           }
+          width="100%"
+          height="100%"
           controls={false}
           ref={videoRef}
-          width={"auto"}
-          height={"100%"}
         />
       </div>
       {showControls && (
