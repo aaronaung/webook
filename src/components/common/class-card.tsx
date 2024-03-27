@@ -223,7 +223,7 @@ export default function ClassCard({
               </div>
             ) : (
               <video
-                playsinline
+                playsInline
                 src={previewUrl + "#t=0.001"}
                 className="min-h-full min-w-full rounded-md object-cover"
                 onMouseOver={(event: any) => {
