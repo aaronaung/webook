@@ -167,7 +167,7 @@ export default function BusinessProfileForm({
 
   async function checkIfHandleExists(handle: string) {
     try {
-      const { count } = await supaClientComponentClient()
+      const { count } = await supaClientComponentClient
         .from("businesses")
         .select("*", { count: "exact", head: true })
         .eq("handle", handle);
@@ -212,18 +212,16 @@ export default function BusinessProfileForm({
       }
 
       const promises: any[] = [
-        supaClientComponentClient()
-          .from("businesses")
-          .upsert({
-            ...values,
-            owner_id: loggedInUser.id,
-            id: defaultValues?.id,
-          }),
+        supaClientComponentClient.from("businesses").upsert({
+          ...values,
+          owner_id: loggedInUser.id,
+          id: defaultValues?.id,
+        }),
       ];
       if (logoFile) {
         promises.push(
-          supaClientComponentClient()
-            .storage.from(BUCKETS.publicBusinessAssets)
+          supaClientComponentClient.storage
+            .from(BUCKETS.publicBusinessAssets)
             .upload(
               `/${STORAGE_DIR_PATHS.businessLogos}/${values.handle}`,
               logoFile,

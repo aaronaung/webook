@@ -37,7 +37,7 @@ export default function Navbar({
     router.refresh();
   };
   const handleLogout = async () => {
-    await supaClientComponentClient().auth.signOut();
+    await supaClientComponentClient.auth.signOut();
     router.refresh();
   };
 

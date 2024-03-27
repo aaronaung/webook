@@ -39,7 +39,7 @@ export default function UserAuthForm({
   async function handleEmailLogin(formValues: FormSchemaType) {
     try {
       const { data, error } =
-        await supaClientComponentClient().auth.signInWithPassword({
+        await supaClientComponentClient.auth.signInWithPassword({
           email: formValues.email,
           password: formValues.password,
         });
@@ -68,7 +68,7 @@ export default function UserAuthForm({
     // @todo - turn on email confirmation in real environment
     const formValues = getValues();
     try {
-      const { data, error } = await supaClientComponentClient().auth.signUp({
+      const { data, error } = await supaClientComponentClient.auth.signUp({
         email: formValues.email,
         password: formValues.password,
         options: {
@@ -102,7 +102,7 @@ export default function UserAuthForm({
   async function handleLoginWithGoogle() {
     try {
       const { data, error } =
-        await supaClientComponentClient().auth.signInWithOAuth({
+        await supaClientComponentClient.auth.signInWithOAuth({
           provider: "google",
           options: {
             redirectTo: `${location.origin}/api/auth/callback?return_path=${returnPath}`,

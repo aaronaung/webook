@@ -84,7 +84,7 @@ export default function Navbar({
                         {({ active }) => (
                           <a
                             onClick={async () => {
-                              await supaClientComponentClient().auth.signOut();
+                              await supaClientComponentClient.auth.signOut();
                               router.push("/login");
                             }}
                             className={cn(
@@ -167,7 +167,7 @@ export default function Navbar({
               <div className="mt-3 space-y-1">
                 <Disclosure.Button
                   onClick={async () => {
-                    await supaClientComponentClient().auth.signOut();
+                    await supaClientComponentClient.auth.signOut();
                     router.push("/login");
                   }}
                   className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"

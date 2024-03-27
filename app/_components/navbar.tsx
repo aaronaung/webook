@@ -22,7 +22,7 @@ export default function Navbar({ user }: { user?: Tables<"users"> }) {
   };
 
   const handleLogout = async () => {
-    await supaClientComponentClient().auth.signOut();
+    await supaClientComponentClient.auth.signOut();
     router.refresh();
   };
 

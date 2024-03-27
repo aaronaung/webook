@@ -17,7 +17,7 @@ export const AuthContextProvider = (props: { children: React.ReactNode }) => {
   const [userSession, setUserSession] = useState<Session | null>(null);
   const [user, setUser] = useState<Tables<"users"> | null>(null);
 
-  const supabase = supaClientComponentClient();
+  const supabase = supaClientComponentClient;
 
   const redirectToLoginIfUnauthed = (
     session: Session | null,

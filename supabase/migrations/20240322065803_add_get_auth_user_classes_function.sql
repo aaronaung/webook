@@ -101,9 +101,13 @@ BEGIN
            c.stripe_price_id,
            c.difficulty
     FROM classes c
-    JOIN user_stripe_products usp ON c.stripe_product_id = usp.stripe_product_id
     JOIN businesses b ON c.business_id = b.id
-    WHERE usp.user_id != auth.uid();
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM user_stripe_products usp
+        WHERE usp.user_id = auth.uid()
+        AND usp.stripe_product_id = c.stripe_product_id
+    );
 END;
 $$ LANGUAGE plpgsql;
 

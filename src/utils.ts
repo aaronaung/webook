@@ -55,8 +55,8 @@ export const getTimestampedObjUrl = (
   path: string,
   timestamp?: string | null,
 ): string => {
-  const { data } = supaClientComponentClient()
-    .storage.from(bucket)
+  const { data } = supaClientComponentClient.storage
+    .from(bucket)
     .getPublicUrl(path);
 
   if (!timestamp) {

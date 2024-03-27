@@ -26,7 +26,7 @@ export function useSupaMutation<Args, Result>(
   return useMutation({
     ...options,
     mutationFn: (mutationArgs: Args) =>
-      fn(mutationArgs, { client: supaClientComponentClient() }),
+      fn(mutationArgs, { client: supaClientComponentClient }),
     meta: {
       errorMessage: options.errorMessage || "Failed to run mutation.",
       ...options.meta,
@@ -62,11 +62,11 @@ export function useSupaQuery<Args, Result>(
       options && "arg" in options
         ? () =>
             (fn as QueryFnWithArgs<Args, Result>)(options.arg!, {
-              client: supaClientComponentClient(),
+              client: supaClientComponentClient,
             })
         : () =>
             (fn as QueryFnWithoutArgs<Result>)({
-              client: supaClientComponentClient(),
+              client: supaClientComponentClient,
             }),
     meta: { errorMessage: options?.errorMessage || "Failed to run query." },
     ...(options || {}),

@@ -176,7 +176,7 @@ function AsyncFileUploadProvider({ ...props }) {
 
     const {
       data: { session },
-    } = await supaClientComponentClient().auth.getSession();
+    } = await supaClientComponentClient.auth.getSession();
 
     uppyInstance.use(Tus, {
       endpoint: `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/upload/resumable`,

@@ -2,5 +2,5 @@
 import { Database } from "@/types/db";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-export const supaClientComponentClient = () =>
+export const supaClientComponentClient =
   createClientComponentClient<Database>();

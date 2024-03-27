@@ -78,7 +78,7 @@ export default function ChatRoom({
   useEffect(() => {
     const fetchMessages = async () => {
       const messages = await listChatMessagesInRoom(room.id, {
-        client: supaClientComponentClient(),
+        client: supaClientComponentClient,
       });
       // We need to flush the dom here, since the messages changes the height of the chat body.
       flushSync(() => {
@@ -92,7 +92,7 @@ export default function ChatRoom({
   }, [room.id]);
 
   useEffect(() => {
-    const client = supaClientComponentClient();
+    const client = supaClientComponentClient;
     const chatMessagesChannel = client
       .channel("chat_messages")
       .on<Tables<"chat_messages">>(
